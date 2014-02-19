@@ -13,6 +13,8 @@
     "php": ">=5.4.0"
   },
   "autoload": {
-    "files": ["src/bootstrap.php"]
+    "psr-0": {
+      "FastRoute" : "src"
+    }
   }
 }
