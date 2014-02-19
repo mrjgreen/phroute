@@ -3,6 +3,8 @@
 namespace FastRoute\Dispatcher;
 
 use FastRoute\Dispatcher;
+use FastRoute\Exception\HttpMethodNotAllowedException;
+use FastRoute\Exception\HttpRouteNotFoundException;
 
 class GroupCountBased implements Dispatcher {
     private $staticRouteMap;
@@ -24,12 +26,12 @@ class GroupCountBased implements Dispatcher {
         $routes = $this->staticRouteMap[$uri];
 
         if (isset($routes[$httpMethod])) {
-            return [self::FOUND, $routes[$httpMethod], []];
+            return array($routes[$httpMethod], array());
         } elseif ($httpMethod === 'HEAD' && isset($routes['GET'])) {
-            return [self::FOUND, $routes['GET'], []];
-        } else {
-            return [self::METHOD_NOT_ALLOWED, array_keys($routes)];
-        }
+            return array($routes['GET'], array());
+        } 
+        
+        throw new HttpMethodNotAllowedException();
     }
 
     private function dispatchVariableRoute($httpMethod, $uri) {
@@ -43,7 +45,7 @@ class GroupCountBased implements Dispatcher {
                 if ($httpMethod === 'HEAD' && isset($routes['GET'])) {
                     $httpMethod = 'GET';
                 } else {
-                    return [self::METHOD_NOT_ALLOWED, array_keys($routes)];
+                    throw new HttpMethodNotAllowedException();
                 }
             }
 
@@ -54,9 +56,9 @@ class GroupCountBased implements Dispatcher {
             foreach ($varNames as $varName) {
                 $vars[$varName] = $matches[++$i];
             }
-            return [self::FOUND, $handler, $vars];
+            return array($handler, $vars);
         }
 
-        return [self::NOT_FOUND];
+        throw new HttpRouteNotFoundException();
     }
 }
