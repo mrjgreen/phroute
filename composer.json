@@ -9,12 +9,12 @@
       "email": "nikic@php.net"
     }
   ],
+  "autoload": {
+        "psr-0": { 
+            "FastRoute": "src"
+         }
+    },
   "require": {
     "php": ">=5.4.0"
-  },
-  "autoload": {
-    "psr-0": {
-      "FastRoute" : "src"
-    }
   }
 }
