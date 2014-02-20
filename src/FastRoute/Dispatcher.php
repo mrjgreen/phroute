@@ -20,6 +20,13 @@ class Dispatcher {
             $httpMethod = Route::GET;
         }
         
+        list($handler, $vars) = $this->dispatchRoute($httpMethod, $uri);
+        
+        return call_user_func_array($handler, $vars);
+    }
+    
+    private function dispatchRoute($httpMethod, $uri)
+    {
         if (isset($this->staticRouteMap[$uri]))
         {
             return $this->dispatchStaticRoute($httpMethod, $uri);
