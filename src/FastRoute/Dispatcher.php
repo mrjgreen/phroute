@@ -4,13 +4,14 @@ namespace FastRoute;
 
 use FastRoute\Exception\HttpMethodNotAllowedException;
 use FastRoute\Exception\HttpRouteNotFoundException;
+use FastRoute\RouteCollector;
 
 class Dispatcher {
     private $staticRouteMap;
     private $variableRouteData;
 
-    public function __construct($data) {
-        list($this->staticRouteMap, $this->variableRouteData) = $data;
+    public function __construct(RouteCollector $data) {
+        list($this->staticRouteMap, $this->variableRouteData) = $data->getData();
     }
 
     public function dispatch($httpMethod, $uri) {
