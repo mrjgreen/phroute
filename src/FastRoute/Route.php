@@ -3,6 +3,14 @@
 namespace FastRoute;
 
 class Route {
+    
+    const GET = 'GET';
+    const HEAD = 'HEAD';
+    const POST = 'POST';
+    const PUT = 'PUT';
+    const DELETE = 'DELETE';
+    const OPTIONS = 'OPTIONS';
+    
     public $httpMethod;
     public $regex;
     public $variables;

@@ -1,64 +1,74 @@
-<?php
-
-namespace FastRoute;
+<?php namespace FastRoute;
 
 use FastRoute\Exception\HttpMethodNotAllowedException;
 use FastRoute\Exception\HttpRouteNotFoundException;
-use FastRoute\RouteCollector;
 
 class Dispatcher {
+
     private $staticRouteMap;
     private $variableRouteData;
 
-    public function __construct(RouteCollector $data) {
+    public function __construct(RouteCollector $data)
+    {
         list($this->staticRouteMap, $this->variableRouteData) = $data->getData();
     }
 
-    public function dispatch($httpMethod, $uri) {
-        if (isset($this->staticRouteMap[$uri])) {
-            return $this->dispatchStaticRoute($httpMethod, $uri);
-        } else {
-            return $this->dispatchVariableRoute($httpMethod, $uri);
+    public function dispatch($httpMethod, $uri)
+    {
+        if($httpMethod === Route::HEAD)
+        {
+            $httpMethod = Route::GET;
         }
+        
+        if (isset($this->staticRouteMap[$uri]))
+        {
+            return $this->dispatchStaticRoute($httpMethod, $uri);
+        }
+        
+        return $this->dispatchVariableRoute($httpMethod, $uri);
     }
 
-    private function dispatchStaticRoute($httpMethod, $uri) {
+    private function dispatchStaticRoute($httpMethod, $uri)
+    {
         $routes = $this->staticRouteMap[$uri];
 
-        if (isset($routes[$httpMethod])) {
-            return array($routes[$httpMethod], array());
-        } elseif ($httpMethod === 'HEAD' && isset($routes['GET'])) {
-            return array($routes['GET'], array());
+        if (!isset($routes[$httpMethod]))
+        {
+            throw new HttpMethodNotAllowedException();
         } 
         
-        throw new HttpMethodNotAllowedException();
+        return array($routes[$httpMethod], array());
     }
 
-    private function dispatchVariableRoute($httpMethod, $uri) {
-        foreach ($this->variableRouteData as $data) {
-            if (!preg_match($data['regex'], $uri, $matches)) {
+    private function dispatchVariableRoute($httpMethod, $uri)
+    {
+        foreach ($this->variableRouteData as $data) 
+        {
+            if (!preg_match($data['regex'], $uri, $matches))
+            {
                 continue;
             }
 
             $routes = $data['routeMap'][count($matches)];
-            if (!isset($routes[$httpMethod])) {
-                if ($httpMethod === 'HEAD' && isset($routes['GET'])) {
-                    $httpMethod = 'GET';
-                } else {
-                    throw new HttpMethodNotAllowedException();
-                }
+            
+            if (!isset($routes[$httpMethod]))
+            {
+                throw new HttpMethodNotAllowedException();
             }
 
             list($handler, $varNames) = $routes[$httpMethod];
 
-            $vars = [];
-            $i = 0;
-            foreach ($varNames as $varName) {
-                $vars[$varName] = $matches[++$i];
+            $vars = array();
+
+            foreach ($varNames as $i => $varName)
+            {
+                $vars[$varName] = $matches[$i + 1];
             }
+            
             return array($handler, $vars);
         }
 
         throw new HttpRouteNotFoundException();
     }
+
 }

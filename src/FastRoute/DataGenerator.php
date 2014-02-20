@@ -1,9 +1,6 @@
-<?php
-
-namespace FastRoute;
+<?php namespace FastRoute;
 
 use FastRoute\Exception\BadRouteException;
-use FastRoute\Route;
 
 class DataGenerator {
 

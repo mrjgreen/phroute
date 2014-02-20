@@ -1,6 +1,4 @@
-<?php
-
-namespace FastRoute;
+<?php namespace FastRoute;
 
 class RouteCollector {
     private $routeParser;
@@ -18,32 +16,32 @@ class RouteCollector {
     
     public function get($route, $handler)
     {
-        $this->addRoute('GET', $route, $handler);
+        $this->addRoute(Route::GET, $route, $handler);
     }
     
     public function head($route, $handler)
     {
-        $this->addRoute('HEAD', $route, $handler);
+        $this->addRoute(Route::GET, $route, $handler);
     }
     
     public function post($route, $handler)
     {
-        $this->addRoute('POST', $route, $handler);
+        $this->addRoute(Route::POST, $route, $handler);
     }
     
     public function put($route, $handler)
     {
-        $this->addRoute('PUT', $route, $handler);
+        $this->addRoute(Route::PUT, $route, $handler);
     }
     
     public function delete($route, $handler)
     {
-        $this->addRoute('DELETE', $route, $handler);
+        $this->addRoute(Route::DELETE, $route, $handler);
     }
     
     public function options($route, $handler)
     {
-        $this->addRoute('OPTIONS', $route, $handler);
+        $this->addRoute(Route::OPTIONS, $route, $handler);
     }
 
     public function getData() {
