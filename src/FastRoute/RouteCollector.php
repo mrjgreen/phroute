@@ -44,6 +44,11 @@ class RouteCollector {
     {
         return $this->addRoute(Route::OPTIONS, $route, $handler);
     }
+    
+    public function any($route, $handler)
+    {
+        return $this->addRoute(Route::ANY, $route, $handler);
+    }
 
     public function getData() {
         return $this->dataGenerator->getData();

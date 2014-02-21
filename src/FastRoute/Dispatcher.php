@@ -41,7 +41,12 @@ class Dispatcher {
 
         if (!isset($routes[$httpMethod]))
         {
-            throw new HttpMethodNotAllowedException();
+            $httpMethod = Route::ANY;
+                    
+            if (!isset($routes[$httpMethod]))
+            {
+                throw new HttpMethodNotAllowedException();
+            } 
         } 
         
         return array($routes[$httpMethod], array());
@@ -60,8 +65,13 @@ class Dispatcher {
             
             if (!isset($routes[$httpMethod]))
             {
-                throw new HttpMethodNotAllowedException();
-            }
+                $httpMethod = Route::ANY;
+
+                if (!isset($routes[$httpMethod]))
+                {
+                    throw new HttpMethodNotAllowedException();
+                } 
+            } 
 
             list($handler, $varNames) = $routes[$httpMethod];
 

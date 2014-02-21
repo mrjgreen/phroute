@@ -4,6 +4,7 @@ namespace FastRoute;
 
 class Route {
     
+    const ANY = 'ANY';
     const GET = 'GET';
     const HEAD = 'HEAD';
     const POST = 'POST';
