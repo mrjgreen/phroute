@@ -6,6 +6,8 @@ class RouteCollector {
     private $filters;
     private $before = array();
     private $after = array();
+    
+    private $globalFilters = array();
 
     public function __construct(RouteParser $routeParser, DataGenerator $dataGenerator) {
         $this->routeParser = $routeParser;
@@ -14,8 +16,15 @@ class RouteCollector {
 
     private function addRoute($httpMethod, $route, $handler) {
         $routeData = $this->routeParser->parse($route);
-        $this->dataGenerator->addRoute($httpMethod, $routeData, $handler);
+        $this->dataGenerator->addRoute($httpMethod, $routeData, array_merge_recursive($this->globalFilters, (array)$handler));
         return $this;
+    }
+    
+    public function group(array $filters, \Closure $callback)
+    {
+        $this->globalFilters = array_intersect_key($filters, array(Route::AFTER => 1, Route::BEFORE => 1));
+        $callback();
+        $this->globalFilters = array();
     }
     
     public function before($handler)
