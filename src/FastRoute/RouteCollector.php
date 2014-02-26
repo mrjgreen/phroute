@@ -3,6 +3,9 @@
 class RouteCollector {
     private $routeParser;
     private $dataGenerator;
+    private $filters;
+    private $before = array();
+    private $after = array();
 
     public function __construct(RouteParser $routeParser, DataGenerator $dataGenerator) {
         $this->routeParser = $routeParser;
@@ -13,6 +16,21 @@ class RouteCollector {
         $routeData = $this->routeParser->parse($route);
         $this->dataGenerator->addRoute($httpMethod, $routeData, $handler);
         return $this;
+    }
+    
+    public function before($handler)
+    {
+        $this->before[] = $handler;
+    }
+    
+    public function after($handler)
+    {
+        $this->after[] = $handler;
+    }
+    
+    public function filter($name, $handler)
+    {
+        $this->filters[$name] = $handler;
     }
     
     public function get($route, $handler)
@@ -50,7 +68,13 @@ class RouteCollector {
         return $this->addRoute(Route::ANY, $route, $handler);
     }
 
-    public function getData() {
+    public function getData() 
+    {
         return $this->dataGenerator->getData();
+    }
+    
+    public function getFilters() 
+    {
+        return array($this->before, $this->after, $this->filters);
     }
 }
