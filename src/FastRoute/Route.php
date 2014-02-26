@@ -4,6 +4,9 @@ namespace FastRoute;
 
 class Route {
     
+    const BEFORE = 'before';
+    const AFTER = 'after';
+    
     const ANY = 'ANY';
     const GET = 'GET';
     const HEAD = 'HEAD';
