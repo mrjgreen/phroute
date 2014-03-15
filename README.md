@@ -10,31 +10,44 @@ Usage
 Here's a basic usage example:
 
 ```php
-<?php
-
-require '/path/to/FastRoute/src/bootstrap.php'
-
-$dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
-    $r->addRoute('GET', '/user/{name}/{id:[0-9]+}', 'handler0');
-    $r->addRoute('GET', '/user/{id:[0-9]+}', 'handler1');
-    $r->addRoute('GET', '/user/{name}', 'handler2');
+Route::filter('auth', function(){    
+    if(!isset($_SESSION['user'])) 
+    {
+        return RedirectResponse::create('/login');
+    }
 });
 
-$routeInfo = $dispatcher->dispatch($methodMethod, $uri);
-switch ($routeInfo[0]) {
-    case FastRoute\Dispatcher::NOT_FOUND:
-        // ... 404 Not Found
-        break;
-    case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
-        $allowedMethods = $routeInfo[1];
-        // ... 405 Method Not Allowed
-        break;
-    case FastRoute\Dispatcher::FOUND:
-        $handler = $routeInfo[1];
-        $vars = $routeInfo[2];
-        // ... call $handler with $vars
-        break;
-}
+Route::filter('test', function(){    
+    var_dump('before_filter');
+});
+
+Route::group(array('before' => 'auth'), function(){
+    
+    Route::get('/user/{name}', function($name){
+        return new Response($name, 200, array('something' => 1));
+    })
+    ->get('/page/{id:\d+}', function($id){
+        return $id;
+    });
+    
+});
+
+Route::post('/page/{id:\d+}', function($id){
+    return 'POST ' . $id;
+})
+
+->any('/any', function(){
+    return 'any';
+}, array('before' => 'test'))
+
+->any('/test', function() use($app){
+    
+   
+})
+
+->any('/', function(){
+    return 'home';
+});
 ```
 
 ### Defining routes
@@ -57,16 +70,40 @@ caching. By using `cachedDispatcher` instead of `simpleDispatcher` you can cache
 routing data and construct the dispatcher from the cached information:
 
 ```php
-<?php
+class Test {
+    
+    public function anyIndex()
+    {
+        var_dump('index');
+    }
+    
+    public function anyTestany()
+    {
+        var_dump('blah');
+    }
+    
+    public function getTestget()
+    {
+        
+    }
+    
+    public function postTestpost()
+    {
+        var_dump('blah');
+    }
+    
+    public function putTestput()
+    {
+        
+    }
+    
+    public function deleteTestdelete()
+    {
+        
+    }
+}
 
-$dispatcher = FastRoute\cachedDispatcher(function(FastRoute\RouteCollector $r) {
-    $r->addRoute('GET', '/user/{name}/{id:[0-9]+}', 'handler0');
-    $r->addRoute('GET', '/user/{id:[0-9]+}', 'handler1');
-    $r->addRoute('GET', '/user/{name}', 'handler2');
-}, [
-    'cacheFile' => __DIR__ . '/route.cache', /* required */
-    'cacheDisabled' => IS_DEBUG_ENABLED,     /* optional, enabled by default */
-]);
+Route::controller('/controller', 'Test');
 ```
 
 The second parameter to the function is an options array, which can be used to specify the cache
