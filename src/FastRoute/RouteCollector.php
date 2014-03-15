@@ -14,9 +14,9 @@ class RouteCollector {
         $this->dataGenerator = $dataGenerator;
     }
 
-    private function addRoute($httpMethod, $route, $handler) {
+    public function addRoute($httpMethod, $route, $handler, array $filters = array()) {
         $routeData = $this->routeParser->parse($route);
-        $this->dataGenerator->addRoute($httpMethod, $routeData, array_merge_recursive($this->globalFilters, (array)$handler));
+        $this->dataGenerator->addRoute($httpMethod, $routeData, $handler, array_merge_recursive($this->globalFilters, $filters));
         return $this;
     }
     
@@ -42,39 +42,39 @@ class RouteCollector {
         $this->filters[$name] = $handler;
     }
     
-    public function get($route, $handler)
+    public function get($route, $handler, array $filters = array())
     {
-        return $this->addRoute(Route::GET, $route, $handler);
+        return $this->addRoute(Route::GET, $route, $handler, $filters);
     }
     
-    public function head($route, $handler)
+    public function head($route, $handler, array $filters = array())
     {
-        return $this->addRoute(Route::GET, $route, $handler);
+        return $this->addRoute(Route::GET, $route, $handler, $filters);
     }
     
-    public function post($route, $handler)
+    public function post($route, $handler, array $filters = array())
     {
-        return $this->addRoute(Route::POST, $route, $handler);
+        return $this->addRoute(Route::POST, $route, $handler, $filters);
     }
     
-    public function put($route, $handler)
+    public function put($route, $handler, array $filters = array())
     {
-        return $this->addRoute(Route::PUT, $route, $handler);
+        return $this->addRoute(Route::PUT, $route, $handler, $filters);
     }
     
-    public function delete($route, $handler)
+    public function delete($route, $handler, array $filters = array())
     {
-        return $this->addRoute(Route::DELETE, $route, $handler);
+        return $this->addRoute(Route::DELETE, $route, $handler, $filters);
     }
     
-    public function options($route, $handler)
+    public function options($route, $handler, array $filters = array())
     {
-        return $this->addRoute(Route::OPTIONS, $route, $handler);
+        return $this->addRoute(Route::OPTIONS, $route, $handler, $filters);
     }
     
-    public function any($route, $handler)
+    public function any($route, $handler, array $filters = array())
     {
-        return $this->addRoute(Route::ANY, $route, $handler);
+        return $this->addRoute(Route::ANY, $route, $handler, $filters);
     }
 
     public function getData() 
@@ -85,5 +85,18 @@ class RouteCollector {
     public function getFilters() 
     {
         return array($this->before, $this->after, $this->filters);
+    }
+    
+    public function getValidMethods()
+    {
+        return array(
+            Route::ANY,
+            Route::GET,
+            Route::POST,
+            Route::PUT,
+            Route::DELETE,
+            Route::OPTIONS,
+            Route::HEAD,
+        );
     }
 }

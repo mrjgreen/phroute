@@ -52,24 +52,22 @@ class Dispatcher {
     
     private function parseFilters($httpMethod, $uri)
     {
-        list($handler, $vars) = $this->dispatchRoute($httpMethod, $uri);
+        list($handlerFilter, $vars) = $this->dispatchRoute($httpMethod, $uri);
         
         $beforeFilter = array();
         $afterFilter = array();
         
-        if(is_array($handler))
+        $handler = $handlerFilter[0];
+        $filters = $handlerFilter[1];
+        
+        if(isset($filters[Route::BEFORE]))
         {
-            if(isset($handler[Route::BEFORE]))
-            {
-                $beforeFilter = array_intersect_key($this->filters, array_flip((array) $handler[Route::BEFORE]));
-            }
-            
-            if(isset($handler[Route::AFTER]))
-            {
-                $afterFilter = array_intersect_key($this->filters, array_flip((array) $handler[Route::AFTER]));
-            }
-            
-            $handler = array_pop($handler);
+            $beforeFilter = array_intersect_key($this->filters, array_flip((array) $filters[Route::BEFORE]));
+        }
+
+        if(isset($filters[Route::AFTER]))
+        {
+            $afterFilter = array_intersect_key($this->filters, array_flip((array) $filters[Route::AFTER]));
         }
         
         return array(array_merge($this->before, $beforeFilter), array_merge($this->after, $afterFilter), $handler, $vars);

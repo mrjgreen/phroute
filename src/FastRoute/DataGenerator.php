@@ -9,14 +9,14 @@ class DataGenerator {
     protected $staticRoutes = [];
     protected $regexToRoutesMap = [];
 
-    public function addRoute($httpMethod, $routeData, $handler)
+    public function addRoute($httpMethod, $routeData, $handler, array $filters = array())
     {
         if ($this->isStaticRoute($routeData))
         {
-            $this->addStaticRoute($httpMethod, $routeData, $handler);
+            $this->addStaticRoute($httpMethod, $routeData, $handler, $filters);
         } else
         {
-            $this->addVariableRoute($httpMethod, $routeData, $handler);
+            $this->addVariableRoute($httpMethod, $routeData, $handler, $filters);
         }
     }
 
@@ -25,7 +25,7 @@ class DataGenerator {
         return count($routeData) == 1 && is_string($routeData[0]);
     }
 
-    private function addStaticRoute($httpMethod, $routeData, $handler)
+    private function addStaticRoute($httpMethod, $routeData, $handler, $filters)
     {
         $routeStr = $routeData[0];
 
@@ -49,10 +49,10 @@ class DataGenerator {
             }
         }
 
-        $this->staticRoutes[$routeStr][$httpMethod] = $handler;
+        $this->staticRoutes[$routeStr][$httpMethod] = array($handler, $filters);
     }
 
-    private function addVariableRoute($httpMethod, $routeData, $handler)
+    private function addVariableRoute($httpMethod, $routeData, $handler, $filters)
     {
         list($regex, $variables) = $this->buildRegexForRoute($routeData);
 
@@ -64,7 +64,7 @@ class DataGenerator {
         }
 
         $this->regexToRoutesMap[$regex][$httpMethod] = new Route(
-                $httpMethod, $handler, $regex, $variables
+                $httpMethod, array($handler, $filters) ,$regex, $variables
         );
     }
 
