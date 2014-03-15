@@ -1,5 +1,8 @@
 <?php namespace FastRoute;
 
+use ReflectionClass;
+use ReflectionMethod;
+
 class RouteCollector {
     
     const DEFAULT_CONTROLLER_ROUTE = 'index';
@@ -93,7 +96,7 @@ class RouteCollector {
     public function controller($route, $classname)
     {
         $reflection = new ReflectionClass($classname);
-        
+
         $validMethods = $this->getValidMethods();
         
         foreach($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method)
@@ -104,9 +107,12 @@ class RouteCollector {
                 {
                     $methodName = strtolower(substr($method->name, strlen($valid)));
                     
-                    $path = $methodName === self::DEFAULT_CONTROLLER_ROUTE ? '' : '/' . $methodName;
+                    if($methodName === self::DEFAULT_CONTROLLER_ROUTE)
+                    {
+                        $this->addRoute($valid, $route, array($classname, $method->name));
+                    }
                     
-                    $this->addRout($valid, $route . $path, array($classname, $method->name));
+                    $this->addRoute($valid, $route . '/' . $methodName, array($classname, $method->name));
                     
                     break;
                 }

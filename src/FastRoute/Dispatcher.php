@@ -32,11 +32,23 @@ class Dispatcher {
             return $response;
         }
         
-        $response = call_user_func_array($handler, $vars);
+        $resolvedHandler = $this->resolveHandler($handler);
+        
+        $response = call_user_func_array($resolvedHandler, $vars);
 
         $this->dispatchFilters($afterFilter);
         
         return $response;
+    }
+    
+    private function resolveHandler($handler)
+    {
+        if(is_array($handler) and is_string($handler[0]))
+        {
+            $handler[0] = new $handler[0];
+        }
+        
+        return $handler;
     }
     
     private function dispatchFilters($filters, $args = array())
