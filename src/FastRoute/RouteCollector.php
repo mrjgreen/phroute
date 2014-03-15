@@ -29,7 +29,7 @@ class RouteCollector {
     public function group(array $filters, \Closure $callback)
     {
         $this->globalFilters = array_intersect_key($filters, array(Route::AFTER => 1, Route::BEFORE => 1));
-        $callback();
+        $callback($this);
         $this->globalFilters = array();
     }
     
