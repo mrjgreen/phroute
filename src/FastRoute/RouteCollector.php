@@ -1,6 +1,9 @@
 <?php namespace FastRoute;
 
 class RouteCollector {
+    
+    const DEFAULT_CONTROLLER_ROUTE = 'index';
+    
     private $routeParser;
     private $dataGenerator;
     private $filters;
@@ -85,6 +88,30 @@ class RouteCollector {
     public function getFilters() 
     {
         return array($this->before, $this->after, $this->filters);
+    }
+    
+    public function controller($route, $classname)
+    {
+        $reflection = new ReflectionClass($classname);
+        
+        $validMethods = $this->getValidMethods();
+        
+        foreach($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method)
+        {
+            foreach($validMethods as $valid)
+            {
+                if(stripos($method->name, $valid) === 0)
+                {
+                    $methodName = strtolower(substr($method->name, strlen($valid)));
+                    
+                    $path = $methodName === self::DEFAULT_CONTROLLER_ROUTE ? '' : '/' . $methodName;
+                    
+                    $this->addRout($valid, $route . $path, array($classname, $method->name));
+                    
+                    break;
+                }
+            }
+        }
     }
     
     public function getValidMethods()
