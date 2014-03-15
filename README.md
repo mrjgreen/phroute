@@ -10,27 +10,6 @@ Usage
 Here's a basic usage example:
 
 ```php
-Route::filter('auth', function(){    
-    if(!isset($_SESSION['user'])) 
-    {
-        return RedirectResponse::create('/login');
-    }
-});
-
-Route::filter('test', function(){    
-    var_dump('before_filter');
-});
-
-Route::group(array('before' => 'auth'), function(){
-    
-    Route::get('/user/{name}', function($name){
-        return new Response($name, 200, array('something' => 1));
-    })
-    ->get('/page/{id:\d+}', function($id){
-        return $id;
-    });
-    
-});
 
 Route::post('/page/{id:\d+}', function($id){
     return 'POST ' . $id;
@@ -68,6 +47,34 @@ syntax by passing using a different route parser.
 The reason `simpleDispatcher` accepts a callback for defining the routes is to allow seamless
 caching. By using `cachedDispatcher` instead of `simpleDispatcher` you can cache the generated
 routing data and construct the dispatcher from the cached information:
+
+##Filters
+
+```php
+Route::filter('auth', function(){    
+    if(!isset($_SESSION['user'])) 
+    {
+        return RedirectResponse::create('/login');
+    }
+});
+
+Route::filter('test', function(){    
+    var_dump('before_filter');
+});
+
+Route::group(array('before' => 'auth'), function(){
+    
+    Route::get('/user/{name}', function($name){
+        return new Response($name, 200, array('something' => 1));
+    })
+    ->get('/page/{id:\d+}', function($id){
+        return $id;
+    });
+    
+});
+```
+
+##Controllers
 
 ```php
 class Test {
