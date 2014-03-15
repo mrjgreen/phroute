@@ -7,68 +7,76 @@ implementation works and why it is fast.][blog_post]
 Usage
 -----
 
-Here's a basic usage example:
-
-```php
-
-Route::post('/page/{id:\d+}', function($id){
-    return 'POST ' . $id;
-})
-
-->any('/any', function(){
-    return 'any';
-}, array('before' => 'test'))
-
-->any('/test', function() use($app){
-    
-   
-})
-
-->any('/', function(){
-    return 'home';
-});
-```
-
 ### Defining routes
 
-The routes are defined by calling the `FastRoute\simpleDispatcher` function, which accepts
-a callable taking a `FastRoute\RouteCollector` instance. The routes are added by calling
-`addRoute()` on the collector instance.
+The routes are added by calling `addRoute()` on the `FastRoute\RouteCollector` collector instance.
 
-This method accepts the HTTP method the route must match, the route pattern and an associated
-handler. The handler does not necessarily have to be a callback (it could also be a controller
-class name or any other kind of data you wish to associate with the route).
+This method accepts the HTTP method the route must match, the route pattern, an associated
+handler and an optional array of 'before' and 'after' filters. The handler does not necessarily have 
+to be a callback (it could also be a controller class name and method or any other kind of data you wish to 
+associate with the route).
 
 By default a route pattern syntax is used where `{foo}` specified a placeholder with name `foo`
 and matching the string `[^/]+`. To adjust the pattern the placeholder matches, you can specify
 a custom pattern by writing `{bar:[0-9]+}`. However, it is also possible to adjust the pattern
 syntax by passing using a different route parser.
 
-The reason `simpleDispatcher` accepts a callback for defining the routes is to allow seamless
-caching. By using `cachedDispatcher` instead of `simpleDispatcher` you can cache the generated
-routing data and construct the dispatcher from the cached information:
-
-##Filters
 
 ```php
-Route::filter('auth', function(){    
+
+$router = new FastRoute\RouteCollector(new FastRoute\RouteParser, new FastRoute\DataGenerator);
+
+
+$router->any('/example', function(){
+    return 'This route responds to any method (POST, GET, DELETE etc...) at the URI /example';
+});
+
+$router->post('/page/{id:\d+}', function($id){
+
+    // $id contains the url paramter
+    
+    return 'This route responds to the post method at the URI /page/{param} where param is at least one number';
+});
+
+$router->any('/', function(){
+
+    return 'This responds to the default route';
+});
+
+
+
+$response = (new FastRoute\Dispatcher($router))->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_METHOD']);
+    
+// Print out the value returned from the dispatched function
+echo $response;
+
+```
+
+###Filters
+
+```php
+
+// Any thing other than null returned from a filter will prevent the route handler from being dispatched
+$router->filter('auth', function(){    
     if(!isset($_SESSION['user'])) 
     {
-        return RedirectResponse::create('/login');
+        header('Location: /login');
+        
+        return false;
     }
 });
 
-Route::filter('test', function(){    
-    var_dump('before_filter');
+$router->filter('test', function(){    
+    var_dump('Test Filter');
 });
 
-Route::group(array('before' => 'auth'), function(){
+$router->group(array('before' => 'auth'), function($router){
     
-    Route::get('/user/{name}', function($name){
-        return new Response($name, 200, array('something' => 1));
+    $router->get('/user/{name}', function($name){
+        return 'Hello ' . $name;
     })
     ->get('/page/{id:\d+}', function($id){
-        return $id;
+        return 'You must be authenticated to see this page: ' . $id;
     });
     
 });
@@ -81,40 +89,38 @@ class Test {
     
     public function anyIndex()
     {
-        var_dump('index');
+        return 'This is the default page and will respond to /controller and /controller/index';
     }
     
     public function anyTestany()
     {
-        var_dump('blah');
+        return 'This will respond to /controller/testany with any method';
     }
     
     public function getTestget()
     {
-        
+        return 'This will respond to /controller/testget with only a GET method';
     }
     
     public function postTestpost()
     {
-        var_dump('blah');
+        return 'This will respond to /controller/testpost with only a POST method';
     }
     
     public function putTestput()
     {
-        
+        return 'This will respond to /controller/testput with only a PUT method';
     }
     
     public function deleteTestdelete()
     {
-        
+        return 'This will respond to /controller/testdelete with only a DELETE method';
     }
 }
 
 Route::controller('/controller', 'Test');
 ```
 
-The second parameter to the function is an options array, which can be used to specify the cache
-file location, among other things.
 
 ### Dispatching a URI
 
@@ -140,74 +146,6 @@ and the third array element is a dictionary of placeholder names to their values
 
     [FastRoute\Dispatcher::FOUND, 'handler0', ['name' => 'nikic', 'id' => '42']]
 
-### Overriding the route parser and dispatcher
-
-The routing process makes use of three components: A route parser, a data generator and a
-dispatcher. The three components adhere to the following interfaces:
-
-```php
-<?php
-
-namespace FastRoute;
-
-interface RouteParser {
-    public function parse($route);
-}
-
-interface DataGenerator {
-    public function addRoute($httpMethod, $routeData, $handler);
-    public function getData();
-}
-
-interface Dispatcher {
-    const NOT_FOUND = 0, FOUND = 1, METHOD_NOT_ALLOWED = 2;
-
-    public function dispatch($httpMethod, $uri);
-}
-```
-
-The route parser takes a route pattern string and converts it into an array of it's parts. The
-array has a certain structure, best understood using an example:
-
-    /* The route /user/{name}/{id:[0-9]+} converts to the following array: */
-    [
-        '/user/',
-        ['name', '[^/]+'],
-        '/',
-        ['id', [0-9]+'],
-    ]
-
-This array can then be passed to the `addRoute()` method of a data generator. After all routes have
-been added the `getData()` of the generator is invoked, which returns all the routing data required
-by the dispatcher. The format of this data is not further specified - it is tightly coupled to
-the corresponding dispatcher.
-
-The dispatcher accepts the routing data via a constructor and provides a `dispatch()` method, which
-you're already familiar with.
-
-The route parser can be overwritten individually (to make use of some different pattern syntax),
-however the data generator and dispatcher should always be changed as a pair, as the output from
-the former is tightly coupled to the input of the latter. The reason the generator and the
-dispatcher are separate is that only the latter is needed when using caching (as the output of
-the former is what is being cached.)
-
-When using the `simpleDispatcher` / `cachedDispatcher` functions from above the override happens
-through the options array:
-
-```php
-<?php
-
-$dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
-    /* ... */
-}, [
-    'routeParser' => 'FastRoute\\RouteParser\\Std',
-    'dataGenerator' => 'FastRoute\\DataGenerator\\GroupCountBased',
-    'dispatcher' => 'FastRoute\\Dispatcher\\GroupCountBased',
-]);
-```
-
-The above options array corresponds to the defaults. By replacing `GroupCountBased` by
-`GroupPosBased` you could switch to a different dispatching strategy.
 
 ### A Note on HEAD Requests
 
