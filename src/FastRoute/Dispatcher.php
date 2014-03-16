@@ -25,12 +25,14 @@ class Dispatcher {
             $httpMethod = Route::GET;
         }
                 
-        list($beforeFilter, $afterFilter, $handler, $vars) = $this->parseFilters($httpMethod, $uri);
-        
+        list($beforeFilter, $afterFilter, $handler, $vars) = $this->parseFilters($httpMethod, $uri ?: '/');
+
         if(($response = $this->dispatchFilters($beforeFilter)) !== null)
         {
             return $response;
         }
+        
+        
         
         $resolvedHandler = $this->resolveHandler($handler);
         

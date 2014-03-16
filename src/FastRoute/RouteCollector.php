@@ -100,7 +100,7 @@ class RouteCollector {
         $validMethods = $this->getValidMethods();
         
         foreach($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method)
-        {
+        {                    
             foreach($validMethods as $valid)
             {
                 if(stripos($method->name, $valid) === 0)
@@ -112,7 +112,7 @@ class RouteCollector {
                         $this->addRoute($valid, $route, array($classname, $method->name));
                     }
                     
-                    $this->addRoute($valid, $route . '/' . $methodName, array($classname, $method->name));
+                    $this->addRoute($valid, ltrim($route . '/' . $methodName, '/'), array($classname, $method->name));
                     
                     break;
                 }
