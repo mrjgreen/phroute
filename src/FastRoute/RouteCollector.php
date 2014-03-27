@@ -55,7 +55,7 @@ class RouteCollector {
     
     public function head($route, $handler, array $filters = array())
     {
-        return $this->addRoute(Route::GET, $route, $handler, $filters);
+        return $this->addRoute(Route::HEAD, $route, $handler, $filters);
     }
     
     public function post($route, $handler, array $filters = array())

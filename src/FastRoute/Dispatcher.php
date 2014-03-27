@@ -22,20 +22,33 @@ class Dispatcher {
     {
         if($httpMethod === Route::HEAD)
         {
-            $httpMethod = Route::GET;
+            $httpMethod = array(Route::HEAD, Route::GET);
         }
-                
-        list($beforeFilter, $afterFilter, $handler, $vars) = $this->parseFilters($httpMethod, $uri ?: '/');
+        
+        $found = false;
+        
+        foreach((array)$httpMethod as $method)
+        {
+            if($found = $this->parseFilters($method, $uri ?: '/'))
+            {
+                list($beforeFilter, $afterFilter, $handler, $vars) = $found;
 
+                break;
+            }
+        }
+        
+        if($found === false)
+        {
+            throw new HttpMethodNotAllowedException();
+        }
+        
         if(($response = $this->dispatchFilters($beforeFilter)) !== null)
         {
             return $response;
         }
         
-        
-        
         $resolvedHandler = $this->resolveHandler($handler);
-        
+
         $response = call_user_func_array($resolvedHandler, $vars);
 
         $this->dispatchFilters($afterFilter);
@@ -107,7 +120,7 @@ class Dispatcher {
                     
             if (!isset($routes[$httpMethod]))
             {
-                throw new HttpMethodNotAllowedException();
+                return false;
             } 
         } 
         
@@ -131,7 +144,7 @@ class Dispatcher {
 
                 if (!isset($routes[$httpMethod]))
                 {
-                    throw new HttpMethodNotAllowedException();
+                    return false;
                 } 
             } 
 
