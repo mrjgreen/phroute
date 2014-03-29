@@ -10,20 +10,13 @@ class Dispatcher {
     private $after;
     private $before;
     private $filters;
+    public $matchedRoute;
 
     public function __construct(RouteCollector $data)
     {
         list($this->staticRouteMap, $this->variableRouteData) = $data->getData();
         
         list($this->before, $this->after, $this->filters) = $data->getFilters();
-    }
-    
-    private function dispatchForMethods($httpMethod, $uri)
-    {
-        foreach((array)$httpMethod as $method)
-        {
-            
-        }
     }
 
     public function dispatch($httpMethod, $uri)
@@ -130,6 +123,8 @@ class Dispatcher {
                 return $method;
             }
         }
+        
+        $this->matchedRoute = $routes;
         
         throw new HttpMethodNotAllowedException('Allowed routes: ' . implode(',', array_keys($routes)));
     }
