@@ -19,7 +19,7 @@ class Dispatcher {
 
     public function dispatch($httpMethod, $uri)
     {
-        list($handlerFilter, $vars) = $this->dispatchRoute($httpMethod, trim($uri, '/') ?: '/');
+        list($handlerFilter, $vars) = $this->dispatchRoute($httpMethod, trim($uri, '/'));
 
         list($handler, $filters) = $handlerFilter;
 

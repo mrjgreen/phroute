@@ -26,7 +26,7 @@ class Route {
         $this->regex = $regex;
         $this->variables = $variables;
     }
-
+    
     public function matches($str) {
         $regex = '~^' . $this->regex . '$~';
         return (bool) preg_match($regex, $str);

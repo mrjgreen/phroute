@@ -64,7 +64,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
      */
     private function router()
     {
-        return new RouteCollector(new RouteParser, new DataGenerator);
+        return new RouteCollector(new RouteParser);
     }
 
     private function dispatch($router, $method, $uri)
@@ -276,6 +276,29 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     public function provideFoundDispatchCases()
     {
         $cases = [];
+        
+         // 0 -------------------------------------------------------------------------------------->
+
+        $callback = function($r) {
+            $r->addRoute('GET', '/', function() {
+                return true;
+            });
+        };
+        
+        $cases[] = ['GET', '', $callback, true];
+
+        $cases[] = ['GET', '/', $callback, true];
+        
+        
+        $callback = function($r) {
+            $r->addRoute('GET', '', function() {
+                return true;
+            });
+        };
+        
+        $cases[] = ['GET', '', $callback, true];
+
+        $cases[] = ['GET', '/', $callback, true];
 
         // 0 -------------------------------------------------------------------------------------->
 
@@ -458,6 +481,17 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
          //18
         $cases[] = ['GET', '/user/random_', $callback, null];
         
+        $callback = function($r) {
+            $r->addRoute('GET', '{name}?', function($name = null) {
+                return $name;
+            });
+        };
+
+        //19
+        $cases[] = ['GET', 'rdlowrey', $callback, 'rdlowrey'];
+         //20
+        $cases[] = ['GET', '/', $callback, null];
+        
         return $cases;
     }
 
@@ -533,6 +567,9 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
         //17
         $cases[] = ['GET', 'rdlowrey', $callback];
+        
+        //19
+        $cases[] = ['GET', '/user/rdlowrey', $callback, null];
         
         return $cases;
     }

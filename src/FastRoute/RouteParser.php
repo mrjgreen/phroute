@@ -1,9 +1,7 @@
 <?php
 
 namespace FastRoute;
-
 use FastRoute\Exception\BadRouteException;
-
 /**
  * Parses routes of the following form:
  *
@@ -23,65 +21,69 @@ REGEX;
 
     public function parse($route)
     {
-        if (!preg_match_all(
-                        self::VARIABLE_REGEX, $route, $matches, PREG_OFFSET_CAPTURE | PREG_SET_ORDER
-                ))
+        if (!preg_match_all(self::VARIABLE_REGEX, $route, $matches, PREG_OFFSET_CAPTURE | PREG_SET_ORDER))
         {
-            return [$route];
+            return [$this->quote($route)];
         }
 
         $offset = 0;
         $routeData = [];
-        
-        $optional = false;
-        
-        foreach ($matches as $i => $set) {
-            if (substr($set[0][0], -1) === '?')
-            {
-                $optional = true;
-            }
-            elseif($optional)
-            {
-                throw new BadRouteException('Parameter ' . ($i) . ' in route ' . $route . ' is optional. All following parameters must also be optional.');
-            }
-                        
+        $variables = []; 
+        $i = 0;
+        foreach ($matches as $set) {
+          
             if ($set[0][1] > $offset)
             {
-                $static = explode('/', substr($route, $offset, $set[0][1] - $offset));
-                
-                $first = array_shift($static);
-                
-                if($first)
-                {
-                    $routeData[] = $first;
-                }
-                
+                $static = preg_split('~(/)~u', substr($route, $offset, $set[0][1] - $offset), 0, PREG_SPLIT_DELIM_CAPTURE);
+                                
                 foreach($static as $staticPart)
                 {
-                    $routeData[] = '/';
-                    $staticPart and $routeData[] = $staticPart;
-                    
+                    $staticPart and $routeData[$i++] = $staticPart;
+                } 
+            }
+            
+            $varName = $set[1][0];
+            
+            if (isset($variables[$varName]))
+            {
+                throw new BadRouteException(sprintf('Cannot use the same placeholder "%s" twice', $varName));
+            }
+            
+            $variables[$varName] = $varName;
+
+            $regexPart = (isset($set[2]) ? trim($set[2][0]) : self::DEFAULT_DISPATCH_REGEX);
+            
+            $optional = substr($set[0][0], -1) === '?';
+
+            $offset = $set[0][1] + strlen($set[0][0]);
+            
+            $match = '(' . $regexPart . ')';
+            
+            if($optional) 
+            {
+                if(isset($routeData[$i - 1]) && $routeData[$i - 1] === '/')
+                {
+                    $i--;
+                    $match = '(?:/' . $match . ')';
                 }
                 
+                 $match = $match . '?';
             }
-
-            $routeData[] = [
-                $set[1][0],
-                (isset($set[2]) ? trim($set[2][0]) : self::DEFAULT_DISPATCH_REGEX),
-                $optional
-            ];
             
-            
-            
-            $offset = $set[0][1] + strlen($set[0][0]);
+            $routeData[$i++] = $match;
         }
 
         if ($offset != strlen($route))
         {
-            $routeData[] = substr($route, $offset);
+            $routeData[$i] = substr($route, $offset);
         }
 
-        return $routeData;
+        return [implode('',$routeData), $variables];
+    }
+    
+    private function quote($part)
+    {
+        return preg_quote($part, '~');
     }
 
 }
