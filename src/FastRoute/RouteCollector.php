@@ -19,8 +19,8 @@ class RouteCollector {
     
     private $globalFilters = array();
     
-    public function __construct(RouteParser $routeParser) {
-        $this->routeParser = $routeParser;
+    public function __construct(RouteParser $routeParser = null) {
+        $this->routeParser = $routeParser ?: new RouteParser();
     }
     
     public function route($name, $args = array())
