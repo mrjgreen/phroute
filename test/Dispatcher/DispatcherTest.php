@@ -240,6 +240,43 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         
         $this->assertTrue($dispatchedFilter);
     }
+    
+    public function testFilterGroups()
+    {
+        $r = $this->router();
+        
+        $dispatchedFilter = 0;
+        $dispatchedFilter2 = 0;
+        
+        $r->filter('test', function() use(&$dispatchedFilter){
+            $dispatchedFilter++;
+        });
+        
+        $r->filter('test2', function() use(&$dispatchedFilter2){
+            $dispatchedFilter2++;
+        });
+        
+        $r->group(array('before' => 'test'), function($router){
+            $router->addRoute('GET', '/user', function() {
+            
+            });
+            $router->group(array('before' => 'test2'), function($router){
+                $router->addRoute('GET', '/user2', function() {
+
+                });
+            });
+        });
+        
+        $this->dispatch($r, 'GET', '/user');
+        
+        $this->assertEquals(1, $dispatchedFilter);
+        
+        $this->dispatch($r, 'GET', '/user2');
+        
+        $this->assertEquals(2, $dispatchedFilter);
+        $this->assertEquals(1, $dispatchedFilter2);
+        
+    }
 
     public function testValidMethods()
     {
