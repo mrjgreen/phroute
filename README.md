@@ -1,6 +1,10 @@
 FastRoute - Fast request router for PHP
 =======================================
 
+#### Based on nikic/FastRoute. 
+
+The regex engine is taken from the nikic/FastRoute library
+
 This library provides a fast implementation of a regular expression based router. [Blog post explaining how the
 implementation works and why it is fast.][blog_post]
 
@@ -31,6 +35,8 @@ $router->any('/example', function(){
     return 'This route responds to any method (POST, GET, DELETE etc...) at the URI /example';
 });
 
+// or '/page/{id:i}' (see shortcuts)
+
 $router->post('/page/{id:\d+}', function($id){
 
     // $id contains the url paramter
@@ -49,6 +55,41 @@ $response = (new FastRoute\Dispatcher($router))->dispatch($_SERVER['REQUEST_METH
     
 // Print out the value returned from the dispatched function
 echo $response;
+
+```
+
+### Regex Shortcuts
+
+```
+
+:i => :/d+                # numbers only
+:a => :[a-zA-Z0-9]+       # alphanumeric
+:c => :[a-zA-Z0-9+_-\.]+  # alnumnumeric and + _ - . characters 
+:h => :[a-fA-F0-9]+       # hex
+
+use in routes:
+
+'/user/{name:i}'
+'/user/{name:a}'
+
+```
+
+###Named Routes
+
+```php
+
+$router->get(['/user/{name}', 'username'], function($name){
+    return 'Hello ' . $name;
+})
+->get(['/page/{slug}/{id:\d+}', 'page'], function($id){
+    return 'You must be authenticated to see this page: ' . $id;
+});
+
+$router->route('username', 'joe');
+// string(9) '/user/joe'
+
+$router->route('page', ['intro', 456]);
+// string(15) '/page/intro/456'
 
 ```
 
