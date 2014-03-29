@@ -32,6 +32,7 @@ class RouteParser {
         ':i}'  => ':[0-9]+}',
 		':a}'  => ':[0-9A-Za-z]+}',
 		':h}'  => ':[0-9A-Fa-f]+}',
+        ':c}'  => ':[a-zA-Z0-9+_-\.]+}'
     );
     
     public function parse($route)
