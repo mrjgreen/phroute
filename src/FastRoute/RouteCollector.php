@@ -10,11 +10,9 @@ class RouteCollector {
     private $routeParser;
     private $dataGenerator;
     private $filters;
-    private $before = array();
-    private $after = array();
     
     private $globalFilters = array();
-
+    
     public function __construct(RouteParser $routeParser, DataGenerator $dataGenerator) {
         $this->routeParser = $routeParser;
         $this->dataGenerator = $dataGenerator;
@@ -81,7 +79,7 @@ class RouteCollector {
     
     public function getFilters() 
     {
-        return array($this->before, $this->after, $this->filters);
+        return $this->filters;
     }
     
     public function controller($route, $classname)

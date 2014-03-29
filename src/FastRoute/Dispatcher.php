@@ -7,8 +7,6 @@ class Dispatcher {
 
     private $staticRouteMap;
     private $variableRouteData;
-    private $after;
-    private $before;
     private $filters;
     public $matchedRoute;
 
@@ -16,7 +14,7 @@ class Dispatcher {
     {
         list($this->staticRouteMap, $this->variableRouteData) = $data->getData();
         
-        list($this->before, $this->after, $this->filters) = $data->getFilters();
+        $this->filters = $data->getFilters();
     }
 
     public function dispatch($httpMethod, $uri)
@@ -77,7 +75,7 @@ class Dispatcher {
             $afterFilter = array_intersect_key($this->filters, array_flip((array) $filters[Route::AFTER]));
         }
         
-        return array(array_merge($this->before, $beforeFilter), array_merge($this->after, $afterFilter));
+        return array($beforeFilter, $afterFilter);
     }
     
     private function dispatchRoute($httpMethod, $uri)
