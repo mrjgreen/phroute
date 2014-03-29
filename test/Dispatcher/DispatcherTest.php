@@ -120,7 +120,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @expectedException \FastRoute\Exception\BadRouteException
-     * @expectedExceptionMessage Cannot use the same placeholder "test" twice
+     * @expectedExceptionMessage Cannot use the same placeholder 'test' twice
      */
     public function testDuplicateVariableNameError()
     {
@@ -131,7 +131,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @expectedException \FastRoute\Exception\BadRouteException
-     * @expectedExceptionMessage Cannot register two routes matching "user/([^/]+)" for method "GET"
+     * @expectedExceptionMessage Cannot register two routes matching 'user/([^/]+)' for method 'GET'
      */
     public function testDuplicateVariableRoute()
     {
@@ -146,7 +146,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @expectedException \FastRoute\Exception\BadRouteException
-     * @expectedExceptionMessage Cannot register two routes matching "user" for method "GET"
+     * @expectedExceptionMessage Cannot register two routes matching 'user' for method 'GET'
      */
     public function testDuplicateStaticRoute()
     {
@@ -161,7 +161,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @expectedException \FastRoute\Exception\BadRouteException
-     * @expectedExceptionMessage Static route "user/nikic" is shadowed by previously defined variable route "user/([^/]+)" for method "GET"
+     * @expectedExceptionMessage Static route 'user/nikic' is shadowed by previously defined variable route 'user/([^/]+)' for method 'GET'
      */
     public function testShadowedStaticRoute()
     {

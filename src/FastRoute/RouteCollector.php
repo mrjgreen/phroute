@@ -28,47 +28,30 @@ class RouteCollector {
         
         $filters = array_merge_recursive($this->globalFilters, $filters);
 
-        if ($this->isStaticRoute($routeData))
-        {
+        isset($routeData[1]) ? 
+            $this->addVariableRoute($httpMethod, $routeData, $handler, $filters) :
             $this->addStaticRoute($httpMethod, $routeData, $handler, $filters);
-        } else
-        {
-            $this->addVariableRoute($httpMethod, $routeData, $handler, $filters);
-        }
         
         return $this;
     }
     
-    private function isStaticRoute($routeData)
-    {
-        return !isset($routeData[1]);
-    }
-
     private function addStaticRoute($httpMethod, $routeData, $handler, $filters)
     {
         $routeStr = $routeData[0];
 
         if (isset($this->staticRoutes[$routeStr][$httpMethod]))
         {
-            throw new BadRouteException(sprintf(
-                    'Cannot register two routes matching "%s" for method "%s"', $routeStr, $httpMethod
-            ));
+            throw new BadRouteException("Cannot register two routes matching '$routeStr' for method '$httpMethod'");
         }
 
-        foreach ($this->regexToRoutesMap as $routes) {
-            if (!isset($routes[$httpMethod]))
-                continue;
-
-            $route = $routes[$httpMethod];
-            if ($route->matches($routeStr))
+        foreach ($this->regexToRoutesMap as $regex => $routes) {
+            if (isset($routes[$httpMethod]) && preg_match('~^' . $regex . '$~', $routeStr))
             {
-                throw new BadRouteException(sprintf(
-                        'Static route "%s" is shadowed by previously defined variable route "%s" for method "%s"', $routeStr, $route->regex, $httpMethod
-                ));
+                throw new BadRouteException("Static route '$routeStr' is shadowed by previously defined variable route '$regex' for method '$httpMethod'");
             }
         }
 
-        $this->staticRoutes[$routeStr][$httpMethod] = array($handler, $filters);
+        $this->staticRoutes[$routeStr][$httpMethod] = array($handler, $filters, array());
     }
 
     private function addVariableRoute($httpMethod, $routeData, $handler, $filters)
@@ -77,14 +60,10 @@ class RouteCollector {
 
         if (isset($this->regexToRoutesMap[$regex][$httpMethod]))
         {
-            throw new BadRouteException(sprintf(
-                    'Cannot register two routes matching "%s" for method "%s"', $regex, $httpMethod
-            ));
+            throw new BadRouteException("Cannot register two routes matching '$regex' for method '$httpMethod'");
         }
 
-        $this->regexToRoutesMap[$regex][$httpMethod] = new Route(
-                $httpMethod, array($handler, $filters) ,$regex, $variables
-        );
+        $this->regexToRoutesMap[$regex][$httpMethod] = array($handler, $filters, $variables);
     }
     
     public function group(array $filters, \Closure $callback)
@@ -211,16 +190,16 @@ class RouteCollector {
         $regexes = [];
         $numGroups = 0;
         foreach ($regexToRoutesMap as $regex => $routes) {
-            $numVariables = count(reset($routes)->variables);
+            $numVariables = count(reset($routes)[2]);
             $numGroups = max($numGroups, $numVariables);
 
             $regexes[] = $regex . str_repeat('()', $numGroups - $numVariables);
 
-            foreach ($routes as $route) {
-                $routeMap[$numGroups + 1][$route->httpMethod] = [$route->handler, $route->variables];
+            foreach ($routes as $httpMethod => $route) {
+                $routeMap[$numGroups + 1][$httpMethod] = $route;
             }
 
-            ++$numGroups;
+            $numGroups++;
         }
 
         $regex = '~^(?|' . implode('|', $regexes) . ')$~';

@@ -95,7 +95,7 @@ class RouteParser {
     {
         if (isset($this->variables[$varName]))
         {
-            throw new BadRouteException(sprintf('Cannot use the same placeholder "%s" twice', $varName));
+            throw new BadRouteException("Cannot use the same placeholder '$varName' twice");
         }
 
         $this->variables[$varName] = $varName;

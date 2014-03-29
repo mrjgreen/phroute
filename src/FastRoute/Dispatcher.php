@@ -19,9 +19,7 @@ class Dispatcher {
 
     public function dispatch($httpMethod, $uri)
     {
-        list($handlerFilter, $vars) = $this->dispatchRoute($httpMethod, trim($uri, '/'));
-
-        list($handler, $filters) = $handlerFilter;
+        list($handler, $filters, $vars) = $this->dispatchRoute($httpMethod, trim($uri, '/'));
 
         list($beforeFilter, $afterFilter) = $this->parseFilters($filters);
 
@@ -97,7 +95,7 @@ class Dispatcher {
             $httpMethod = $this->checkFallbacks($routes, $httpMethod);
         }
         
-        return array($routes[$httpMethod], array());
+        return $routes[$httpMethod];
     }
     
     private function checkFallbacks($routes, $httpMethod)
@@ -146,21 +144,19 @@ class Dispatcher {
                 $httpMethod = $this->checkFallbacks($routes, $httpMethod);
             } 
 
-            list($handler, $varNames) = $routes[$httpMethod];
-
-            foreach (array_values($varNames) as $i => $varName)
+            foreach (array_values($routes[$httpMethod][2]) as $i => $varName)
             {
                 if(!isset($matches[$i + 1]))
                 {
-                    unset($varNames[$varName]);
+                    unset($routes[$httpMethod][2][$varName]);
                 }
                 else
                 {
-                    $varNames[$varName] = $matches[$i + 1];
+                    $routes[$httpMethod][2][$varName] = $matches[$i + 1];
                 }
             }
-            
-            return array($handler, $varNames);
+
+            return $routes[$httpMethod];
         }
 
         throw new HttpRouteNotFoundException('Route ' . $uri . ' does not exist');
