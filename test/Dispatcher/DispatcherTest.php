@@ -228,6 +228,51 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue($dispatchedFilter);
     }
 
+    public function testValidMethods()
+    {
+        $this->assertEquals(array(
+            \FastRoute\Route::ANY,
+            \FastRoute\Route::GET,
+            \FastRoute\Route::POST,
+            \FastRoute\Route::PUT,
+            \FastRoute\Route::DELETE,
+            \FastRoute\Route::HEAD,
+            \FastRoute\Route::OPTIONS,
+        ), $this->router()->getValidMethods());
+    }
+    
+    public function testRestfulControllerMethods()
+    {
+        
+        $r = $this->router();
+        
+        $r->controller('/user', __NAMESPACE__ . '\\Test');
+        
+        $data = $r->getData();
+        
+        $this->assertEquals($r->getValidMethods(), array_keys($data[0]['/user/test']));
+        
+        $this->assertEquals(array(\FastRoute\Route::ANY), array_keys($data[0]['/user']));
+        $this->assertEquals(array(\FastRoute\Route::ANY), array_keys($data[0]['/user/index']));
+    }
+    
+    public function testRestfulMethods()
+    {
+        
+        $r = $this->router();
+        
+        $methods = $r->getValidMethods();
+        
+        foreach($methods as $method)
+        {
+            $r->$method('/user','callback');
+        }
+        
+        $data = $r->getData();
+        
+        $this->assertEquals($methods, array_keys($data[0]['/user']));
+    }
+    
     public function provideFoundDispatchCases()
     {
         $cases = [];
@@ -342,52 +387,59 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
         // x -------------------------------------------------------------------------------------->
 
+        
+        // 11 -------------------------------------------------------------------------------------->
+        // Test optional parameter
+        $callback = function($r) {
+            $r->addRoute('GET', '/user/{name}/{id:[0-9]+}?', function($name, $id = null) {
+                return [$name, $id];
+            });
+        };
+
+        $cases[] = ['GET', '/user/rdlowrey', $callback, array('rdlowrey', null)];
+        
+        // 12
+        $cases[] = ['GET', '/user/rdlowrey/23', $callback, array('rdlowrey', '23')];
+        
+        // 13 -------------------------------------------------------------------------------------->
+        // Test multiple optional parameters
+        $callback = function($r) {
+            $r->addRoute('GET', '/user/{name}/{id:[0-9]+}?/{other}?', function($name, $id = null, $other = null) {
+                return [$name, $id, $other];
+            });
+        };
+
+        $cases[] = ['GET', '/user/rdlowrey', $callback, array('rdlowrey', null, null)];
+        
+        // 14
+        $cases[] = ['GET', '/user/rdlowrey/23', $callback, array('rdlowrey', '23', null)];
+        
+        //15
+        $cases[] = ['GET', '/user/rdlowrey/23/blah', $callback, array('rdlowrey', '23', 'blah')];
+        
+
+        $callback = function($r) {
+            $r->addRoute('GET', '/user/random_{name}', function($name) {
+                return $name;
+            });
+        };
+
+        //16
+        $cases[] = ['GET', '/user/random_rdlowrey', $callback, 'rdlowrey'];
+        
+        
+        $callback = function($r) {
+            $r->addRoute('GET', '/user/random_{name}?', function($name = null) {
+                return $name;
+            });
+        };
+
+        //17
+        $cases[] = ['GET', '/user/random_rdlowrey', $callback, 'rdlowrey'];
+         //18
+        $cases[] = ['GET', '/user/random_', $callback, null];
+        
         return $cases;
-    }
-    
-    public function testValidMethods()
-    {
-        $this->assertEquals(array(
-            \FastRoute\Route::ANY,
-            \FastRoute\Route::GET,
-            \FastRoute\Route::POST,
-            \FastRoute\Route::PUT,
-            \FastRoute\Route::DELETE,
-            \FastRoute\Route::HEAD,
-            \FastRoute\Route::OPTIONS,
-        ), $this->router()->getValidMethods());
-    }
-    
-    public function testRestfulControllerMethods()
-    {
-        
-        $r = $this->router();
-        
-        $r->controller('/user', __NAMESPACE__ . '\\Test');
-        
-        $data = $r->getData();
-        
-        $this->assertEquals($r->getValidMethods(), array_keys($data[0]['/user/test']));
-        
-        $this->assertEquals(array(\FastRoute\Route::ANY), array_keys($data[0]['/user']));
-        $this->assertEquals(array(\FastRoute\Route::ANY), array_keys($data[0]['/user/index']));
-    }
-    
-    public function testRestfulMethods()
-    {
-        
-        $r = $this->router();
-        
-        $methods = $r->getValidMethods();
-        
-        foreach($methods as $method)
-        {
-            $r->$method('/user','callback');
-        }
-        
-        $data = $r->getData();
-        
-        $this->assertEquals($methods, array_keys($data[0]['/user']));
     }
 
     public function provideNotFoundDispatchCases()
@@ -454,6 +506,15 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
         // x -------------------------------------------------------------------------------------->
 
+        $callback = function($r) {
+            $r->addRoute('GET', '/user/random_{name}?', function($name = null) {
+                return $name;
+            });
+        };
+
+        //17
+        $cases[] = ['GET', 'rdlowrey', $callback];
+        
         return $cases;
     }
 

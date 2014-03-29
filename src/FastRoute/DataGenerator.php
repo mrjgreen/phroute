@@ -70,16 +70,16 @@ class DataGenerator {
 
     private function buildRegexForRoute($routeData)
     {
-        $regex = '';
+        $regex = [];
         $variables = [];
-        foreach ($routeData as $part) {
+        foreach ($routeData as $i => $part) {
             if (is_string($part))
             {
-                $regex .= preg_quote($part, '~');
+                $regex[] = preg_quote($part, '~');
                 continue;
             }
 
-            list($varName, $regexPart) = $part;
+            list($varName, $regexPart, $optional) = $part;
 
             if (isset($variables[$varName]))
             {
@@ -89,10 +89,21 @@ class DataGenerator {
             }
 
             $variables[$varName] = $varName;
-            $regex .= '(' . $regexPart . ')';
+            
+            $match = '(' . $regexPart . ')';
+            
+            if($optional && isset($regex[$i - 1]))
+            {
+                $regex[$i - 1] = '(?:' . $regex[$i - 1] . ')?';
+                
+                $match = $match . '?';
+            }
+
+            $regex[] = $match;
+            
         }
 
-        return [$regex, $variables];
+        return [ implode('',$regex), $variables];
     }
 
     public function getData()
