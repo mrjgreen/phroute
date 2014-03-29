@@ -9,76 +9,109 @@ use FastRoute\Exception\BadRouteException;
  */
 class RouteParser {
 
-    const VARIABLE_REGEX = <<<'REGEX'
-~\{
+    const VARIABLE_REGEX = 
+"~\{
     \s* ([a-zA-Z][a-zA-Z0-9_]*) \s*
     (?:
         : \s* ([^{}]*(?:\{(?-1)\}[^{}*])*)
     )?
-\}\??~x
-REGEX;
+\}\??~x";
+    
     const DEFAULT_DISPATCH_REGEX = '[^/]+';
 
+    private $parts;
+    
+    private $partsCounter;
+    
+    private $variables;
+    
+    private $regexOffset;
+    
     public function parse($route)
     {
-        if (!preg_match_all(self::VARIABLE_REGEX, $route, $matches, PREG_OFFSET_CAPTURE | PREG_SET_ORDER))
+        $this->reset();
+        
+        if (!$matches = $this->extractVariableRouteParts($route))
         {
             return [$this->quote($route)];
         }
 
-        $offset = 0;
-        $routeData = [];
-        $variables = []; 
-        $i = 0;
         foreach ($matches as $set) {
           
-            if ($set[0][1] > $offset)
-            {
-                $static = preg_split('~(/)~u', substr($route, $offset, $set[0][1] - $offset), 0, PREG_SPLIT_DELIM_CAPTURE);
-                                
-                foreach($static as $staticPart)
-                {
-                    $staticPart and $routeData[$i++] = $staticPart;
-                } 
-            }
-            
-            $varName = $set[1][0];
-            
-            if (isset($variables[$varName]))
-            {
-                throw new BadRouteException(sprintf('Cannot use the same placeholder "%s" twice', $varName));
-            }
-            
-            $variables[$varName] = $varName;
+            $this->staticParts($route, $set[0][1]);
+                        
+            $this->validateVariable($set[1][0]);
 
             $regexPart = (isset($set[2]) ? trim($set[2][0]) : self::DEFAULT_DISPATCH_REGEX);
             
-            $optional = substr($set[0][0], -1) === '?';
-
-            $offset = $set[0][1] + strlen($set[0][0]);
+            $this->regexOffset = $set[0][1] + strlen($set[0][0]);
             
             $match = '(' . $regexPart . ')';
             
-            if($optional) 
+            if(substr($set[0][0], -1) === '?') 
             {
-                if(isset($routeData[$i - 1]) && $routeData[$i - 1] === '/')
-                {
-                    $i--;
-                    $match = '(?:/' . $match . ')';
-                }
-                
-                 $match = $match . '?';
+                $match = $this->makeOptional($match);
             }
             
-            $routeData[$i++] = $match;
+            $this->parts[$this->partsCounter++] = $match;
         }
 
-        if ($offset != strlen($route))
+        $this->staticParts($route, $this->regexOffset);
+
+
+        return [implode('', $this->parts), $this->variables];
+    }
+    
+    private function reset()
+    {
+        $this->parts = array();
+    
+        $this->partsCounter = 0;
+
+        $this->variables = array();
+
+        $this->regexOffset = 0;
+    }
+    
+    private function extractVariableRouteParts($route)
+    {
+        if(preg_match_all(self::VARIABLE_REGEX, $route, $matches, PREG_OFFSET_CAPTURE | PREG_SET_ORDER))
         {
-            $routeData[$i] = substr($route, $offset);
+            return $matches;
+        }
+    }
+    
+    private function staticParts($route, $nextOffset)
+    {
+        $static = preg_split('~(/)~u', substr($route, $this->regexOffset, $nextOffset - $this->regexOffset), 0, PREG_SPLIT_DELIM_CAPTURE);
+                                
+        foreach($static as $staticPart)
+        {
+            $staticPart and $this->parts[$this->partsCounter++] = $staticPart;
+        }
+    }
+
+    private function validateVariable($varName)
+    {
+        if (isset($this->variables[$varName]))
+        {
+            throw new BadRouteException(sprintf('Cannot use the same placeholder "%s" twice', $varName));
         }
 
-        return [implode('',$routeData), $variables];
+        $this->variables[$varName] = $varName;
+    }
+
+    private function makeOptional($match)
+    {
+        $previous = $this->partsCounter - 1;
+        
+        if(isset($this->parts[$previous]) && $this->parts[$previous] === '/')
+        {
+            $this->partsCounter--;
+            $match = '(?:/' . $match . ')';
+        }
+
+        return $match . '?';
     }
     
     private function quote($part)
