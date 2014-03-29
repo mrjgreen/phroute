@@ -28,21 +28,12 @@ class RouteCollector {
     
     public function group(array $filters, \Closure $callback)
     {
-        $this->globalFilters = array_intersect_key($filters, array(Route::AFTER => 1, Route::BEFORE => 1));
+        $oldGlobal = $this->globalFilters;
+        $this->globalFilters = array_merge_recursive($this->globalFilters, array_intersect_key($filters, array(Route::AFTER => 1, Route::BEFORE => 1)));
         $callback($this);
-        $this->globalFilters = array();
+        $this->globalFilters = $oldGlobal;
     }
-    
-    public function before($handler)
-    {
-        $this->before[] = $handler;
-    }
-    
-    public function after($handler)
-    {
-        $this->after[] = $handler;
-    }
-    
+
     public function filter($name, $handler)
     {
         $this->filters[$name] = $handler;
@@ -112,7 +103,9 @@ class RouteCollector {
                         $this->addRoute($valid, $route, array($classname, $method->name));
                     }
                     
-                    $this->addRoute($valid, ltrim($route . '/' . $methodName, '/'), array($classname, $method->name));
+                    $sep = $route === '/' ? '' : '/';
+                    
+                    $this->addRoute($valid, $route . $sep . $methodName, array($classname, $method->name));
                     
                     break;
                 }
@@ -128,8 +121,8 @@ class RouteCollector {
             Route::POST,
             Route::PUT,
             Route::DELETE,
-            Route::OPTIONS,
             Route::HEAD,
+            Route::OPTIONS,
         );
     }
 }

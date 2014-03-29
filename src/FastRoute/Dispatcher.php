@@ -94,11 +94,6 @@ class Dispatcher {
     {
         $routes = $this->staticRouteMap[$uri];
 
-        if(!$routes)
-        {
-            throw new HttpRouteNotFoundException('Route ' . $uri . ' does not exist');
-        }
-        
         if (!isset($routes[$httpMethod]))
         {
             $httpMethod = $this->checkFallbacks($routes, $httpMethod);
