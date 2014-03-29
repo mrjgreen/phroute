@@ -63,7 +63,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
      * @expectedExceptionMessage Cannot use the same placeholder "test" twice
      */
     public function testDuplicateVariableNameError() {
-        $this->router()->addRoute('GET', '/foo/{test}/{test:\d+}', 'handler0');
+        $this->router()->addRoute('GET', '/foo/{test}/{test:\d+}', function(){});
     }
 
     /**
@@ -72,8 +72,8 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
      */
     public function testDuplicateVariableRoute() {
         $r =  $this->router();
-        $r->addRoute('GET', '/user/{id}', 'handler0'); // oops, forgot \d+ restriction ;)
-        $r->addRoute('GET', '/user/{name}', 'handler1');
+        $r->addRoute('GET', '/user/{id}', function(){}); // oops, forgot \d+ restriction ;)
+        $r->addRoute('GET', '/user/{name}', function(){});
     }
 
     /**
@@ -82,8 +82,8 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
      */
     public function testDuplicateStaticRoute() {
          $r = $this->router();
-        $r->addRoute('GET', '/user', 'handler0');
-        $r->addRoute('GET', '/user', 'handler1');
+        $r->addRoute('GET', '/user', function(){});
+        $r->addRoute('GET', '/user', function(){});
     }
 
     /**
@@ -92,8 +92,8 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
      */
     public function testShadowedStaticRoute() {
          $r = $this->router();
-        $r->addRoute('GET', '/user/{name}', 'handler0');
-        $r->addRoute('GET', '/user/nikic', 'handler1');
+        $r->addRoute('GET', '/user/{name}', function(){});
+        $r->addRoute('GET', '/user/nikic', function(){});
     }
 
     public function provideFoundDispatchCases() {
@@ -112,8 +112,8 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         // 1 -------------------------------------------------------------------------------------->
 
         $callback = function($r) {
-            $r->addRoute('GET', '/handler0', 'handler0');
-            $r->addRoute('GET', '/handler1', 'handler1');
+            $r->addRoute('GET', '/handler0', function(){});
+            $r->addRoute('GET', '/handler1', function(){});
             $r->addRoute('GET', '/handler2', function(){
                 return true;
             });

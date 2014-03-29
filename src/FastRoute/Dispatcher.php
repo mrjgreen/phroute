@@ -29,10 +29,14 @@ class Dispatcher {
         
         foreach((array)$httpMethod as $method)
         {
-            if($found = $this->parseFilters($method, $uri ?: '/'))
+            if($found = $this->dispatchRoute($method, $uri ?: '/'))
             {
-                list($beforeFilter, $afterFilter, $handler, $vars) = $found;
-
+                list($handlerFilter, $vars) = $found;
+                
+                list($handler, $filters) = $handlerFilter;
+                
+                list($beforeFilter, $afterFilter) = $this->parseFilters($filters);
+                
                 break;
             }
         }
@@ -48,7 +52,7 @@ class Dispatcher {
         }
         
         $resolvedHandler = $this->resolveHandler($handler);
-
+        
         $response = call_user_func_array($resolvedHandler, $vars);
 
         $this->dispatchFilters($afterFilter);
@@ -77,15 +81,10 @@ class Dispatcher {
         }
     }
     
-    private function parseFilters($httpMethod, $uri)
-    {
-        list($handlerFilter, $vars) = $this->dispatchRoute($httpMethod, $uri);
-        
+    private function parseFilters($filters)
+    {        
         $beforeFilter = array();
         $afterFilter = array();
-        
-        $handler = $handlerFilter[0];
-        $filters = $handlerFilter[1];
         
         if(isset($filters[Route::BEFORE]))
         {
@@ -97,7 +96,7 @@ class Dispatcher {
             $afterFilter = array_intersect_key($this->filters, array_flip((array) $filters[Route::AFTER]));
         }
         
-        return array(array_merge($this->before, $beforeFilter), array_merge($this->after, $afterFilter), $handler, $vars);
+        return array(array_merge($this->before, $beforeFilter), array_merge($this->after, $afterFilter));
     }
     
     private function dispatchRoute($httpMethod, $uri)
@@ -150,14 +149,12 @@ class Dispatcher {
 
             list($handler, $varNames) = $routes[$httpMethod];
 
-            $vars = array();
-
-            foreach ($varNames as $i => $varName)
+            foreach (array_values($varNames) as $i => $varName)
             {
-                $vars[$varName] = $matches[$i + 1];
+                $varNames[$varName] = $matches[$i + 1];
             }
             
-            return array($handler, $vars);
+            return array($handler, $varNames);
         }
 
         throw new HttpRouteNotFoundException();
