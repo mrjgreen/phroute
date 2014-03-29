@@ -17,35 +17,23 @@ class Dispatcher {
         
         list($this->before, $this->after, $this->filters) = $data->getFilters();
     }
+    
+    private function dispatchForMethods($httpMethod, $uri)
+    {
+        foreach((array)$httpMethod as $method)
+        {
+            
+        }
+    }
 
     public function dispatch($httpMethod, $uri)
     {
-        if($httpMethod === Route::HEAD)
-        {
-            $httpMethod = array(Route::HEAD, Route::GET);
-        }
-        
-        $found = false;
-        
-        foreach((array)$httpMethod as $method)
-        {
-            if($found = $this->dispatchRoute($method, $uri ?: '/'))
-            {
-                list($handlerFilter, $vars) = $found;
-                
-                list($handler, $filters) = $handlerFilter;
-                
-                list($beforeFilter, $afterFilter) = $this->parseFilters($filters);
-                
-                break;
-            }
-        }
-        
-        if($found === false)
-        {
-            throw new HttpMethodNotAllowedException();
-        }
-        
+        list($handlerFilter, $vars) = $this->dispatchRoute($httpMethod, $uri ?: '/');
+
+        list($handler, $filters) = $handlerFilter;
+
+        list($beforeFilter, $afterFilter) = $this->parseFilters($filters);
+
         if(($response = $this->dispatchFilters($beforeFilter)) !== null)
         {
             return $response;
@@ -113,17 +101,37 @@ class Dispatcher {
     {
         $routes = $this->staticRouteMap[$uri];
 
+        if(!$routes)
+        {
+            throw new HttpRouteNotFoundException('Route ' . $uri . ' does not exist');
+        }
+        
         if (!isset($routes[$httpMethod]))
         {
-            $httpMethod = Route::ANY;
-                    
-            if (!isset($routes[$httpMethod]))
-            {
-                return false;
-            } 
-        } 
+            $httpMethod = $this->checkFallbacks($routes, $httpMethod);
+        }
         
         return array($routes[$httpMethod], array());
+    }
+    
+    private function checkFallbacks($routes, $httpMethod)
+    {
+        $additional = array(Route::ANY);
+        
+        if($httpMethod === Route::HEAD)
+        {
+            $additional[] = Route::GET;
+        }
+        
+        foreach($additional as $method)
+        {
+            if(isset($routes[$method]))
+            {
+                return $method;
+            }
+        }
+        
+        throw new HttpMethodNotAllowedException('Allowed routes: ' . implode(',', array_keys($routes)));
     }
 
     private function dispatchVariableRoute($httpMethod, $uri)
@@ -139,12 +147,7 @@ class Dispatcher {
             
             if (!isset($routes[$httpMethod]))
             {
-                $httpMethod = Route::ANY;
-
-                if (!isset($routes[$httpMethod]))
-                {
-                    return false;
-                } 
+                $httpMethod = $this->checkFallbacks($routes, $httpMethod);
             } 
 
             list($handler, $varNames) = $routes[$httpMethod];
@@ -157,7 +160,7 @@ class Dispatcher {
             return array($handler, $varNames);
         }
 
-        throw new HttpRouteNotFoundException();
+        throw new HttpRouteNotFoundException('Route ' . $uri . ' does not exist');
     }
 
 }

@@ -30,34 +30,29 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $response = $this->dispatch($r, $method, $uri);
         $this->assertEquals($expected, $response);
     }
-
+    
     /**
      * @dataProvider provideNotFoundDispatchCases
-  
+     * @expectedException \FastRoute\Exception\HttpRouteNotFoundException
+     * @expectedExceptionMessage does not exist
+     */
     public function testNotFoundDispatches($method, $uri, $callback) {
-        $dispatcher = \FastRoute\simpleDispatcher($callback, $this->generateDispatcherOptions());
-        $this->assertFalse(isset($routeInfo[1]),
-            "NOT_FOUND result must only contain a single element in the returned info array"
-        );
-        list($routedStatus) = $dispatcher->dispatch($method, $uri);
-        $this->assertSame($dispatcher::NOT_FOUND, $routedStatus);
+        $r = $this->router();
+        $callback($r);
+        $this->dispatch($r, $method, $uri);
     }
-   */
+
     /**
      * @dataProvider provideMethodNotAllowedDispatchCases
-    
-    public function testMethodNotAllowedDispatches($method, $uri, $callback, $availableMethods) {
-        $dispatcher = \FastRoute\simpleDispatcher($callback, $this->generateDispatcherOptions());
-        $routeInfo = $dispatcher->dispatch($method, $uri);
-        $this->assertTrue(isset($routeInfo[1]),
-            "METHOD_NOT_ALLOWED result must return an array of allowed methods at index 1"
-        );
-
-        list($routedStatus, $methodArray) = $dispatcher->dispatch($method, $uri);
-        $this->assertSame($dispatcher::METHOD_NOT_ALLOWED, $routedStatus);
-        $this->assertSame($availableMethods, $methodArray);
+     * @expectedException \FastRoute\Exception\HttpMethodNotAllowedException
+     * @expectedExceptionMessage Allowed routes
+     */
+    public function testMethodNotAllowedDispatches($method, $uri, $callback) {
+        $r = $this->router();
+        $callback($r);
+        $this->dispatch($r, $method, $uri);
     }
- */
+    
     /**
      * @expectedException \FastRoute\Exception\BadRouteException
      * @expectedExceptionMessage Cannot use the same placeholder "test" twice
