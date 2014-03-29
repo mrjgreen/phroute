@@ -35,6 +35,8 @@ $router->any('/example', function(){
     return 'This route responds to any method (POST, GET, DELETE etc...) at the URI /example';
 });
 
+// or '/page/{id:i}' (see shortcuts)
+
 $router->post('/page/{id:\d+}', function($id){
 
     // $id contains the url paramter
@@ -53,6 +55,22 @@ $response = (new FastRoute\Dispatcher($router))->dispatch($_SERVER['REQUEST_METH
     
 // Print out the value returned from the dispatched function
 echo $response;
+
+```
+
+### Regex Shortcuts
+
+```
+
+:i => :/d+               # numbers only
+:a => :[a-zA-Z0-9]       # alphanumeric
+:c => :[a-zA-Z0-9+_-\.]  # alnumnumeric and + _ - . characters 
+:h => :[a-fA-F0-9]       # hex
+
+use in routes:
+
+'/user/{name:i}'
+'/user/{name:a}'
 
 ```
 
