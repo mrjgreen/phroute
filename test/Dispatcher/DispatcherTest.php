@@ -114,8 +114,21 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $r->addRoute('GET', '/foo', array(__NAMESPACE__.'\\Test','route'));
         
         $response = $this->dispatch($r, 'GET', '/foo');
-        
+                
         $this->assertEquals('testRoute',$response);
+    }
+    
+    public function testNamedRoutes()
+    {
+        $r = $this->router();
+        
+        $r->addRoute('GET', array('/foo', 'name'), array(__NAMESPACE__.'\\Test','route'));
+                
+        $this->assertEquals('foo',$r->route('name'));
+        
+        $r->addRoute('GET', array('/foo/{name}/{something:i}', 'name2'), array(__NAMESPACE__.'\\Test','route'));
+                
+        $this->assertEquals('foo/joe/something',$r->route('name2', 'joe', 'something'));
     }
 
     /**
@@ -491,6 +504,60 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $cases[] = ['GET', 'rdlowrey', $callback, 'rdlowrey'];
          //20
         $cases[] = ['GET', '/', $callback, null];
+        
+        // 11 -------------------------------------------------------------------------------------->
+        // Test shortcuts parameter
+        $callback = function($r) {
+            $r->addRoute('GET', '/user/{id:i}', function($id) {
+                return $id;
+            });
+            $r->addRoute('GET', '/user1/{idname:a}', function($idname) {
+                return array($idname);
+            });
+            $r->addRoute('GET', '/user2/{hexcode:h}', function($hexcode) {
+                return array($hexcode);
+            });
+            $r->addRoute('GET', '/user3/{id:i}/{hexcode:h}?', function($id, $hexcode = null) {
+                return array($id, $hexcode);
+            });
+        };
+
+        $cases[] = ['GET', '/user/21', $callback, '21'];
+        $cases[] = ['GET', '/user1/abcdezzASd123', $callback, array('abcdezzASd123')];
+        $cases[] = ['GET', '/user2/abcde123', $callback, array('abcde123')];
+        $cases[] = ['GET', '/user3/21/abcde123', $callback, array('21','abcde123')];
+        $cases[] = ['GET', '/user3/21', $callback, array('21', null)];
+        
+        
+        
+        // 11 -------------------------------------------------------------------------------------->
+        // Test shortcuts parameter
+        $callback = function($r) {
+            $r->addRoute('GET', '/user/{id}?/{id2}?/{id3}?', function() {
+                return 'first';
+            });
+            $r->addRoute('GET', '/user2/{id}?', function() {
+                return 'second';
+            });
+            $r->addRoute('GET', '/user3/{id}?', function() {
+                return 'third';
+            });
+            $r->addRoute('GET', '/user4/{id}?/{id2}?/{id3}?', function() {
+                return 'fourth';
+            });
+        };
+
+        $cases[] = ['GET', '/user/21', $callback, 'first'];
+        $cases[] = ['GET', '/user2/abcdezzASd123', $callback, 'second'];
+        $cases[] = ['GET', '/user2/abcde123', $callback, 'second'];
+        $cases[] = ['GET', '/user/21/abcde123', $callback, 'first'];
+        $cases[] = ['GET', '/user2/21', $callback, 'second'];
+        $cases[] = ['GET', '/user3/abcdezzASd123', $callback, 'third'];
+        $cases[] = ['GET', '/user3/abcde123', $callback, 'third'];
+        $cases[] = ['GET', '/user3/21', $callback, 'third'];
+        $cases[] = ['GET', '/user4/abcdezzASd123', $callback, 'fourth'];
+        $cases[] = ['GET', '/user4/abcde123', $callback, 'fourth'];
+        $cases[] = ['GET', '/user4/21', $callback, 'fourth'];
         
         return $cases;
     }

@@ -128,17 +128,14 @@ class Dispatcher {
             {
                 continue;
             }
-            
+
             $count = count($matches);
 
-            foreach($data['routeMap'] as $i => $routes)
-            {
-                if($count++ === $i)
-                {
-                    break;
-                }
-            }
-                        
+            while(!isset($data['routeMap'][$count++]));
+            
+            $routes = $data['routeMap'][$count - 1];
+            
+       
             if (!isset($routes[$httpMethod]))
             {
                 $httpMethod = $this->checkFallbacks($routes, $httpMethod);
@@ -146,7 +143,7 @@ class Dispatcher {
 
             foreach (array_values($routes[$httpMethod][2]) as $i => $varName)
             {
-                if(!isset($matches[$i + 1]))
+                if(!isset($matches[$i + 1]) || $matches[$i + 1] === '')
                 {
                     unset($routes[$httpMethod][2][$varName]);
                 }

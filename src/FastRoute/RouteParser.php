@@ -20,6 +20,7 @@ class RouteParser {
     const DEFAULT_DISPATCH_REGEX = '[^/]+';
 
     private $parts;
+    private $reverseParts;
     
     private $partsCounter;
     
@@ -27,17 +28,25 @@ class RouteParser {
     
     private $regexOffset;
     
+    private $regexShortcuts = array(
+        ':i}'  => ':[0-9]+}',
+		':a}'  => ':[0-9A-Za-z]+}',
+		':h}'  => ':[0-9A-Fa-f]+}',
+    );
+    
     public function parse($route)
     {
         $this->reset();
         
+        $route = strtr($route, $this->regexShortcuts);
+        
         if (!$matches = $this->extractVariableRouteParts($route))
         {
-            return [$this->quote($route)];
+            return [[$this->quote($route)], $route];
         }
 
         foreach ($matches as $set) {
-          
+
             $this->staticParts($route, $set[0][1]);
                         
             $this->validateVariable($set[1][0]);
@@ -53,18 +62,20 @@ class RouteParser {
                 $match = $this->makeOptional($match);
             }
             
+            $this->reverseParts[$this->partsCounter] = '{' . $set[1][0] . '}';
             $this->parts[$this->partsCounter++] = $match;
         }
 
         $this->staticParts($route, $this->regexOffset);
 
-
-        return [implode('', $this->parts), $this->variables];
+        return [[implode('', $this->parts), $this->variables], implode('', $this->reverseParts)];
     }
     
     private function reset()
     {
         $this->parts = array();
+        
+        $this->reverseParts = array();
     
         $this->partsCounter = 0;
 
@@ -87,7 +98,13 @@ class RouteParser {
                                 
         foreach($static as $staticPart)
         {
-            $staticPart and $this->parts[$this->partsCounter++] = $staticPart;
+            if($staticPart)
+            {
+                $this->parts[$this->partsCounter] = $staticPart;
+                $this->reverseParts[$this->partsCounter] = $staticPart;
+                
+                $this->partsCounter++;
+            }
         }
     }
 

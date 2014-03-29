@@ -15,16 +15,34 @@ class RouteCollector {
     private $filters;
     private $staticRoutes = [];
     private $regexToRoutesMap = [];
+    private $reverse = [];
     
     private $globalFilters = array();
     
     public function __construct(RouteParser $routeParser) {
         $this->routeParser = $routeParser;
     }
+    
+    public function route($name)
+    {
+        $replacements = array_slice(func_get_args(), 1);
+        
+        return count($replacements) ? preg_replace(array_fill(0, count($replacements), '/\{[^\{\}\/]+\}/'), $replacements, $this->reverse[$name], 1) : $this->reverse[$name];
+    }
 
     public function addRoute($httpMethod, $route, $handler, array $filters = array()) {
         
-        $routeData = $this->routeParser->parse(trim($route , '/'));
+        if(is_array($route))
+        {
+            list($route, $name) = $route;
+        }
+        
+        list($routeData, $reverseData) = $this->routeParser->parse(trim($route , '/'));
+        
+        if(isset($name))
+        {
+            $this->reverse[$name] = $reverseData;
+        }
         
         $filters = array_merge_recursive($this->globalFilters, $filters);
 
@@ -113,7 +131,7 @@ class RouteCollector {
     {
         return $this->addRoute(Route::ANY, $route, $handler, $filters);
     }
-    
+
     public function getFilters() 
     {
         return $this->filters;
@@ -190,7 +208,8 @@ class RouteCollector {
         $regexes = [];
         $numGroups = 0;
         foreach ($regexToRoutesMap as $regex => $routes) {
-            $numVariables = count(reset($routes)[2]);
+            $firstRoute = reset($routes);
+            $numVariables = count($firstRoute[2]);
             $numGroups = max($numGroups, $numVariables);
 
             $regexes[] = $regex . str_repeat('()', $numGroups - $numVariables);
