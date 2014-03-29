@@ -1,6 +1,10 @@
 FastRoute - Fast request router for PHP
 =======================================
 
+#### Based on nikic/FastRoute. 
+
+The regex engine is taken from the nikic/FastRoute library
+
 This library provides a fast implementation of a regular expression based router. [Blog post explaining how the
 implementation works and why it is fast.][blog_post]
 
