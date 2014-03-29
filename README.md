@@ -52,6 +52,25 @@ echo $response;
 
 ```
 
+###Named Routes
+
+```php
+
+$router->get(['/user/{name}', 'username'], function($name){
+    return 'Hello ' . $name;
+})
+->get(['/page/{slug}/{id:\d+}', 'page'], function($id){
+    return 'You must be authenticated to see this page: ' . $id;
+});
+
+$router->route('username', 'joe');
+// string(9) '/user/joe'
+
+$router->route('page', ['intro', 456]);
+// string(15) '/page/intro/456'
+
+```
+
 ###Filters
 
 ```php
