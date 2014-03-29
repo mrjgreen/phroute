@@ -131,7 +131,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @expectedException \FastRoute\Exception\BadRouteException
-     * @expectedExceptionMessage Cannot register two routes matching "/user/([^/]+)" for method "GET"
+     * @expectedExceptionMessage Cannot register two routes matching "user/([^/]+)" for method "GET"
      */
     public function testDuplicateVariableRoute()
     {
@@ -146,7 +146,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @expectedException \FastRoute\Exception\BadRouteException
-     * @expectedExceptionMessage Cannot register two routes matching "/user" for method "GET"
+     * @expectedExceptionMessage Cannot register two routes matching "user" for method "GET"
      */
     public function testDuplicateStaticRoute()
     {
@@ -161,7 +161,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @expectedException \FastRoute\Exception\BadRouteException
-     * @expectedExceptionMessage Static route "/user/nikic" is shadowed by previously defined variable route "/user/([^/]+)" for method "GET"
+     * @expectedExceptionMessage Static route "user/nikic" is shadowed by previously defined variable route "user/([^/]+)" for method "GET"
      */
     public function testShadowedStaticRoute()
     {
@@ -250,10 +250,10 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         
         $data = $r->getData();
         
-        $this->assertEquals($r->getValidMethods(), array_keys($data[0]['/user/test']));
+        $this->assertEquals($r->getValidMethods(), array_keys($data[0]['user/test']));
         
-        $this->assertEquals(array(\FastRoute\Route::ANY), array_keys($data[0]['/user']));
-        $this->assertEquals(array(\FastRoute\Route::ANY), array_keys($data[0]['/user/index']));
+        $this->assertEquals(array(\FastRoute\Route::ANY), array_keys($data[0]['user']));
+        $this->assertEquals(array(\FastRoute\Route::ANY), array_keys($data[0]['user/index']));
     }
     
     public function testRestfulMethods()
@@ -270,7 +270,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         
         $data = $r->getData();
         
-        $this->assertEquals($methods, array_keys($data[0]['/user']));
+        $this->assertEquals($methods, array_keys($data[0]['user']));
     }
     
     public function provideFoundDispatchCases()
@@ -281,6 +281,25 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
         $callback = function($r) {
             $r->addRoute('GET', '/resource/123/456', function() {
+                return true;
+            });
+        };
+
+        $cases[] = ['GET', '/resource/123/456', $callback, true];
+        
+        
+        
+        $callback = function($r) {
+            $r->addRoute('GET', 'resource/123/456', function() {
+                return true;
+            });
+        };
+
+        $cases[] = ['GET', 'resource/123/456', $callback, true];
+        
+        
+        $callback = function($r) {
+            $r->addRoute('GET', 'resource/123/456', function() {
                 return true;
             });
         };

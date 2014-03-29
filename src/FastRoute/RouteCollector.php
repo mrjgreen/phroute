@@ -19,7 +19,7 @@ class RouteCollector {
     }
 
     public function addRoute($httpMethod, $route, $handler, array $filters = array()) {
-        $routeData = $this->routeParser->parse($route);
+        $routeData = $this->routeParser->parse(trim($route , '/'));
         $this->dataGenerator->addRoute($httpMethod, $routeData, $handler, array_merge_recursive($this->globalFilters, $filters));
         return $this;
     }
