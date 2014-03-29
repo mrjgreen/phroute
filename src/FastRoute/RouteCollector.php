@@ -23,9 +23,9 @@ class RouteCollector {
         $this->routeParser = $routeParser;
     }
     
-    public function route($name)
+    public function route($name, $args = array())
     {
-        $replacements = array_slice(func_get_args(), 1);
+        $replacements = (array) $args;
         
         return count($replacements) ? preg_replace(array_fill(0, count($replacements), '/\{[^\{\}\/]+\}/'), $replacements, $this->reverse[$name], 1) : $this->reverse[$name];
     }
