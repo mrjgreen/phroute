@@ -8,6 +8,19 @@ The regex engine is taken from the nikic/FastRoute library
 This library provides a fast implementation of a regular expression based router. [Blog post explaining how the
 implementation works and why it is fast.][blog_post]
 
+Installation
+------------
+Install via composer
+
+```
+{
+    "require": {
+        "phroute/phroute": "1.*"
+    }
+}
+
+```
+
 Usage
 -----
 
@@ -28,7 +41,7 @@ syntax by passing using a different route parser.
 
 ```php
 
-$router = new FastRoute\RouteCollector(new FastRoute\RouteParser, new FastRoute\DataGenerator);
+$router = new FastRoute\RouteCollector(new FastRoute\RouteParser);
 
 
 $router->any('/example', function(){
