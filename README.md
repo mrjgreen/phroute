@@ -1,7 +1,7 @@
 FastRoute - Fast request router for PHP
 =======================================
 
-[![Build Status](https://travis-ci.org/joegreen0991/phroute.svg?branch=master)](https://travis-ci.org/joegreen0991/phroute)  [![Coverage Status](https://coveralls.io/repos/joegreen0991/phroute/badge.png)](https://coveralls.io/r/joegreen0991/phroute)
+[![Build Status](https://travis-ci.org/joegreen0991/phroute.svg?branch=master)](https://travis-ci.org/joegreen0991/phroute)  [![Coverage Status](https://coveralls.io/repos/joegreen0991/phroute/badge.png?branch=master)](https://coveralls.io/r/joegreen0991/phroute?branch=master)
 
 #### Based on nikic/FastRoute. 
 
