@@ -1,5 +1,5 @@
 {
-  "name": "joegreen0991/fast-router",
+  "name": "phroute/phroute",
   "description": "Fast request router for PHP",
   "keywords": ["routing", "router"],
   "license": "BSD-3-Clause",
