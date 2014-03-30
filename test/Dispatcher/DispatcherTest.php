@@ -1,11 +1,11 @@
 <?php
 
-namespace FastRoute\Dispatcher;
+namespace Phroute\Dispatcher;
 
-use FastRoute\RouteCollector;
-use FastRoute\RouteParser;
-use FastRoute\DataGenerator;
-use FastRoute\Dispatcher;
+use Phroute\RouteCollector;
+use Phroute\RouteParser;
+use Phroute\Dispatcher;
+use Phroute\Route;
 
 class Test {
     
@@ -85,7 +85,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider provideNotFoundDispatchCases
-     * @expectedException \FastRoute\Exception\HttpRouteNotFoundException
+     * @expectedException \Phroute\Exception\HttpRouteNotFoundException
      * @expectedExceptionMessage does not exist
      */
     public function testNotFoundDispatches($method, $uri, $callback)
@@ -97,7 +97,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider provideMethodNotAllowedDispatchCases
-     * @expectedException \FastRoute\Exception\HttpMethodNotAllowedException
+     * @expectedException \Phroute\Exception\HttpMethodNotAllowedException
      * @expectedExceptionMessage Allowed routes
      */
     public function testMethodNotAllowedDispatches($method, $uri, $callback)
@@ -132,7 +132,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException \FastRoute\Exception\BadRouteException
+     * @expectedException \Phroute\Exception\BadRouteException
      * @expectedExceptionMessage Cannot use the same placeholder 'test' twice
      */
     public function testDuplicateVariableNameError()
@@ -143,7 +143,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException \FastRoute\Exception\BadRouteException
+     * @expectedException \Phroute\Exception\BadRouteException
      * @expectedExceptionMessage Cannot register two routes matching 'user/([^/]+)' for method 'GET'
      */
     public function testDuplicateVariableRoute()
@@ -158,7 +158,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException \FastRoute\Exception\BadRouteException
+     * @expectedException \Phroute\Exception\BadRouteException
      * @expectedExceptionMessage Cannot register two routes matching 'user' for method 'GET'
      */
     public function testDuplicateStaticRoute()
@@ -173,7 +173,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException \FastRoute\Exception\BadRouteException
+     * @expectedException \Phroute\Exception\BadRouteException
      * @expectedExceptionMessage Static route 'user/nikic' is shadowed by previously defined variable route 'user/([^/]+)' for method 'GET'
      */
     public function testShadowedStaticRoute()
@@ -281,13 +281,13 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     public function testValidMethods()
     {
         $this->assertEquals(array(
-            \FastRoute\Route::ANY,
-            \FastRoute\Route::GET,
-            \FastRoute\Route::POST,
-            \FastRoute\Route::PUT,
-            \FastRoute\Route::DELETE,
-            \FastRoute\Route::HEAD,
-            \FastRoute\Route::OPTIONS,
+            Route::ANY,
+            Route::GET,
+            Route::POST,
+            Route::PUT,
+            Route::DELETE,
+            Route::HEAD,
+            Route::OPTIONS,
         ), $this->router()->getValidMethods());
     }
     
@@ -302,8 +302,8 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         
         $this->assertEquals($r->getValidMethods(), array_keys($data[0]['user/test']));
         
-        $this->assertEquals(array(\FastRoute\Route::ANY), array_keys($data[0]['user']));
-        $this->assertEquals(array(\FastRoute\Route::ANY), array_keys($data[0]['user/index']));
+        $this->assertEquals(array(Route::ANY), array_keys($data[0]['user']));
+        $this->assertEquals(array(Route::ANY), array_keys($data[0]['user/index']));
     }
     
     public function testRestfulMethods()
@@ -595,6 +595,20 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $cases[] = ['GET', '/user4/abcdezzASd123', $callback, 'fourth'];
         $cases[] = ['GET', '/user4/abcde123', $callback, 'fourth'];
         $cases[] = ['GET', '/user4/21', $callback, 'fourth'];
+        
+        // 11 -------------------------------------------------------------------------------------->
+        // Test shortcuts parameter
+        $callback = function($r) {
+            $r->addRoute('GET', 'ext/{asset}.json', function($asset) {
+                return $asset . ' jsonencoded';
+            });
+            $r->addRoute('GET', 'ext/{asset}', function($asset) {
+                return $asset;
+            });
+        };
+
+        $cases[] = ['GET', 'ext/asset', $callback, 'asset'];
+        $cases[] = ['GET', 'ext/asset.json', $callback, 'asset jsonencoded'];
         
         return $cases;
     }

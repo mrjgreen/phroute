@@ -1,3 +1,3 @@
-<?php namespace FastRoute\Exception;
+<?php namespace Phroute\Exception;
 
 class HttpMethodNotAllowedException extends HttpException {}

@@ -1,9 +1,9 @@
-<?php namespace FastRoute;
+<?php namespace Phroute;
 
 use ReflectionClass;
 use ReflectionMethod;
 
-use FastRoute\Exception\BadRouteException;
+use Phroute\Exception\BadRouteException;
 
 class RouteCollector {
     

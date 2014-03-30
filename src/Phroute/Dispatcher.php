@@ -1,7 +1,7 @@
-<?php namespace FastRoute;
+<?php namespace Phroute;
 
-use FastRoute\Exception\HttpMethodNotAllowedException;
-use FastRoute\Exception\HttpRouteNotFoundException;
+use Phroute\Exception\HttpMethodNotAllowedException;
+use Phroute\Exception\HttpRouteNotFoundException;
 
 class Dispatcher {
 

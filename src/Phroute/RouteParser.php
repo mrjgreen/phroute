@@ -1,7 +1,7 @@
 <?php
 
-namespace FastRoute;
-use FastRoute\Exception\BadRouteException;
+namespace Phroute;
+use Phroute\Exception\BadRouteException;
 /**
  * Parses routes of the following form:
  *
@@ -67,8 +67,8 @@ class RouteParser {
             $this->parts[$this->partsCounter++] = $match;
         }
 
-        $this->staticParts($route, $this->regexOffset);
-
+        $this->staticParts($route, strlen($route));
+        
         return [[implode('', $this->parts), $this->variables], implode('', $this->reverseParts)];
     }
     

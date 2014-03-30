@@ -26,7 +26,7 @@ Usage
 
 ### Defining routes
 
-The routes are added by calling `addRoute()` on the `FastRoute\RouteCollector` collector instance.
+The routes are added by calling `addRoute()` on the `Phroute\RouteCollector` collector instance.
 
 This method accepts the HTTP method the route must match, the route pattern, an associated
 handler and an optional array of 'before' and 'after' filters. The handler does not necessarily have 
@@ -41,7 +41,7 @@ syntax by passing using a different route parser.
 
 ```php
 
-$router = new FastRoute\RouteCollector(new FastRoute\RouteParser);
+$router = new Phroute\RouteCollector(new Phroute\RouteParser);
 
 
 $router->any('/example', function(){
@@ -64,7 +64,7 @@ $router->any('/', function(){
 
 
 
-$response = (new FastRoute\Dispatcher($router))->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_METHOD']);
+$response = (new Phroute\Dispatcher($router))->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_METHOD']);
     
 // Print out the value returned from the dispatched function
 echo $response;
@@ -187,10 +187,10 @@ of `Dispatcher::NOT_FOUND`, `Dispatcher::METHOD_NOT_ALLOWED` and `Dispatcher::FO
 method not allowed status the second array element contains a list of HTTP methods allowed for
 this method. For example:
 
-    [FastRoute\Dispatcher::METHOD_NOT_ALLOWED, ['GET', 'POST']]
+    [Phroute\Dispatcher::METHOD_NOT_ALLOWED, ['GET', 'POST']]
 
 > **NOTE:** The HTTP specification requires that a `405 Method Not Allowed` response include the
-`Allow:` header to detail available methods for the requested resource. Applications using FastRoute
+`Allow:` header to detail available methods for the requested resource. Applications using Phroute
 should use the second array element to add this header when relaying a 405 response.
 
 For the found status the second array element is the handler that was associated with the route
@@ -198,7 +198,7 @@ and the third array element is a dictionary of placeholder names to their values
 
     /* Routing against GET /user/nikic/42 */
 
-    [FastRoute\Dispatcher::FOUND, 'handler0', ['name' => 'nikic', 'id' => '42']]
+    [Phroute\Dispatcher::FOUND, 'handler0', ['name' => 'nikic', 'id' => '42']]
 
 
 ### A Note on HEAD Requests
@@ -211,9 +211,9 @@ To avoid forcing users to manually register HEAD routes for each resource we fal
 available GET route for a given resource. The PHP web SAPI transparently removes the entity body
 from HEAD responses so this behavior has no effect on the vast majority of users.
 
-However, implementors using FastRoute outside the web SAPI environment (e.g. a custom server) MUST
+However, implementors using Phroute outside the web SAPI environment (e.g. a custom server) MUST
 NOT send entity bodies generated in response to HEAD requests. If you are a non-SAPI user this is
-*your responsibility*; FastRoute has no purview to prevent you from breaking HTTP in such cases.
+*your responsibility*; Phroute has no purview to prevent you from breaking HTTP in such cases.
 
 Finally, note that applications MAY always specify their own HEAD method route for a given
 resource to bypass this behavior entirely.
