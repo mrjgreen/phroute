@@ -1,5 +1,7 @@
-FastRoute - Fast request router for PHP
+PHRoute - Fast request router for PHP
 =======================================
+
+[![Build Status](https://travis-ci.org/joegreen0991/phroute.svg?branch=master)](https://travis-ci.org/joegreen0991/phroute)  [![Coverage Status](http://img.shields.io/coveralls/joegreen0991/phroute.svg)](https://coveralls.io/r/joegreen0991/phroute?branch=master)
 
 #### Based on nikic/FastRoute. 
 
