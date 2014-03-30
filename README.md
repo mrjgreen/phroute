@@ -1,6 +1,8 @@
 FastRoute - Fast request router for PHP
 =======================================
 
+[![Build Status](https://travis-ci.org/joegreen0991/phroute.svg?branch=master)](https://travis-ci.org/joegreen0991/phroute)
+
 #### Based on nikic/FastRoute. 
 
 The regex engine is taken from the nikic/FastRoute library
