@@ -112,6 +112,25 @@ $router->route('page', ['intro', 456]);
 
 ```php
 
+$router->filter('statsStart', function(){    
+    setPageStartTime(microtime(true));
+});
+
+$router->filter('statsComplete', function(){    
+    var_dump('Page load time: ' . (microtime(true) - getPageStartTime()));
+});
+
+$router->get('/user/{name}', function($name){
+    return 'Hello ' . $name;
+}, array('before' => 'statsStart', 'after' => 'statsComplete'));
+```
+
+###Filter Groups
+
+Wrap multiple routes in a route group to apply that filter to every route defined within. You can nest route groups if required.
+
+```php
+
 // Any thing other than null returned from a filter will prevent the route handler from being dispatched
 $router->filter('auth', function(){    
     if(!isset($_SESSION['user'])) 
@@ -120,10 +139,6 @@ $router->filter('auth', function(){
         
         return false;
     }
-});
-
-$router->filter('test', function(){    
-    var_dump('Test Filter');
 });
 
 $router->group(array('before' => 'auth'), function($router){
