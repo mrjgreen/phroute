@@ -66,7 +66,7 @@ $router->any('/', function(){
 
 
 
-$response = (new Phroute\Dispatcher($router))->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_METHOD']);
+$response = (new Phroute\Dispatcher($router))->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
     
 // Print out the value returned from the dispatched function
 echo $response;
