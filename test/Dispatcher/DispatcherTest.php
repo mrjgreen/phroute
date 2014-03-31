@@ -228,17 +228,21 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
         $dispatchedFilter = false;
         
-        $r->filter('test', function() use(&$dispatchedFilter){
+        $r->filter('test', function($response) use(&$dispatchedFilter){
             $dispatchedFilter = true;
+            
+            return $response . ' filtered';
         });
 
         $r->addRoute('GET', '/user', function() {
-            
+            return 'test';
         }, array('after' => 'test'));
 
-        $this->dispatch($r, 'GET', '/user');
+        $response = $this->dispatch($r, 'GET', '/user');
         
         $this->assertTrue($dispatchedFilter);
+        
+        $this->assertEquals('test filtered', $response);
     }
     
     public function testFilterGroups()

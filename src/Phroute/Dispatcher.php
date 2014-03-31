@@ -32,9 +32,7 @@ class Dispatcher {
         
         $response = call_user_func_array($resolvedHandler, $vars);
 
-        $this->dispatchFilters($afterFilter);
-        
-        return $response;
+        return $this->dispatchFilters($afterFilter, $response);
     }
     
     private function resolveHandler($handler)
@@ -47,15 +45,19 @@ class Dispatcher {
         return $handler;
     }
     
-    private function dispatchFilters($filters, $args = array())
+    private function dispatchFilters($filters, $response = null)
     {        
+        $args = $response ? array($response) : array();
+        
         while($filter = array_shift($filters))
         {
-            if(($response = call_user_func_array($filter, $args)) !== null)
+            if(($filteredResponse = call_user_func_array($filter, $args)) !== null)
             {
-                return $response;
+                return $filteredResponse;
             }
         }
+        
+        return $response;
     }
     
     private function parseFilters($filters)
