@@ -205,6 +205,17 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         
         $this->assertTrue($dispatchedFilter);
     }
+    
+    public function testBeforeFiltersStringClass()
+    {
+        $r = $this->router();
+        
+        $r->filter('test', array(__NAMESPACE__ . '\Test','route'));
+
+        $r->addRoute('GET', '/user', function() {}, array('before' => 'test'));
+
+        $this->assertEquals('testRoute', $this->dispatch($r, 'GET', '/user'));
+    }
 
     public function testBeforeFilterCancels()
     {

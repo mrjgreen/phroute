@@ -51,7 +51,7 @@ class Dispatcher {
         
         while($filter = array_shift($filters))
         {
-            if(($filteredResponse = call_user_func_array($filter, $args)) !== null)
+            if(($filteredResponse = call_user_func_array($this->resolveHandler($filter), $args)) !== null)
             {
                 return $filteredResponse;
             }
