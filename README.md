@@ -64,6 +64,12 @@ $router->any('/', function(){
     return 'This responds to the default route';
 });
 
+// Optional Parameters
+// simply add a '?' after the route name to make the parameter optional
+// NB. be sure to add a default value for the function argument
+$router->addRoute('GET', '/user/{id}?', function($id = null) {
+    return 'second';
+});
 
 
 $response = (new Phroute\Dispatcher($router))->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
