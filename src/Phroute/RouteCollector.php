@@ -164,6 +164,8 @@ class RouteCollector {
                 }
             }
         }
+        
+        return $this;
     }
     
     public function getValidMethods()
