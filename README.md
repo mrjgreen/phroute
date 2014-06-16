@@ -198,7 +198,7 @@ class Test {
     }
 }
 
-Route::controller('/controller', 'Test');
+$router->controller('/controller', 'Test');
 ```
 
 
@@ -208,23 +208,19 @@ A URI is dispatched by calling the `dispatch()` method of the created dispatcher
 accepts the HTTP method and a URI. Getting those two bits of information (and normalizing them
 appropriately) is your job - this library is not bound to the PHP web SAPIs.
 
-The `dispatch()` method returns an array those first element contains a status code. It is one
-of `Dispatcher::NOT_FOUND`, `Dispatcher::METHOD_NOT_ALLOWED` and `Dispatcher::FOUND`. For the
-method not allowed status the second array element contains a list of HTTP methods allowed for
-this method. For example:
+$response = (new Phroute\Dispatcher($router))
+            ->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
 
-    [Phroute\Dispatcher::METHOD_NOT_ALLOWED, ['GET', 'POST']]
+The `dispatch()` method will call the matched route, or if no matches, throw one of the exceptions below:
+
+    # Route not found
+    Phroute\Exception\HttpRouteNotFoundException;
+    
+    # Route found, but method not allowed
+    Phroute\Exception\HttpMethodNotAllowedException;
 
 > **NOTE:** The HTTP specification requires that a `405 Method Not Allowed` response include the
-`Allow:` header to detail available methods for the requested resource. Applications using Phroute
-should use the second array element to add this header when relaying a 405 response.
-
-For the found status the second array element is the handler that was associated with the route
-and the third array element is a dictionary of placeholder names to their values. For example:
-
-    /* Routing against GET /user/nikic/42 */
-
-    [Phroute\Dispatcher::FOUND, 'handler0', ['name' => 'nikic', 'id' => '42']]
+`Allow:` header to detail available methods for the requested resource. 
 
 
 ### A Note on HEAD Requests
