@@ -478,7 +478,8 @@ implementation works and why it is fast.](http://nikic.github.io/2014/02/18/Fast
 
 Many modifications to the core have been made suit the new library wrapper, and additional features added such as optional route parameters etc, but please head over and checkout nikic's library to see the origins of the core and how it works.
 
-###### Further Credits
+##### Further Credits
+
 [nikic/FastRoute]: https://github.com/nikic/FastRoute
 [2616-511]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.1.1 "RFC 2616 Section 5.1.1"
 [blog_post]: http://nikic.github.io/2014/02/18/Fast-request-routing-using-regular-expressions.html
