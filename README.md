@@ -240,20 +240,9 @@ NOT send entity bodies generated in response to HEAD requests. If you are a non-
 Finally, note that applications MAY always specify their own HEAD method route for a given
 resource to bypass this behavior entirely.
 
-### Credits
 
-This library is based on a router that [Levi Morrison][levi] implemented for the Aerys server.
-
-A large number of tests, as well as HTTP compliance considerations, were provided by [Daniel Lowrey][rdlowrey].
-
-
-[2616-511]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.1.1 "RFC 2616 Section 5.1.1"
-[blog_post]: http://nikic.github.io/2014/02/18/Fast-request-routing-using-regular-expressions.html
-[levi]: https://github.com/morrisonlevi
-[rdlowrey]: https://github.com/rdlowrey
-
-
-### Some Stats
+### Performance
+<a name="performance">
 Performed on a machine with :
 
  * Processor  2.3 GHz Intel Core i7
@@ -513,3 +502,16 @@ Percentage of the requests served within a certain time (ms)
   99%   3236
  100%   3241 (longest request)
 ~~~
+
+
+### Credits
+
+This library is based on a router that [Levi Morrison][levi] implemented for the Aerys server.
+
+A large number of tests, as well as HTTP compliance considerations, were provided by [Daniel Lowrey][rdlowrey].
+
+
+[2616-511]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.1.1 "RFC 2616 Section 5.1.1"
+[blog_post]: http://nikic.github.io/2014/02/18/Fast-request-routing-using-regular-expressions.html
+[levi]: https://github.com/morrisonlevi
+[rdlowrey]: https://github.com/rdlowrey
