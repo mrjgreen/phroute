@@ -172,7 +172,7 @@ $router->group(array('before' => 'auth'), function($router){
 });
 ```
 
-##Controllers
+###Controllers
 
 ```php
 class Test {
@@ -471,7 +471,7 @@ Percentage of the requests served within a certain time (ms)
  100%  19975 (longest request)
 ~~~
 
-#### Credit to nikic/FastRoute. 
+### Credit to nikic/FastRoute. 
 
 While the bulk of the library and extensive unit tests are my own, full credit for the work and benchmarking surrounding the fast routing engine must go to [nikic/FastRoute](https://github.com/nikic/FastRoute). Please also go and read nikic's [blog post explaining how the
 implementation works and why it is fast.](http://nikic.github.io/2014/02/18/Fast-request-routing-using-regular-expressions.html)
