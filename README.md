@@ -258,38 +258,22 @@ $ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:9943/
 
 Finished 1000 requests
 
-Document Path:          /
-Document Length:        7 bytes
-
-Concurrency Level:      100
-Time taken for tests:   3.488 seconds
-Complete requests:      1000
-Failed requests:        0
-Write errors:           0
-Total transferred:      117000 bytes
-HTML transferred:       7000 bytes
-Requests per second:    286.71 [#/sec] (mean)
-Time per request:       348.789 [ms] (mean)
-Time per request:       3.488 [ms] (mean, across all concurrent requests)
-Transfer rate:          32.76 [Kbytes/sec] received
-
-Connection Times (ms)
-              min  mean[+/-sd] median   max
-Connect:        0    0   0.5      0       3
-Processing:     5  331  60.6    347     358
-Waiting:        5  331  60.6    347     358
-Total:          8  332  60.1    347     358
+Time taken for tests:   3.062 seconds
+Requests per second:    326.60 [#/sec] (mean)
+Time per request:       306.181 [ms] (mean)
+Time per request:       3.062 [ms] (mean, across all concurrent requests)
+Transfer rate:          37.32 [Kbytes/sec] received
 
 Percentage of the requests served within a certain time (ms)
-  50%    347
-  66%    350
-  75%    351
-  80%    352
-  90%    353
-  95%    353
-  98%    357
-  99%    358
- 100%    358 (longest request)
+  50%    306
+  66%    307
+  75%    307
+  80%    308
+  90%    309
+  95%    309
+  98%    310
+  99%    310
+ 100%    310 (longest request)
 ~~~~
 
 #####  With 10 routes, matching last route (worst case)
@@ -301,38 +285,23 @@ $ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:9943/thelastroute
 
 Finished 1000 requests
 
-Document Path:          /thelastroute
-Document Length:        7 bytes
+Time taken for tests:   3.079 seconds
+Requests per second:    324.80 [#/sec] (mean)
+Time per request:       307.880 [ms] (mean)
+Time per request:       3.079 [ms] (mean, across all concurrent requests)
+Transfer rate:          37.11 [Kbytes/sec] received
 
-Concurrency Level:      100
-Time taken for tests:   3.487 seconds
-Complete requests:      1000
-Failed requests:        0
-Write errors:           0
-Total transferred:      117000 bytes
-HTML transferred:       7000 bytes
-Requests per second:    286.79 [#/sec] (mean)
-Time per request:       348.693 [ms] (mean)
-Time per request:       3.487 [ms] (mean, across all concurrent requests)
-Transfer rate:          32.77 [Kbytes/sec] received
-
-Connection Times (ms)
-              min  mean[+/-sd] median   max
-Connect:        0    0   0.6      0       3
-Processing:     5  331  59.4    347     359
-Waiting:        5  331  59.4    346     359
-Total:          8  331  58.8    347     359
 
 Percentage of the requests served within a certain time (ms)
-  50%    347
-  66%    348
-  75%    349
-  80%    350
-  90%    353
-  95%    358
-  98%    359
-  99%    359
- 100%    359 (longest request)
+  50%    307
+  66%    308
+  75%    309
+  80%    309
+  90%    310
+  95%    311
+  98%    312
+  99%    312
+ 100%    313 (longest request)
 ~~~
 
 #####  With 100 routes, matching last route (worst case)
@@ -342,27 +311,12 @@ $ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:9943/thelastroute
 
 Finished 1000 requests
 
-Document Path:          /thelastroute
-Document Length:        7 bytes
-
-Concurrency Level:      100
 Time taken for tests:   3.195 seconds
-Complete requests:      1000
-Failed requests:        0
-Write errors:           0
-Total transferred:      117000 bytes
-HTML transferred:       7000 bytes
 Requests per second:    312.97 [#/sec] (mean)
 Time per request:       319.515 [ms] (mean)
 Time per request:       3.195 [ms] (mean, across all concurrent requests)
 Transfer rate:          35.76 [Kbytes/sec] received
 
-Connection Times (ms)
-              min  mean[+/-sd] median   max
-Connect:        0    0   0.7      0       3
-Processing:     5  303  54.9    318     324
-Waiting:        5  303  54.9    318     324
-Total:          9  303  54.2    318     324
 
 Percentage of the requests served within a certain time (ms)
   50%    318
@@ -376,6 +330,32 @@ Percentage of the requests served within a certain time (ms)
  100%    324 (longest request)
 ~~~
 
+##### With 1000 routes, matching the last route (worst case)
+
+~~~
+$ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:9943/thelastroute
+
+Finished 1000 requests
+
+Time taken for tests:   4.497 seconds
+Complete requests:      1000
+Requests per second:    222.39 [#/sec] (mean)
+Time per request:       449.668 [ms] (mean)
+Time per request:       4.497 [ms] (mean, across all concurrent requests)
+Transfer rate:          25.41 [Kbytes/sec] received
+
+Percentage of the requests served within a certain time (ms)
+  50%    445
+  66%    447
+  75%    448
+  80%    449
+  90%    454
+  95%    456
+  98%    457
+  99%    458
+ 100%    478 (longest request)
+~~~
+
 ###For comparison, Laravel 4.0 routing core
 
 Please note, this is no slight against laravel - it is based on a routing loop, which is why the performance worsens as the number of routes grows
@@ -387,26 +367,11 @@ $ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:4968/
 
 Finished 1000 requests
 
-Document Length:        7 bytes
-
-Concurrency Level:      100
 Time taken for tests:   13.366 seconds
-Complete requests:      1000
-Failed requests:        0
-Write errors:           0
-Total transferred:      117000 bytes
-HTML transferred:       7000 bytes
 Requests per second:    74.82 [#/sec] (mean)
 Time per request:       1336.628 [ms] (mean)
 Time per request:       13.366 [ms] (mean, across all concurrent requests)
 Transfer rate:          8.55 [Kbytes/sec] received
-
-Connection Times (ms)
-              min  mean[+/-sd] median   max
-Connect:        0    0   0.6      0       3
-Processing:    16 1270 233.7   1336    1353
-Waiting:       16 1270 233.7   1335    1352
-Total:         19 1271 233.1   1336    1353
 
 Percentage of the requests served within a certain time (ms)
   50%   1336
@@ -428,27 +393,11 @@ $ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:4968/thelastroute
 
 Finished 1000 requests
 
-Document Path:          /thelastroute
-Document Length:        7 bytes
-
-Concurrency Level:      100
 Time taken for tests:   14.621 seconds
-Complete requests:      1000
-Failed requests:        0
-Write errors:           0
-Total transferred:      117000 bytes
-HTML transferred:       7000 bytes
 Requests per second:    68.39 [#/sec] (mean)
 Time per request:       1462.117 [ms] (mean)
 Time per request:       14.621 [ms] (mean, across all concurrent requests)
 Transfer rate:          7.81 [Kbytes/sec] received
-
-Connection Times (ms)
-              min  mean[+/-sd] median   max
-Connect:        0    0   0.6      0       3
-Processing:    15 1389 255.7   1461    1484
-Waiting:       14 1389 255.7   1460    1484
-Total:         18 1389 255.1   1461    1484
 
 Percentage of the requests served within a certain time (ms)
   50%   1461
@@ -469,27 +418,11 @@ $ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:4968/thelastroute
 
 Finished 1000 requests
 
-Document Path:          /thelastroute
-Document Length:        7 bytes
-
-Concurrency Level:      100
 Time taken for tests:   31.254 seconds
-Complete requests:      1000
-Failed requests:        0
-Write errors:           0
-Total transferred:      117000 bytes
-HTML transferred:       7000 bytes
 Requests per second:    32.00 [#/sec] (mean)
 Time per request:       3125.402 [ms] (mean)
 Time per request:       31.254 [ms] (mean, across all concurrent requests)
 Transfer rate:          3.66 [Kbytes/sec] received
-
-Connection Times (ms)
-              min  mean[+/-sd] median   max
-Connect:        0    0   0.5      0       2
-Processing:    32 2969 552.7   3124    3241
-Waiting:       31 2968 552.6   3123    3240
-Total:         34 2969 552.2   3124    3241
 
 Percentage of the requests served within a certain time (ms)
   50%   3124
@@ -503,6 +436,11 @@ Percentage of the requests served within a certain time (ms)
  100%   3241 (longest request)
 ~~~
 
+##### With 1000 routes, matching last route (worst case)
+
+~~~
+
+~~~
 
 ### Credits
 
