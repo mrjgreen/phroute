@@ -11,6 +11,13 @@ PHRoute - Fast request router for PHP
  * Restful controller routing
  * Route filters and route groups
 
+### Credit to nikic/FastRoute. 
+
+While the bulk of the library and extensive unit tests are my own, credit for the regex matching core implementation and benchmarking goes to [nikic](https://github.com/nikic/FastRoute). Please go and read nikic's 
+[blog post explaining how the implementation works and why it's fast.](http://nikic.github.io/2014/02/18/Fast-request-routing-using-regular-expressions.html)
+
+Many modifications to the core have been made suit the new library wrapper, and additional features added such as optional route parameters etc, but please head over and checkout nikic's library to see the origins of the core and how it works.
+
 
 Installation
 ------------
@@ -470,10 +477,3 @@ Percentage of the requests served within a certain time (ms)
   99%  19960
  100%  19975 (longest request)
 ~~~
-
-### Credit to nikic/FastRoute. 
-
-While the bulk of the library and extensive unit tests are my own, full credit for the work and benchmarking surrounding the fast routing engine must go to [nikic/FastRoute](https://github.com/nikic/FastRoute). Please also go and read nikic's [blog post explaining how the
-implementation works and why it is fast.](http://nikic.github.io/2014/02/18/Fast-request-routing-using-regular-expressions.html)
-
-Many modifications to the core have been made suit the new library wrapper, and additional features added such as optional route parameters etc, but please head over and checkout nikic's library to see the origins of the core and how it works.
