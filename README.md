@@ -261,7 +261,7 @@ Performed on a machine with :
 
 ####Phroute
 
-This test is to illustrate, in part, the efficiency of the lightweight routing-core, but mostly to the lack of degradation of matching speed as the number of routes grows, as compared to conventional libraries.
+This test is to illustrate, in part, the efficiency of the lightweight routing-core, but mostly the lack of degradation of matching speed as the number of routes grows, as compared to conventional libraries.
 
 ##### With 10 routes, matching 1st route (best case)
 ~~~~
@@ -346,7 +346,50 @@ Percentage of the requests served within a certain time (ms)
  100%    359 (longest request)
 ~~~
 
+#####  With 100 routes, matching last route (worst case)
+
+~~~
+$ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:9943/thelastroute
+
+Finished 1000 requests
+
+Document Path:          /thelastroute
+Document Length:        7 bytes
+
+Concurrency Level:      100
+Time taken for tests:   3.195 seconds
+Complete requests:      1000
+Failed requests:        0
+Write errors:           0
+Total transferred:      117000 bytes
+HTML transferred:       7000 bytes
+Requests per second:    312.97 [#/sec] (mean)
+Time per request:       319.515 [ms] (mean)
+Time per request:       3.195 [ms] (mean, across all concurrent requests)
+Transfer rate:          35.76 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.7      0       3
+Processing:     5  303  54.9    318     324
+Waiting:        5  303  54.9    318     324
+Total:          9  303  54.2    318     324
+
+Percentage of the requests served within a certain time (ms)
+  50%    318
+  66%    319
+  75%    320
+  80%    320
+  90%    322
+  95%    323
+  98%    323
+  99%    324
+ 100%    324 (longest request)
+~~~
+
 ###For comparison, Laravel 4.0 routing core
+
+Please note, this is no slight against laravel - it is based on a routing loop, which is why the performance worsens as the number of routes grows
 
 ##### With 10 routes, matching first route (best case)
 
@@ -428,4 +471,45 @@ Percentage of the requests served within a certain time (ms)
   98%   1480
   99%   1482
  100%   1484 (longest request)
+~~~
+
+##### With 100 routes, matching last route (worst case)
+
+~~~
+$ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:4968/thelastroute
+
+Finished 1000 requests
+
+Document Path:          /thelastroute
+Document Length:        7 bytes
+
+Concurrency Level:      100
+Time taken for tests:   31.254 seconds
+Complete requests:      1000
+Failed requests:        0
+Write errors:           0
+Total transferred:      117000 bytes
+HTML transferred:       7000 bytes
+Requests per second:    32.00 [#/sec] (mean)
+Time per request:       3125.402 [ms] (mean)
+Time per request:       31.254 [ms] (mean, across all concurrent requests)
+Transfer rate:          3.66 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.5      0       2
+Processing:    32 2969 552.7   3124    3241
+Waiting:       31 2968 552.6   3123    3240
+Total:         34 2969 552.2   3124    3241
+
+Percentage of the requests served within a certain time (ms)
+  50%   3124
+  66%   3145
+  75%   3154
+  80%   3163
+  90%   3188
+  95%   3219
+  98%   3232
+  99%   3236
+ 100%   3241 (longest request)
 ~~~
