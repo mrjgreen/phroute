@@ -11,13 +11,6 @@ PHRoute - Fast request router for PHP
  * Restful controller routing
  * Route filters and route groups
 
-#### Credit to nikic/FastRoute. 
-
-While the bulk of the library and extensive unit tests are my own, full credit for the work and benchmarking surrounding the fast routing engine must go to [nikic/FastRoute](https://github.com/nikic/FastRoute). Please also go and read nikic's [blog post explaining how the
-implementation works and why it is fast.](http://nikic.github.io/2014/02/18/Fast-request-routing-using-regular-expressions.html)
-
-Many modifications to the core have been made suit the new library wrapper, and additional features added such as optional route parameters etc, but please head over and checkout nikic's library to see the origins of the core and how it works.
-
 
 Installation
 ------------
@@ -478,13 +471,15 @@ Percentage of the requests served within a certain time (ms)
  100%  19975 (longest request)
 ~~~
 
-### Credits
+#### Credit to nikic/FastRoute. 
 
-This library is based on a router that [Levi Morrison][levi] implemented for the Aerys server.
+While the bulk of the library and extensive unit tests are my own, full credit for the work and benchmarking surrounding the fast routing engine must go to [nikic/FastRoute](https://github.com/nikic/FastRoute). Please also go and read nikic's [blog post explaining how the
+implementation works and why it is fast.](http://nikic.github.io/2014/02/18/Fast-request-routing-using-regular-expressions.html)
 
-A large number of tests, as well as HTTP compliance considerations, were provided by [Daniel Lowrey][rdlowrey].
+Many modifications to the core have been made suit the new library wrapper, and additional features added such as optional route parameters etc, but please head over and checkout nikic's library to see the origins of the core and how it works.
 
-
+###### Further Credits
+[nikic/FastRoute](https://github.com/nikic/FastRoute)
 [2616-511]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.1.1 "RFC 2616 Section 5.1.1"
 [blog_post]: http://nikic.github.io/2014/02/18/Fast-request-routing-using-regular-expressions.html
 [levi]: https://github.com/morrisonlevi
