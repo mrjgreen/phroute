@@ -189,29 +189,29 @@ class Test {
         return 'This is the default page and will respond to /controller and /controller/index';
     }
     
-    public function anyTestany()
+    public function anyTest()
     {
-        return 'This will respond to /controller/testany with any method';
+        return 'This will respond to /controller/test with any method';
     }
     
-    public function getTestget()
+    public function getTest()
     {
-        return 'This will respond to /controller/testget with only a GET method';
+        return 'This will respond to /controller/test with only a GET method';
     }
     
-    public function postTestpost()
+    public function postTest()
     {
-        return 'This will respond to /controller/testpost with only a POST method';
+        return 'This will respond to /controller/test with only a POST method';
     }
     
-    public function putTestput()
+    public function putTest()
     {
-        return 'This will respond to /controller/testput with only a PUT method';
+        return 'This will respond to /controller/test with only a PUT method';
     }
     
-    public function deleteTestdelete()
+    public function deleteTest()
     {
-        return 'This will respond to /controller/testdelete with only a DELETE method';
+        return 'This will respond to /controller/test with only a DELETE method';
     }
 }
 
