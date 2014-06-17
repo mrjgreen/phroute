@@ -83,8 +83,10 @@ $router->addRoute('GET', '/user/{id}?', function($id = null) {
     return 'second';
 });
 
+# NB. You can cache this object so you don't have to create the routes each request for massive speed gains
+$dispatcher = new Phroute\Dispatcher($router);
 
-$response = (new Phroute\Dispatcher($router))->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+$response = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
     
 // Print out the value returned from the dispatched function
 echo $response;
