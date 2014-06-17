@@ -251,3 +251,258 @@ A large number of tests, as well as HTTP compliance considerations, were provide
 [blog_post]: http://nikic.github.io/2014/02/18/Fast-request-routing-using-regular-expressions.html
 [levi]: https://github.com/morrisonlevi
 [rdlowrey]: https://github.com/rdlowrey
+
+
+### Some Stats
+Performed on a machine with :
+
+ * Processor  2.3 GHz Intel Core i7
+ * Memory  8 GB 1600 MHz DDR3
+
+####Phroute
+
+This test is to illustrate, in part, the efficiency of the lightweight routing-core, but mostly to the lack of degradation of matching speed as the number of routes grows, as compared to conventional libraries.
+
+##### With 10 routes, matching 1st route (best case)
+~~~~
+$ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:9943/
+This is ApacheBench, Version 2.3 <$Revision: 1373084 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 127.0.0.1 (be patient)
+Completed 100 requests
+Completed 200 requests
+Completed 300 requests
+Completed 400 requests
+Completed 500 requests
+Completed 600 requests
+Completed 700 requests
+Completed 800 requests
+Completed 900 requests
+Completed 1000 requests
+Finished 1000 requests
+
+
+Server Software:        
+Server Hostname:        127.0.0.1
+Server Port:            9943
+
+Document Path:          /
+Document Length:        7 bytes
+
+Concurrency Level:      100
+Time taken for tests:   3.488 seconds
+Complete requests:      1000
+Failed requests:        0
+Write errors:           0
+Total transferred:      117000 bytes
+HTML transferred:       7000 bytes
+Requests per second:    286.71 [#/sec] (mean)
+Time per request:       348.789 [ms] (mean)
+Time per request:       3.488 [ms] (mean, across all concurrent requests)
+Transfer rate:          32.76 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.5      0       3
+Processing:     5  331  60.6    347     358
+Waiting:        5  331  60.6    347     358
+Total:          8  332  60.1    347     358
+
+Percentage of the requests served within a certain time (ms)
+  50%    347
+  66%    350
+  75%    351
+  80%    352
+  90%    353
+  95%    353
+  98%    357
+  99%    358
+ 100%    358 (longest request)
+~~~~
+
+#####  With 10 routes, matching last route (worst case)
+
+Note that the match is just as quick as against the first route
+
+~~~
+$ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:9943/thelastroute
+This is ApacheBench, Version 2.3 <$Revision: 1373084 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 127.0.0.1 (be patient)
+Completed 100 requests
+Completed 200 requests
+Completed 300 requests
+Completed 400 requests
+Completed 500 requests
+Completed 600 requests
+Completed 700 requests
+Completed 800 requests
+Completed 900 requests
+Completed 1000 requests
+Finished 1000 requests
+
+
+Server Software:        
+Server Hostname:        127.0.0.1
+Server Port:            9943
+
+Document Path:          /thelastroute
+Document Length:        7 bytes
+
+Concurrency Level:      100
+Time taken for tests:   3.487 seconds
+Complete requests:      1000
+Failed requests:        0
+Write errors:           0
+Total transferred:      117000 bytes
+HTML transferred:       7000 bytes
+Requests per second:    286.79 [#/sec] (mean)
+Time per request:       348.693 [ms] (mean)
+Time per request:       3.487 [ms] (mean, across all concurrent requests)
+Transfer rate:          32.77 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.6      0       3
+Processing:     5  331  59.4    347     359
+Waiting:        5  331  59.4    346     359
+Total:          8  331  58.8    347     359
+
+Percentage of the requests served within a certain time (ms)
+  50%    347
+  66%    348
+  75%    349
+  80%    350
+  90%    353
+  95%    358
+  98%    359
+  99%    359
+ 100%    359 (longest request)
+~~~
+
+###For comparison, Laravel 4.0 routing core
+
+##### With 10 routes, matching first route (best case)
+
+~~~
+$ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:4968/
+This is ApacheBench, Version 2.3 <$Revision: 1373084 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 127.0.0.1 (be patient)
+Completed 100 requests
+Completed 200 requests
+Completed 300 requests
+Completed 400 requests
+Completed 500 requests
+Completed 600 requests
+Completed 700 requests
+Completed 800 requests
+Completed 900 requests
+Completed 1000 requests
+Finished 1000 requests
+
+
+Server Software:        
+Server Hostname:        127.0.0.1
+Server Port:            4968
+
+Document Path:          /
+Document Length:        7 bytes
+
+Concurrency Level:      100
+Time taken for tests:   13.366 seconds
+Complete requests:      1000
+Failed requests:        0
+Write errors:           0
+Total transferred:      117000 bytes
+HTML transferred:       7000 bytes
+Requests per second:    74.82 [#/sec] (mean)
+Time per request:       1336.628 [ms] (mean)
+Time per request:       13.366 [ms] (mean, across all concurrent requests)
+Transfer rate:          8.55 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.6      0       3
+Processing:    16 1270 233.7   1336    1353
+Waiting:       16 1270 233.7   1335    1352
+Total:         19 1271 233.1   1336    1353
+
+Percentage of the requests served within a certain time (ms)
+  50%   1336
+  66%   1339
+  75%   1340
+  80%   1341
+  90%   1346
+  95%   1348
+  98%   1349
+  99%   1351
+ 100%   1353 (longest request)
+~~~
+
+
+##### With 10 routes, matching last route (worst case)
+
+~~~
+$ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:4968/thelastroute
+This is ApacheBench, Version 2.3 <$Revision: 1373084 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking 127.0.0.1 (be patient)
+Completed 100 requests
+Completed 200 requests
+Completed 300 requests
+Completed 400 requests
+Completed 500 requests
+Completed 600 requests
+Completed 700 requests
+Completed 800 requests
+Completed 900 requests
+Completed 1000 requests
+Finished 1000 requests
+
+
+Server Software:        
+Server Hostname:        127.0.0.1
+Server Port:            4968
+
+Document Path:          /thelastroute
+Document Length:        7 bytes
+
+Concurrency Level:      100
+Time taken for tests:   14.621 seconds
+Complete requests:      1000
+Failed requests:        0
+Write errors:           0
+Total transferred:      117000 bytes
+HTML transferred:       7000 bytes
+Requests per second:    68.39 [#/sec] (mean)
+Time per request:       1462.117 [ms] (mean)
+Time per request:       14.621 [ms] (mean, across all concurrent requests)
+Transfer rate:          7.81 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    0   0.6      0       3
+Processing:    15 1389 255.7   1461    1484
+Waiting:       14 1389 255.7   1460    1484
+Total:         18 1389 255.1   1461    1484
+
+Percentage of the requests served within a certain time (ms)
+  50%   1461
+  66%   1465
+  75%   1469
+  80%   1472
+  90%   1476
+  95%   1479
+  98%   1480
+  99%   1482
+ 100%   1484 (longest request)
+~~~
