@@ -439,7 +439,26 @@ Percentage of the requests served within a certain time (ms)
 ##### With 1000 routes, matching last route (worst case)
 
 ~~~
+$ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:5740/thelastroute
 
+Finished 1000 requests
+
+Time taken for tests:   197.366 seconds
+Requests per second:    5.07 [#/sec] (mean)
+Time per request:       19736.598 [ms] (mean)
+Time per request:       197.366 [ms] (mean, across all concurrent requests)
+Transfer rate:          0.58 [Kbytes/sec] received
+
+Percentage of the requests served within a certain time (ms)
+  50%  19736
+  66%  19802
+  75%  19827
+  80%  19855
+  90%  19898
+  95%  19918
+  98%  19945
+  99%  19960
+ 100%  19975 (longest request)
 ~~~
 
 ### Credits
