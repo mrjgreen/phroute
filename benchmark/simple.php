@@ -2,33 +2,33 @@
 
 include __DIR__ . '/../vendor/autoload.php';
 
-$collector = new \FastRoute\RouteCollector();
+$collector = new \Phroute\RouteCollector();
 
-$collector->addRoute('GET', '/test', function(){
+$collector->get('/test', function(){
     
 });
 
-$collector->addRoute('GET', '/test2', function(){
+$collector->get('/test2', function(){
     
 });
 
-$collector->addRoute('GET', '/test3', function(){
+$collector->get('/test3', function(){
     
 });
 
-$collector->addRoute('GET', '/test1/{name}', function(){
+$collector->get('/test1/{name}', function(){
     
 });
 
-$collector->addRoute('GET', '/test2/{name2}', function(){
+$collector->get('/test2/{name2}', function(){
     
 });
 
-$collector->addRoute('GET', '/test3/{name3}', function(){
+$collector->get('/test3/{name3}', function(){
     
 });
 
-$dispatcher =  new FastRoute\Dispatcher($collector);
+$dispatcher =  new Phroute\Dispatcher($collector);
 
 $runTime = 10;
 
