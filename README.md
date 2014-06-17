@@ -266,27 +266,8 @@ This test is to illustrate, in part, the efficiency of the lightweight routing-c
 ##### With 10 routes, matching 1st route (best case)
 ~~~~
 $ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:9943/
-This is ApacheBench, Version 2.3 <$Revision: 1373084 $>
-Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
-Licensed to The Apache Software Foundation, http://www.apache.org/
 
-Benchmarking 127.0.0.1 (be patient)
-Completed 100 requests
-Completed 200 requests
-Completed 300 requests
-Completed 400 requests
-Completed 500 requests
-Completed 600 requests
-Completed 700 requests
-Completed 800 requests
-Completed 900 requests
-Completed 1000 requests
 Finished 1000 requests
-
-
-Server Software:        
-Server Hostname:        127.0.0.1
-Server Port:            9943
 
 Document Path:          /
 Document Length:        7 bytes
@@ -328,27 +309,8 @@ Note that the match is just as quick as against the first route
 
 ~~~
 $ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:9943/thelastroute
-This is ApacheBench, Version 2.3 <$Revision: 1373084 $>
-Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
-Licensed to The Apache Software Foundation, http://www.apache.org/
 
-Benchmarking 127.0.0.1 (be patient)
-Completed 100 requests
-Completed 200 requests
-Completed 300 requests
-Completed 400 requests
-Completed 500 requests
-Completed 600 requests
-Completed 700 requests
-Completed 800 requests
-Completed 900 requests
-Completed 1000 requests
 Finished 1000 requests
-
-
-Server Software:        
-Server Hostname:        127.0.0.1
-Server Port:            9943
 
 Document Path:          /thelastroute
 Document Length:        7 bytes
@@ -390,29 +352,9 @@ Percentage of the requests served within a certain time (ms)
 
 ~~~
 $ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:4968/
-This is ApacheBench, Version 2.3 <$Revision: 1373084 $>
-Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
-Licensed to The Apache Software Foundation, http://www.apache.org/
 
-Benchmarking 127.0.0.1 (be patient)
-Completed 100 requests
-Completed 200 requests
-Completed 300 requests
-Completed 400 requests
-Completed 500 requests
-Completed 600 requests
-Completed 700 requests
-Completed 800 requests
-Completed 900 requests
-Completed 1000 requests
 Finished 1000 requests
 
-
-Server Software:        
-Server Hostname:        127.0.0.1
-Server Port:            4968
-
-Document Path:          /
 Document Length:        7 bytes
 
 Concurrency Level:      100
@@ -451,27 +393,8 @@ Percentage of the requests served within a certain time (ms)
 
 ~~~
 $ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:4968/thelastroute
-This is ApacheBench, Version 2.3 <$Revision: 1373084 $>
-Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
-Licensed to The Apache Software Foundation, http://www.apache.org/
 
-Benchmarking 127.0.0.1 (be patient)
-Completed 100 requests
-Completed 200 requests
-Completed 300 requests
-Completed 400 requests
-Completed 500 requests
-Completed 600 requests
-Completed 700 requests
-Completed 800 requests
-Completed 900 requests
-Completed 1000 requests
 Finished 1000 requests
-
-
-Server Software:        
-Server Hostname:        127.0.0.1
-Server Port:            4968
 
 Document Path:          /thelastroute
 Document Length:        7 bytes
