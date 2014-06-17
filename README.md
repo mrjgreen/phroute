@@ -33,11 +33,14 @@ Usage
 
 The routes are added by calling `addRoute($method, $route, $handler)` on the `Phroute\RouteCollector` collector instance.
 
- > NB. You can also call the HTTP method short cuts: 
+~~~
+  #NB. You can also call the HTTP method short cuts: 
  `$routeCollector->get($route, $handler);` # match only get request methods
- `$routeCollector->post($route, $handler);` # match only delete request methods
+ `$routeCollector->post($route, $handler);` # match only post request methods
+ `$routeCollector->delete($route, $handler);` # match only delete request methods
  `$routeCollector->any($route, $handler);` # match any request methods
  etc...
+~~~
 
 This method accepts the HTTP method the route must match, the route pattern, an associated
 handler and an optional array of 'before' and 'after' filters. The handler does not necessarily have 
