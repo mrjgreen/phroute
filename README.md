@@ -197,7 +197,7 @@ class Test {
     */
     public function anyTest($param, $param2 = 'default')
     {
-        return 'This will respond to /controller/test with any method';
+        return 'This will respond to /controller/test/{param}/{param2}? with any method';
     }
     
     public function getTest()
