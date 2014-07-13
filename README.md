@@ -115,10 +115,11 @@ use in routes:
 
 ```
 
-###Named Routes
+###Named Routes for Reverse Routing
+
+Pass in an array as the first argument, where the first item is your route and the second item is a name with which to reference it later.
 
 ```php
-
 $router->get(['/user/{name}', 'username'], function($name){
     return 'Hello ' . $name;
 })
@@ -126,6 +127,8 @@ $router->get(['/user/{name}', 'username'], function($name){
     return 'You must be authenticated to see this page: ' . $id;
 });
 
+// Use the routename and pass in any route parameters to reverse engineer an existing route path
+// If you change your route path above, you won't need to go through your code updating any links/references to that route
 $router->route('username', 'joe');
 // string(9) '/user/joe'
 
