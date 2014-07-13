@@ -58,6 +58,21 @@ class Test {
     {
         return 'hyphenated';
     }
+
+    public function getParameter($param)
+    {
+        return $param;
+    }
+
+    public function getParameterHyphenated($param)
+    {
+        return $param;
+    }
+
+    public function getParameterOptional($param = 'default')
+    {
+        return $param;
+    }
 }
 
 class DispatcherTest extends \PHPUnit_Framework_TestCase {
@@ -324,6 +339,12 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(array(Route::ANY), array_keys($data[0]['user/index']));
 
         $this->assertEquals('hyphenated', $this->dispatch($r, Route::GET, 'user/camel-case-hyphenated'));
+
+        $this->assertEquals('joe', $this->dispatch($r, Route::GET, 'user/parameter/joe'));
+        $this->assertEquals('joe', $this->dispatch($r, Route::GET, 'user/parameter-hyphenated/joe'));
+
+        $this->assertEquals('joe', $this->dispatch($r, Route::GET, 'user/parameter-optional/joe'));
+        $this->assertEquals('default', $this->dispatch($r, Route::GET, 'user/parameter-optional'));
     }
 
     /**

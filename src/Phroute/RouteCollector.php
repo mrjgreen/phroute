@@ -144,21 +144,23 @@ class RouteCollector {
         $validMethods = $this->getValidMethods();
         
         foreach($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method)
-        {   
+        {
             foreach($validMethods as $valid)
             {
                 if(stripos($method->name, $valid) === 0)
                 {
                     $methodName = $this->camelCaseToDashed(substr($method->name, strlen($valid)));
 
+                    $params = $this->buildControllerParameters($method);
+
                     if($methodName === self::DEFAULT_CONTROLLER_ROUTE)
                     {
-                        $this->addRoute($valid, $route, array($classname, $method->name));
+                        $this->addRoute($valid, $route . $params, array($classname, $method->name));
                     }
                     
                     $sep = $route === '/' ? '' : '/';
                     
-                    $this->addRoute($valid, $route . $sep . $methodName, array($classname, $method->name));
+                    $this->addRoute($valid, $route . $sep . $methodName . $params, array($classname, $method->name));
                     
                     break;
                 }
@@ -166,6 +168,18 @@ class RouteCollector {
         }
         
         return $this;
+    }
+
+    private function buildControllerParameters(ReflectionMethod $method)
+    {
+        $params = '';
+
+        foreach($method->getParameters() as $param)
+        {
+            $params .= "/{" . $param->getName() . "}" . ($param->isOptional() ? '?' : '');
+        }
+
+        return $params;
     }
 
     private function camelCaseToDashed($string)
