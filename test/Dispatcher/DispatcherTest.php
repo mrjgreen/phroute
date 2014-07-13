@@ -53,8 +53,11 @@ class Test {
     {
         return 'testRoute';
     }
-    
-    
+
+    public function getCamelCaseHyphenated()
+    {
+        return 'hyphenated';
+    }
 }
 
 class DispatcherTest extends \PHPUnit_Framework_TestCase {
@@ -314,13 +317,28 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $r->controller('/user', __NAMESPACE__ . '\\Test');
         
         $data = $r->getData();
-        
+
         $this->assertEquals($r->getValidMethods(), array_keys($data[0]['user/test']));
         
         $this->assertEquals(array(Route::ANY), array_keys($data[0]['user']));
         $this->assertEquals(array(Route::ANY), array_keys($data[0]['user/index']));
+
+        $this->assertEquals('hyphenated', $this->dispatch($r, Route::GET, 'user/camel-case-hyphenated'));
     }
-    
+
+    /**
+     * @expectedException \Phroute\Exception\HttpRouteNotFoundException
+     * @expectedExceptionMessage does not exist
+     */
+    public function testRestfulHyphenateControllerMethodThrows()
+    {
+        $r = $this->router();
+
+        $r->controller('/user', __NAMESPACE__ . '\\Test');
+
+        $this->assertEquals('hyphenated', $this->dispatch($r, Route::GET, 'user/camelcasehyphenated'));
+    }
+
     public function testRestfulMethods()
     {
         

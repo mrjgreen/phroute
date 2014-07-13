@@ -149,8 +149,8 @@ class RouteCollector {
             {
                 if(stripos($method->name, $valid) === 0)
                 {
-                    $methodName = strtolower(substr($method->name, strlen($valid)));
-                    
+                    $methodName = $this->camelCaseToDashed(substr($method->name, strlen($valid)));
+
                     if($methodName === self::DEFAULT_CONTROLLER_ROUTE)
                     {
                         $this->addRoute($valid, $route, array($classname, $method->name));
@@ -166,6 +166,11 @@ class RouteCollector {
         }
         
         return $this;
+    }
+
+    private function camelCaseToDashed($string)
+    {
+        return strtolower(preg_replace('/([A-Z])/', '-$1', lcfirst($string)));
     }
     
     public function getValidMethods()

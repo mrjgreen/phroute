@@ -134,7 +134,8 @@ class RouteParser {
     
     private function quote($part)
     {
-        return preg_quote($part, '~');
+        return $part;
+        //return preg_quote($part, '~');
     }
 
 }
