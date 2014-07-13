@@ -73,6 +73,16 @@ class Test {
     {
         return $param;
     }
+
+    public function getParameterRequired($param)
+    {
+        return $param;
+    }
+
+    public function getParameterOptionalRequired($param, $param2 = 'default')
+    {
+        return $param . $param2;
+    }
 }
 
 class DispatcherTest extends \PHPUnit_Framework_TestCase {
@@ -345,6 +355,35 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals('joe', $this->dispatch($r, Route::GET, 'user/parameter-optional/joe'));
         $this->assertEquals('default', $this->dispatch($r, Route::GET, 'user/parameter-optional'));
+        $this->assertEquals('joedefault', $this->dispatch($r, Route::GET, 'user/parameter-optional-required/joe'));
+        $this->assertEquals('joegreen', $this->dispatch($r, Route::GET, 'user/parameter-optional-required/joe/green'));
+
+    }
+
+    /**
+     * @expectedException \Phroute\Exception\HttpRouteNotFoundException
+     * @expectedExceptionMessage does not exist
+     */
+    public function testRestfulOptionalRequiredControllerMethodThrows()
+    {
+        $r = $this->router();
+
+        $r->controller('/user', __NAMESPACE__ . '\\Test');
+
+        $this->dispatch($r, Route::GET, 'user/parameter-optional-required');
+    }
+
+    /**
+     * @expectedException \Phroute\Exception\HttpRouteNotFoundException
+     * @expectedExceptionMessage does not exist
+     */
+    public function testRestfulRequiredControllerMethodThrows()
+    {
+        $r = $this->router();
+
+        $r->controller('/user', __NAMESPACE__ . '\\Test');
+
+        $this->dispatch($r, Route::GET, 'user/parameter-required');
     }
 
     /**
@@ -357,7 +396,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
         $r->controller('/user', __NAMESPACE__ . '\\Test');
 
-        $this->assertEquals('hyphenated', $this->dispatch($r, Route::GET, 'user/camelcasehyphenated'));
+        $this->dispatch($r, Route::GET, 'user/camelcasehyphenated');
     }
 
     public function testRestfulMethods()
