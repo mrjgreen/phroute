@@ -192,7 +192,10 @@ class Test {
         return 'This is the default page and will respond to /controller and /controller/index';
     }
     
-    public function anyTest()
+    /**
+    * One required paramter and one optional parameter
+    */
+    public function anyTest($param, $param2 = 'default')
     {
         return 'This will respond to /controller/test with any method';
     }
