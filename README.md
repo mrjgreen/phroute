@@ -245,7 +245,7 @@ The `dispatch()` method will call the matched route, or if no matches, throw one
 > **NOTE:** The HTTP specification requires that a `405 Method Not Allowed` response include the
 `Allow:` header to detail available methods for the requested resource. 
 This information can be obtained from the thrown exception's message content:
-e.g. `"Allow: HEAD, GET, POST"`
+which will look like: `"Allow: HEAD, GET, POST"`
 
 
 ### A Note on HEAD Requests
