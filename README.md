@@ -245,7 +245,8 @@ The `dispatch()` method will call the matched route, or if no matches, throw one
 > **NOTE:** The HTTP specification requires that a `405 Method Not Allowed` response include the
 `Allow:` header to detail available methods for the requested resource. 
 This information can be obtained from the thrown exception's message content:
-which will look like: `"Allow: HEAD, GET, POST"`
+which will look like: `"Allow: HEAD, GET, POST"` etc... depending on the methods you have set
+You should catch the exception and use this to send a header to the client: `header($e->getMessage());`
 
 
 ### A Note on HEAD Requests
