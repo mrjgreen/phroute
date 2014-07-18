@@ -16,7 +16,7 @@ PHRoute - Fast request router for PHP
 While the bulk of the library and extensive unit tests are my own, credit for the regex matching core implementation and benchmarking goes to [nikic](https://github.com/nikic/FastRoute). Please go and read nikic's 
 [blog post explaining how the implementation works and why it's fast.](http://nikic.github.io/2014/02/18/Fast-request-routing-using-regular-expressions.html)
 
-Many modifications to the core have been made suit the new library wrapper, and additional features added such as optional route parameters etc, but please head over and checkout nikic's library to see the origins of the core and how it works.
+Many modifications to the core have been made to suit the new library wrapper, and additional features added such as optional route parameters and reverse routing etc, but please head over and checkout nikic's library to see the origins of the core and how it works.
 
 
 Installation
