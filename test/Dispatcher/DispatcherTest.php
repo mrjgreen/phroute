@@ -126,7 +126,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     /**
      * @dataProvider provideMethodNotAllowedDispatchCases
      * @expectedException \Phroute\Exception\HttpMethodNotAllowedException
-     * @expectedExceptionMessage Allowed routes
+     * @expectedExceptionMessage Allow:
      */
     public function testMethodNotAllowedDispatches($method, $uri, $callback)
     {
