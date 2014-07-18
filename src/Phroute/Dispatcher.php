@@ -119,7 +119,7 @@ class Dispatcher {
         
         $this->matchedRoute = $routes;
         
-        throw new HttpMethodNotAllowedException('Allowed: ' . implode(',', array_keys($routes)));
+        throw new HttpMethodNotAllowedException('Allow: ' . implode(', ', array_keys($routes)));
     }
 
     private function dispatchVariableRoute($httpMethod, $uri)
