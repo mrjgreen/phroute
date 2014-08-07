@@ -82,6 +82,10 @@ $router->any('/', function(){
     return 'This responds to the default route';
 });
 
+// Lazy load autoloaded route handling classes using strings for classnames
+// Calls the Controllers\User::displayUser($id) method with {id} parameter as an argument
+$router->any('/users/{id}', array('Controllers\User','displayUser'));
+
 // Optional Parameters
 // simply add a '?' after the route name to make the parameter optional
 // NB. be sure to add a default value for the function argument
