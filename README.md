@@ -61,7 +61,7 @@ syntax by passing using a different route parser.
 
 ```php
 
-$router = new Phroute\RouteCollector(new Phroute\RouteParser);
+$router = new Phroute\RouteCollector();
 
 
 $router->any('/example', function(){
