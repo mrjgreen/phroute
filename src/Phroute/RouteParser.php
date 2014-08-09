@@ -13,10 +13,12 @@ class RouteParser {
 "~\{
     \s* ([a-zA-Z][a-zA-Z0-9_]*) \s*
     (?:
-        : \s* ([^{}]*(?:\{(?-1)\}[^{}*])*)
+        : \s* ([^{}]*(?:\{.*\})?)
     )?
 \}\??~x";
-    
+
+
+
     const DEFAULT_DISPATCH_REGEX = '[^/]+';
 
     private $parts;

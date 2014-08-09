@@ -702,7 +702,19 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
         $cases[] = ['GET', 'ext/asset', $callback, 'asset'];
         $cases[] = ['GET', 'ext/asset.json', $callback, 'asset jsonencoded'];
-        
+
+        // 12 -------------------------------------------------------------------------------------->
+        // Test \d{3,4} style quantifiers
+        $callback = function($r) {
+            $r->addRoute('GET', 'server/{ip:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}}/{name}/{newname}?', function($year, $name, $newname = null) {
+                return trim("$year $name $newname");
+            });
+        };
+
+        $cases[] = ['GET', 'server/10.10.10.10/server1', $callback, '10.10.10.10 server1'];
+        $cases[] = ['GET', 'server/0.0.0.0/server2', $callback, '0.0.0.0 server2'];
+        $cases[] = ['GET', 'server/123.2.23.111/server3/server4', $callback, '123.2.23.111 server3 server4'];
+
         return $cases;
     }
 
@@ -781,6 +793,19 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         
         //19
         $cases[] = ['GET', '/user/rdlowrey', $callback, null];
+
+
+        // 20 -------------------------------------------------------------------------------------->
+        // Test \d{3,4} style quantifiers
+        $callback = function($r) {
+            $r->addRoute('GET', 'server/{ip:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}}', function($year) {
+                return trim("$year");
+            });
+        };
+
+        $cases[] = ['GET', 'server/1044.10.10.10', $callback, null];
+        $cases[] = ['GET', 'server/0.0.0', $callback, null];
+        $cases[] = ['GET', 'server/.2.23.111', $callback, null];
         
         return $cases;
     }
