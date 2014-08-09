@@ -18,7 +18,6 @@ class RouteParser {
 \}\??~x";
 
 
-
     const DEFAULT_DISPATCH_REGEX = '[^/]+';
 
     private $parts;
@@ -45,7 +44,7 @@ class RouteParser {
         
         if (!$matches = $this->extractVariableRouteParts($route))
         {
-            return [[$this->quote($route)], $route];
+            return [[$route], $route];
         }
 
         foreach ($matches as $set) {
@@ -133,11 +132,4 @@ class RouteParser {
 
         return $match . '?';
     }
-    
-    private function quote($part)
-    {
-        return $part;
-        //return preg_quote($part, '~');
-    }
-
 }
