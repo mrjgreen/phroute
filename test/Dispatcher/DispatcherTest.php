@@ -706,14 +706,34 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         // 12 -------------------------------------------------------------------------------------->
         // Test \d{3,4} style quantifiers
         $callback = function($r) {
-            $r->addRoute('GET', 'server/{ip:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}}/{name}/{newname}?', function($year, $name, $newname = null) {
-                return trim("$year $name $newname");
+            $r->addRoute('GET', 'server/{ip:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}}/{name}/{newname}?', function($ip, $name, $newname = null) {
+                return trim("$ip $name $newname");
             });
         };
 
         $cases[] = ['GET', 'server/10.10.10.10/server1', $callback, '10.10.10.10 server1'];
         $cases[] = ['GET', 'server/0.0.0.0/server2', $callback, '0.0.0.0 server2'];
         $cases[] = ['GET', 'server/123.2.23.111/server3/server4', $callback, '123.2.23.111 server3 server4'];
+
+        // 13 -------------------------------------------------------------------------------------->
+        // Test \d{3,4} style quantifiers
+        $callback = function($r) {
+            $r->addRoute('GET', 'date/{year:\d{4}}/{month:\d+}?', function($year, $month) {
+                return trim("$year $month");
+            });
+        };
+
+        $cases[] = ['GET', 'date/1990/05', $callback, '1990 05'];
+
+        // 14 -------------------------------------------------------------------------------------->
+        // Test \d{3,4} style quantifiers
+        $callback = function($r) {
+            $r->addRoute('GET', 'date/{year:\d{4}}/{month:\d{2}}', function($year, $month) {
+                return trim("$year $month");
+            });
+        };
+
+        $cases[] = ['GET', 'date/2010/06', $callback, '2010 06'];
 
         return $cases;
     }
