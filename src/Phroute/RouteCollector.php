@@ -142,6 +142,8 @@ class RouteCollector {
         $reflection = new ReflectionClass($classname);
 
         $validMethods = $this->getValidMethods();
+
+        $sep = $route === '/' ? '' : '/';
         
         foreach($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method)
         {
@@ -157,9 +159,7 @@ class RouteCollector {
                     {
                         $this->addRoute($valid, $route . $params, array($classname, $method->name));
                     }
-                    
-                    $sep = $route === '/' ? '' : '/';
-                    
+
                     $this->addRoute($valid, $route . $sep . $methodName . $params, array($classname, $method->name));
                     
                     break;
