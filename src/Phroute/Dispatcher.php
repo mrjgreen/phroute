@@ -10,6 +10,11 @@ class Dispatcher {
     private $filters;
     public $matchedRoute;
 
+    /**
+     * Create a new route dispatcher.
+     *
+     * @param RouteCollector $data
+     */
     public function __construct(RouteCollector $data)
     {
         list($this->staticRouteMap, $this->variableRouteData) = $data->getData();
@@ -17,6 +22,13 @@ class Dispatcher {
         $this->filters = $data->getFilters();
     }
 
+    /**
+     * Dispatch a route for the given HTTP Method / URI.
+     *
+     * @param $httpMethod
+     * @param $uri
+     * @return mixed|null
+     */
     public function dispatch($httpMethod, $uri)
     {
         list($handler, $filters, $vars) = $this->dispatchRoute($httpMethod, trim($uri, '/'));
@@ -34,7 +46,13 @@ class Dispatcher {
 
         return $this->dispatchFilters($afterFilter, $response);
     }
-    
+
+    /**
+     * Create an instance of the given filter handler.
+     *
+     * @param $handler
+     * @return array
+     */
     private function resolveHandler($handler)
     {
         if(is_array($handler) and is_string($handler[0]))
@@ -44,14 +62,19 @@ class Dispatcher {
         
         return $handler;
     }
-    
+
+    /**
+     * Dispatch a route filter.
+     *
+     * @param $filters
+     * @param null $response
+     * @return mixed|null
+     */
     private function dispatchFilters($filters, $response = null)
-    {        
-        $args = $response ? array($response) : array();
-        
+    {
         while($filter = array_shift($filters))
         {
-            if(($filteredResponse = call_user_func_array($this->resolveHandler($filter), $args)) !== null)
+            if(($filteredResponse = call_user_func($this->resolveHandler($filter), $response)) !== null)
             {
                 return $filteredResponse;
             }
@@ -59,7 +82,13 @@ class Dispatcher {
         
         return $response;
     }
-    
+
+    /**
+     * Normalise the array filters attached to the route and merge with any global filters.
+     *
+     * @param $filters
+     * @return array
+     */
     private function parseFilters($filters)
     {        
         $beforeFilter = array();
@@ -77,7 +106,14 @@ class Dispatcher {
         
         return array($beforeFilter, $afterFilter);
     }
-    
+
+    /**
+     * Perform the route dispatching. Check static routes first followed by variable routes.
+     *
+     * @param $httpMethod
+     * @param $uri
+     * @throws Exception\HttpRouteNotFoundException
+     */
     private function dispatchRoute($httpMethod, $uri)
     {
         if (isset($this->staticRouteMap[$uri]))
@@ -88,6 +124,14 @@ class Dispatcher {
         return $this->dispatchVariableRoute($httpMethod, $uri);
     }
 
+    /**
+     * Handle the dispatching of static routes.
+     *
+     * @param $httpMethod
+     * @param $uri
+     * @return mixed
+     * @throws Exception\HttpMethodNotAllowedException
+     */
     private function dispatchStaticRoute($httpMethod, $uri)
     {
         $routes = $this->staticRouteMap[$uri];
@@ -99,7 +143,14 @@ class Dispatcher {
         
         return $routes[$httpMethod];
     }
-    
+
+    /**
+     * Check fallback routes: HEAD for GET requests followed by the ANY attachment.
+     *
+     * @param $routes
+     * @param $httpMethod
+     * @throws Exception\HttpMethodNotAllowedException
+     */
     private function checkFallbacks($routes, $httpMethod)
     {
         $additional = array(Route::ANY);
@@ -122,6 +173,14 @@ class Dispatcher {
         throw new HttpMethodNotAllowedException('Allow: ' . implode(', ', array_keys($routes)));
     }
 
+    /**
+     * Handle the dispatching of variable routes.
+     *
+     * @param $httpMethod
+     * @param $uri
+     * @throws Exception\HttpMethodNotAllowedException
+     * @throws Exception\HttpRouteNotFoundException
+     */
     private function dispatchVariableRoute($httpMethod, $uri)
     {
         foreach ($this->variableRouteData as $data) 
@@ -159,5 +218,4 @@ class Dispatcher {
 
         throw new HttpRouteNotFoundException('Route ' . $uri . ' does not exist');
     }
-
 }

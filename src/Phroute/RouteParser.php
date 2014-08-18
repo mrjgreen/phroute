@@ -5,22 +5,37 @@ use Phroute\Exception\BadRouteException;
 /**
  * Parses routes of the following form:
  *
- * "/user/{name}/{id:[0-9]+}"
+ * "/user/{name}/{id:[0-9]+}?"
  */
 class RouteParser {
 
+    /**
+     * Search through the given route looking for dynamic portions.
+     *
+     * Using ~ as the regex delimiter.
+     *
+     * We start by looking for a literal '{' character followed by any amount of whitespace.
+     * The next portion inside the parentheses looks for a parameter name containing alphanumeric characters or underscore.
+     *
+     * After this we look for the ':\d+' and ':[0-9]+' style portion ending with a closing '}' character.
+     *
+     * Finally we look for an optional '?' which is used to signify an optional route.
+     */
     const VARIABLE_REGEX = 
 "~\{
-    \s* ([a-zA-Z][a-zA-Z0-9_]*) \s*
+    \s* ([a-zA-Z0-9_]*) \s*
     (?:
         : \s* ([^{]+(?:\{.*?\})?)
     )?
 \}\??~x";
 
-
+    /**
+     * The default parameter character restriction (One or more characters that is not a '/').
+     */
     const DEFAULT_DISPATCH_REGEX = '[^/]+';
 
     private $parts;
+
     private $reverseParts;
     
     private $partsCounter;
@@ -28,14 +43,25 @@ class RouteParser {
     private $variables;
     
     private $regexOffset;
-    
+
+    /**
+     * Handy parameter type restrictions.
+     *
+     * @var array
+     */
     private $regexShortcuts = array(
         ':i}'  => ':[0-9]+}',
 		':a}'  => ':[0-9A-Za-z]+}',
 		':h}'  => ':[0-9A-Fa-f]+}',
         ':c}'  => ':[a-zA-Z0-9+_-\.]+}'
     );
-    
+
+    /**
+     * Parse a route returning the correct data format to pass to the dispatch engine.
+     *
+     * @param $route
+     * @return array
+     */
     public function parse($route)
     {
         $this->reset();
@@ -56,7 +82,7 @@ class RouteParser {
             $regexPart = (isset($set[2]) ? trim($set[2][0]) : self::DEFAULT_DISPATCH_REGEX);
             
             $this->regexOffset = $set[0][1] + strlen($set[0][0]);
-            
+
             $match = '(' . $regexPart . ')';
             
             if(substr($set[0][0], -1) === '?') 
@@ -72,7 +98,10 @@ class RouteParser {
         
         return [[implode('', $this->parts), $this->variables], implode('', $this->reverseParts)];
     }
-    
+
+    /**
+     * Reset the parser ready for the next route.
+     */
     private function reset()
     {
         $this->parts = array();
@@ -85,7 +114,13 @@ class RouteParser {
 
         $this->regexOffset = 0;
     }
-    
+
+    /**
+     * Return any variable route portions from the given route.
+     *
+     * @param $route
+     * @return mixed
+     */
     private function extractVariableRouteParts($route)
     {
         if(preg_match_all(self::VARIABLE_REGEX, $route, $matches, PREG_OFFSET_CAPTURE | PREG_SET_ORDER))
@@ -93,16 +128,23 @@ class RouteParser {
             return $matches;
         }
     }
-    
+
+    /**
+     * @param $route
+     * @param $nextOffset
+     */
     private function staticParts($route, $nextOffset)
     {
         $static = preg_split('~(/)~u', substr($route, $this->regexOffset, $nextOffset - $this->regexOffset), 0, PREG_SPLIT_DELIM_CAPTURE);
-                                
+
         foreach($static as $staticPart)
         {
             if($staticPart)
             {
+                $staticPart = $this->quote($staticPart);
+
                 $this->parts[$this->partsCounter] = $staticPart;
+
                 $this->reverseParts[$this->partsCounter] = $staticPart;
                 
                 $this->partsCounter++;
@@ -110,6 +152,9 @@ class RouteParser {
         }
     }
 
+    /**
+     * @param $varName
+     */
     private function validateVariable($varName)
     {
         if (isset($this->variables[$varName]))
@@ -120,6 +165,10 @@ class RouteParser {
         $this->variables[$varName] = $varName;
     }
 
+    /**
+     * @param $match
+     * @return string
+     */
     private function makeOptional($match)
     {
         $previous = $this->partsCounter - 1;
@@ -131,5 +180,14 @@ class RouteParser {
         }
 
         return $match . '?';
+    }
+
+    /**
+     * @param $part
+     * @return string
+     */
+    private function quote($part)
+    {
+        return preg_quote($part, '~');
     }
 }

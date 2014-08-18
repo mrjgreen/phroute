@@ -399,6 +399,53 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $this->dispatch($r, Route::GET, 'user/camelcasehyphenated');
     }
 
+    public function testHyphenatedRoutes()
+    {
+        $r = $this->router();
+
+        $r->get('/user-name', function(){
+            return 'test';
+        });
+
+        $val = $this->dispatch($r, Route::GET, '/user-name');
+
+        $this->assertEquals('test', $val);
+    }
+
+    /**
+     * @dataProvider characterfulRoutes
+     */
+    public function testCharacterDynamicRoutes($route, $uri, $expected)
+    {
+        $r = $this->router();
+
+        $r->get($route, function(){
+            return implode(' ', func_get_args());
+        });
+
+        $val = $this->dispatch($r, Route::GET, $uri);
+
+        $this->assertEquals($expected, $val);
+    }
+
+    public function characterfulRoutes()
+    {
+        return array(
+            // route / dispatch URI / expected
+            array('/user-name/{name}', '/user-name/joe', 'joe'),
+            array('/user_name/{name}', '/user_name/joe', 'joe'),
+            array('/user+++name/{name}', '/user+++name/joe', 'joe'),
+            array('/user.name/{name_with_undersc0r3s_n_nums}', '/user.name/joe', 'joe'),
+            array('/us;er:nam;e/{name}', '/us;er:nam;e/joe', 'joe'),
+            array('/us%25r:na%20;e/{name}', '/us%25r:na%20;e/joe', 'joe'),
+
+            // Regex characters to check for proper escaping
+            array('/sta++++tic1', '/sta++++tic1', ''),
+
+            array('/static1/{name}/static2/{country}', '/static1/joe/static2/uk', 'joe uk'),
+        );
+    }
+
     public function testRestfulMethods()
     {
         
