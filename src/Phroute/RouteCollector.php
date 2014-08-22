@@ -39,7 +39,7 @@ class RouteCollector {
     {
         $replacements = (array) $args;
         
-        return $this->getReversePrefix().count($replacements) ? preg_replace(array_fill(0, count($replacements), '/\{[^\{\}\/]+\}/'), $replacements, $this->reverse[$name], 1) : $this->reverse[$name];
+        return $this->getReversePrefix().(count($replacements) ? preg_replace(array_fill(0, count($replacements), '/\{[^\{\}\/]+\}/'), $replacements, $this->reverse[$name], 1) : $this->reverse[$name]);
     }
 
     public function addRoute($httpMethod, $route, $handler, array $filters = array()) {
