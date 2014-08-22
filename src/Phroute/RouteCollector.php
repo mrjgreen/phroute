@@ -16,6 +16,7 @@ class RouteCollector {
     private $staticRoutes = [];
     private $regexToRoutesMap = [];
     private $reverse = [];
+    private $reversePrefix = '/';
     
     private $globalFilters = array();
     
@@ -23,11 +24,22 @@ class RouteCollector {
         $this->routeParser = $routeParser ?: new RouteParser();
     }
     
+    public function setReversePrefix($prefix = null)
+    {
+        $this->reversePrefix = $prefix;
+        return $this;
+    }
+    
+    public function getReversePrefix()
+    {
+        return $this->reversePrefix;
+    }
+    
     public function route($name, $args = array())
     {
         $replacements = (array) $args;
         
-        return count($replacements) ? preg_replace(array_fill(0, count($replacements), '/\{[^\{\}\/]+\}/'), $replacements, $this->reverse[$name], 1) : $this->reverse[$name];
+        return $this->getReversePrefix().count($replacements) ? preg_replace(array_fill(0, count($replacements), '/\{[^\{\}\/]+\}/'), $replacements, $this->reverse[$name], 1) : $this->reverse[$name];
     }
 
     public function addRoute($httpMethod, $route, $handler, array $filters = array()) {
