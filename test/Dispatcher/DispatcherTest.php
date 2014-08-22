@@ -159,6 +159,19 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('/foo/joe/something',$r->route('name2', ['joe', 'something']));
     }
 
+    public function testPrefixedNamedRoutes()
+    {
+        $r = $this->router()->setReversePrefix('http://localhost/');
+
+        $r->addRoute('GET', array('/foo', 'name'), array(__NAMESPACE__.'\\Test','route'));
+
+        $this->assertEquals('http://localhost/foo',$r->route('name'));
+
+        $r->addRoute('GET', array('/foo/{name}/{something:i}', 'name2'), array(__NAMESPACE__.'\\Test','route'));
+
+        $this->assertEquals('http://localhost/foo/joe/something',$r->route('name2', ['joe', 'something']));
+    }
+
     /**
      * @expectedException \Phroute\Exception\BadRouteException
      * @expectedExceptionMessage Cannot use the same placeholder 'test' twice
