@@ -16,42 +16,42 @@ class Test {
     
     public function anyIndex()
     {
-        return 'testRoute';
+        return 'testRouteAnyIndex';
     }
     
     public function anyTest()
     {
-        return 'testRoute';
+        return 'testRouteAnyTest';
     }
     
     public function getTest()
     {
-        return 'testRoute';
+        return 'testRouteGetTest';
     }
     
     public function postTest()
     {
-        return 'testRoute';
+        return 'testRoutePostTest';
     }
     
     public function putTest()
     {
-        return 'testRoute';
+        return 'testRoutePutTest';
     }
 
     public function deleteTest()
     {
-        return 'testRoute';
+        return 'testRouteDeleteTest';
     }
     
     public function headTest()
     {
-        return 'testRoute';
+        return 'testRouteHeadTest';
     }
     
     public function optionsTest()
     {
-        return 'testRoute';
+        return 'testRouteOptionsTest';
     }
 
     public function getCamelCaseHyphenated()
@@ -333,20 +333,46 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
             Route::OPTIONS,
         ), $this->router()->getValidMethods());
     }
+
+    public function testAnyRespondsToDeletePutAndGet()
+    {
+        $r = $this->router();
+
+        $r->any('/user', function(){
+            return 'yes';
+        });
+
+        $this->assertEquals('yes', $this->dispatch($r, Route::GET, 'user'));
+        $this->assertEquals('yes', $this->dispatch($r, Route::DELETE, 'user'));
+        $this->assertEquals('yes', $this->dispatch($r, Route::PUT, 'user'));
+        $this->assertEquals('yes', $this->dispatch($r, Route::POST, 'user'));
+        $this->assertEquals('yes', $this->dispatch($r, Route::OPTIONS, 'user'));
+        $this->assertEquals('yes', $this->dispatch($r, 'MADE_UP_NON_STANDARD_METHOD', 'user'));
+    }
     
     public function testRestfulControllerMethods()
     {
-        
+
         $r = $this->router();
-        
+
         $r->controller('/user', __NAMESPACE__ . '\\Test');
-        
+
         $data = $r->getData();
 
         $this->assertEquals($r->getValidMethods(), array_keys($data[0]['user/test']));
-        
+
         $this->assertEquals(array(Route::ANY), array_keys($data[0]['user']));
         $this->assertEquals(array(Route::ANY), array_keys($data[0]['user/index']));
+
+        $this->assertEquals('testRouteAnyIndex', $this->dispatch($r, Route::GET, 'user'));
+        $this->assertEquals('testRouteAnyIndex', $this->dispatch($r, Route::POST, 'user'));
+        $this->assertEquals('testRouteAnyIndex', $this->dispatch($r, Route::PUT, 'user'));
+        $this->assertEquals('testRouteAnyIndex', $this->dispatch($r, Route::DELETE, 'user'));
+
+        $this->assertEquals('testRouteAnyIndex', $this->dispatch($r, Route::GET, 'user/index'));
+        $this->assertEquals('testRouteAnyIndex', $this->dispatch($r, Route::POST, 'user/index'));
+        $this->assertEquals('testRouteAnyIndex', $this->dispatch($r, Route::PUT, 'user/index'));
+        $this->assertEquals('testRouteAnyIndex', $this->dispatch($r, Route::DELETE, 'user/index'));
 
         $this->assertEquals('hyphenated', $this->dispatch($r, Route::GET, 'user/camel-case-hyphenated'));
 
@@ -357,8 +383,8 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('default', $this->dispatch($r, Route::GET, 'user/parameter-optional'));
         $this->assertEquals('joedefault', $this->dispatch($r, Route::GET, 'user/parameter-optional-required/joe'));
         $this->assertEquals('joegreen', $this->dispatch($r, Route::GET, 'user/parameter-optional-required/joe/green'));
-
     }
+
 
     /**
      * @expectedException \Phroute\Exception\HttpRouteNotFoundException
