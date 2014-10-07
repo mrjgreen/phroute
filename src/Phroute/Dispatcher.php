@@ -8,6 +8,7 @@ class Dispatcher {
     private $staticRouteMap;
     private $variableRouteData;
     private $filters;
+    private $handlerResolver;
     public $matchedRoute;
 
     /**
@@ -15,11 +16,20 @@ class Dispatcher {
      *
      * @param RouteCollector $data
      */
-    public function __construct(RouteCollector $data)
+    public function __construct(RouteCollector $data, HandlerResolverInterface $resolver = null)
     {
         list($this->staticRouteMap, $this->variableRouteData) = $data->getData();
         
         $this->filters = $data->getFilters();
+        
+        if ($resolver === null)
+        {
+        	$this->handlerResolver = new HandlerResolver();
+        }
+        else
+        {
+        	$this->handlerResolver = $resolver;
+        }
     }
 
     /**
@@ -40,27 +50,11 @@ class Dispatcher {
             return $response;
         }
         
-        $resolvedHandler = $this->resolveHandler($handler);
+        $resolvedHandler = $this->handlerResolver->resolve($handler);
         
         $response = call_user_func_array($resolvedHandler, $vars);
 
         return $this->dispatchFilters($afterFilter, $response);
-    }
-
-    /**
-     * Create an instance of the given filter handler.
-     *
-     * @param $handler
-     * @return array
-     */
-    private function resolveHandler($handler)
-    {
-        if(is_array($handler) and is_string($handler[0]))
-        {
-            $handler[0] = new $handler[0];
-        }
-        
-        return $handler;
     }
 
     /**
@@ -74,7 +68,9 @@ class Dispatcher {
     {
         while($filter = array_shift($filters))
         {
-            if(($filteredResponse = call_user_func($this->resolveHandler($filter), $response)) !== null)
+        	$handler = $this->handlerResolver->resolve($filter);
+        	
+            if(($filteredResponse = call_user_func($handler, $response)) !== null)
             {
                 return $filteredResponse;
             }
