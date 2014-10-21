@@ -37,23 +37,18 @@ class RouteCollector {
             {
                 $url[] = $part['value'];
             }
-            else
+            elseif(isset($replacements[$variable]))
             {
-                if(isset($replacements[$variable]))
+                if($part['optional'])
                 {
-                    if($part['optional'])
-                    {
-                        $url[] = '/';
-                    }
-
-                    $url[] = $replacements[$variable];
-                }
-                elseif(!$part['optional'])
-                {
-                    throw new BadRouteException("Expecting route variable '{$part['name']}'");
+                    $url[] = '/';
                 }
 
-                $variable++;
+                $url[] = $replacements[$variable++];
+            }
+            elseif(!$part['optional'])
+            {
+                throw new BadRouteException("Expecting route variable '{$part['name']}'");
             }
         }
 
