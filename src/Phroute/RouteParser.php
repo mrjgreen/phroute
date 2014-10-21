@@ -70,7 +70,12 @@ class RouteParser {
         
         if (!$matches = $this->extractVariableRouteParts($route))
         {
-            return [[$route], $route];
+            $reverse = array(
+                'variable'  => false,
+                'value'     => $route
+            );
+
+            return [[$route], array($reverse)];
         }
 
         foreach ($matches as $set) {
@@ -84,19 +89,26 @@ class RouteParser {
             $this->regexOffset = $set[0][1] + strlen($set[0][0]);
 
             $match = '(' . $regexPart . ')';
+
+            $isOptional = substr($set[0][0], -1) === '?';
             
-            if(substr($set[0][0], -1) === '?') 
+            if($isOptional)
             {
                 $match = $this->makeOptional($match);
             }
-            
-            $this->reverseParts[$this->partsCounter] = '{' . $set[1][0] . '}';
+
+            $this->reverseParts[$this->partsCounter] = array(
+                'variable'  => true,
+                'optional'  => $isOptional,
+                'name'      => $set[1][0]
+            );
+
             $this->parts[$this->partsCounter++] = $match;
         }
 
         $this->staticParts($route, strlen($route));
-        
-        return [[implode('', $this->parts), $this->variables], implode('', $this->reverseParts)];
+
+        return [[implode('', $this->parts), $this->variables], array_values($this->reverseParts)];
     }
 
     /**
@@ -145,7 +157,10 @@ class RouteParser {
 
                 $this->parts[$this->partsCounter] = $staticPart;
 
-                $this->reverseParts[$this->partsCounter] = $staticPart;
+                $this->reverseParts[$this->partsCounter] = array(
+                    'variable'  => false,
+                    'value'     => $staticPart
+                );
                 
                 $this->partsCounter++;
             }

@@ -23,11 +23,41 @@ class RouteCollector {
         $this->routeParser = $routeParser ?: new RouteParser();
     }
     
-    public function route($name, $args = array())
+    public function route($name, array $args = null)
     {
-        $replacements = (array) $args;
-        
-        return count($replacements) ? preg_replace(array_fill(0, count($replacements), '/\{[^\{\}\/]+\}/'), $replacements, $this->reverse[$name], 1) : $this->reverse[$name];
+        $url = array();
+
+        $replacements = is_null($args) ? array() : array_values($args);
+
+        $variable = 0;
+
+        foreach($this->reverse[$name] as $part)
+        {
+            if(!$part['variable'])
+            {
+                $url[] = $part['value'];
+            }
+            else
+            {
+                if(isset($replacements[$variable]))
+                {
+                    if($part['optional'])
+                    {
+                        $url[] = '/';
+                    }
+
+                    $url[] = $replacements[$variable];
+                }
+                elseif(!$part['optional'])
+                {
+                    throw new BadRouteException("Expecting route variable '{$part['name']}'");
+                }
+
+                $variable++;
+            }
+        }
+
+        return implode('', $url);
     }
 
     public function addRoute($httpMethod, $route, $handler, array $filters = array()) {

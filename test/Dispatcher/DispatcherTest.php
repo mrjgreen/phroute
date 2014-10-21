@@ -159,6 +159,29 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('foo/joe/something',$r->route('name2', ['joe', 'something']));
     }
 
+    public function testOptionalReverseRoute()
+    {
+        $r = $this->router();
+
+        $r->any( array('products/store/{store:i}?', 'products'), array(__NAMESPACE__.'\\Test','route'));
+
+        $this->assertEquals('products/store', $r->route('products'));
+        $this->assertEquals('products/store/1', $r->route('products', array(1)));
+    }
+
+    /**
+     * @expectedException \Phroute\Exception\BadRouteException
+     * @expectedExceptionMessage Expecting route variable 'store'
+     */
+    public function testMissingParameterReverseRoute()
+    {
+        $r = $this->router();
+
+        $r->any( array('products/store/{store:i}', 'products'), array(__NAMESPACE__.'\\Test','route'));
+
+        $this->assertEquals('products/store', $r->route('products'));
+    }
+
     /**
      * @expectedException \Phroute\Exception\BadRouteException
      * @expectedExceptionMessage Cannot use the same placeholder 'test' twice
