@@ -169,6 +169,16 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('products/store/1', $r->route('products', array(1)));
     }
 
+    public function testReverseRouteWithDashes()
+    {
+        $r = $this->router();
+
+        $r->any( array('product-catalogue/store/{store:i}?', 'products'), array(__NAMESPACE__.'\\Test','route'));
+
+        $this->assertEquals('product-catalogue/store', $r->route('products'));
+        $this->assertEquals('product-catalogue/store/1', $r->route('products', array(1)));
+    }
+
     /**
      * @expectedException \Phroute\Exception\BadRouteException
      * @expectedExceptionMessage Expecting route variable 'store'

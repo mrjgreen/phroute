@@ -153,9 +153,9 @@ class RouteParser {
         {
             if($staticPart)
             {
-                $staticPart = $this->quote($staticPart);
+                $quotedPart = $this->quote($staticPart);
 
-                $this->parts[$this->partsCounter] = $staticPart;
+                $this->parts[$this->partsCounter] = $quotedPart;
 
                 $this->reverseParts[$this->partsCounter] = array(
                     'variable'  => false,
