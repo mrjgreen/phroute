@@ -162,14 +162,14 @@ class RouteCollector {
         return $this->filters;
     }
     
-    public function controller($route, $classname)
+    public function controller($route, $classname, array $filters = array())
     {
         $reflection = new ReflectionClass($classname);
 
         $validMethods = $this->getValidMethods();
 
         $sep = $route === '/' ? '' : '/';
-        
+
         foreach($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method)
         {
             foreach($validMethods as $valid)
@@ -182,10 +182,10 @@ class RouteCollector {
 
                     if($methodName === self::DEFAULT_CONTROLLER_ROUTE)
                     {
-                        $this->addRoute($valid, $route . $params, array($classname, $method->name));
+                        $this->addRoute($valid, $route . $params, array($classname, $method->name), $filters);
                     }
 
-                    $this->addRoute($valid, $route . $sep . $methodName . $params, array($classname, $method->name));
+                    $this->addRoute($valid, $route . $sep . $methodName . $params, array($classname, $method->name), $filters);
                     
                     break;
                 }

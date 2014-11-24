@@ -226,6 +226,9 @@ class Test {
 }
 
 $router->controller('/controller', 'Test');
+
+// Controller with associated filter
+$router->controller('/controller', 'Test', array('before' => 'auth'));
 ```
 
 
