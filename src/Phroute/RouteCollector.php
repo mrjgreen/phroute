@@ -5,7 +5,7 @@ use ReflectionMethod;
 
 use Phroute\Exception\BadRouteException;
 
-class RouteCollector {
+class RouteCollector implements RouteDataProviderInterface {
     
     const DEFAULT_CONTROLLER_ROUTE = 'index';
     

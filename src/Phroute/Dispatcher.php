@@ -14,9 +14,10 @@ class Dispatcher {
     /**
      * Create a new route dispatcher.
      *
-     * @param RouteCollector $data
+     * @param RouteDataProviderInterface $data
+     * @param HandlerResolverInterface $resolver
      */
-    public function __construct(RouteCollector $data, HandlerResolverInterface $resolver = null)
+    public function __construct(RouteDataProviderInterface $data, HandlerResolverInterface $resolver = null)
     {
         list($this->staticRouteMap, $this->variableRouteData) = $data->getData();
         
