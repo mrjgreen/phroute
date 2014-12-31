@@ -756,6 +756,9 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
             $r->addRoute('GET', '/user3/{id:i}/{hexcode:h}?', function($id, $hexcode = null) {
                 return array($id, $hexcode);
             });
+            $r->addRoute('GET', '/user4/{slug:c}', function($slug) {
+                return array($slug);
+            });
         };
 
         $cases[] = ['GET', '/user/21', $callback, '21'];
@@ -763,7 +766,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $cases[] = ['GET', '/user2/abcde123', $callback, array('abcde123')];
         $cases[] = ['GET', '/user3/21/abcde123', $callback, array('21','abcde123')];
         $cases[] = ['GET', '/user3/21', $callback, array('21', null)];
-        
+        $cases[] = ['GET', '/user4/test_something-123', $callback, array('test_something-123')];
         
         
         // 11 -------------------------------------------------------------------------------------->
