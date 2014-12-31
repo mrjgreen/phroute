@@ -24,8 +24,22 @@ class RouteDataArray implements RouteDataProviderInterface {
         $this->variableRoutes = $variableRoutes;
     }
 
+    /**
+     * @return array
+     */
     public function getData()
     {
         return [$this->staticRoutes, $this->variableRoutes];
+    }
+
+    /**
+     * @param RouteCollector $collector
+     * @return static
+     */
+    public static function fromRouteCollector(RouteCollector $collector)
+    {
+        list($staticRoute, $variableRoutes) = $collector->getData();
+
+        return new static($staticRoute, $variableRoutes);
     }
 }
