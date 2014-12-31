@@ -1,7 +1,6 @@
 <?php namespace Phroute;
 
-class RouteDataArray implements RouteDataProviderInterface {
-
+class RouteDataArray implements RouteDataInterface {
 
     /**
      * @var array
@@ -14,32 +13,45 @@ class RouteDataArray implements RouteDataProviderInterface {
     private $staticRoutes;
 
     /**
+     * @var array
+     */
+    private $filters;
+
+    /**
      * @param array $staticRoutes
      * @param array $variableRoutes
+     * @param array $filters
      */
-    public function __construct(array $staticRoutes, array $variableRoutes)
+    public function __construct(array $staticRoutes, array $variableRoutes, array $filters)
     {
         $this->staticRoutes = $staticRoutes;
 
         $this->variableRoutes = $variableRoutes;
+
+        $this->filters = $filters;
     }
 
     /**
      * @return array
      */
-    public function getData()
+    public function getStaticRoutes()
     {
-        return [$this->staticRoutes, $this->variableRoutes];
+        return $this->staticRoutes;
     }
 
     /**
-     * @param RouteCollector $collector
-     * @return static
+     * @return array
      */
-    public static function fromRouteCollector(RouteCollector $collector)
+    public function getVariableRoutes()
     {
-        list($staticRoute, $variableRoutes) = $collector->getData();
+        return $this->variableRoutes;
+    }
 
-        return new static($staticRoute, $variableRoutes);
+    /**
+     * @return mixed
+     */
+    public function getFilters()
+    {
+        return $this->filters;
     }
 }

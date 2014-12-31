@@ -97,7 +97,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
     private function dispatch($router, $method, $uri)
     {
-        return (new Dispatcher($router))->dispatch($method, $uri);
+        return (new Dispatcher($router->getData()))->dispatch($method, $uri);
     }
 
     /**
@@ -392,10 +392,10 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
         $data = $r->getData();
 
-        $this->assertEquals($r->getValidMethods(), array_keys($data[0]['user/test']));
+        $this->assertEquals($r->getValidMethods(), array_keys($data->getStaticRoutes()['user/test']));
 
-        $this->assertEquals(array(Route::ANY), array_keys($data[0]['user']));
-        $this->assertEquals(array(Route::ANY), array_keys($data[0]['user/index']));
+        $this->assertEquals(array(Route::ANY), array_keys($data->getStaticRoutes()['user']));
+        $this->assertEquals(array(Route::ANY), array_keys($data->getStaticRoutes()['user/index']));
 
         $this->assertEquals('testRouteAnyIndex', $this->dispatch($r, Route::GET, 'user'));
         $this->assertEquals('testRouteAnyIndex', $this->dispatch($r, Route::POST, 'user'));
@@ -519,7 +519,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         
         $data = $r->getData();
         
-        $this->assertEquals($methods, array_keys($data[0]['user']));
+        $this->assertEquals($methods, array_keys($data->getStaticRoutes()['user']));
     }
     
     public function provideFoundDispatchCases()
