@@ -109,7 +109,7 @@ echo $response;
 
 :i => :/d+                # numbers only
 :a => :[a-zA-Z0-9]+       # alphanumeric
-:c => :[a-zA-Z0-9+_-\.]+  # alnumnumeric and + _ - . characters 
+:c => :[a-zA-Z0-9+_\-\.]+  # alnumnumeric and + _ - . characters 
 :h => :[a-fA-F0-9]+       # hex
 
 use in routes:
