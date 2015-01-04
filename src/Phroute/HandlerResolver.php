@@ -1,5 +1,4 @@
-<?php
-namespace Phroute;
+<?php namespace Phroute\Phroute;
 
 class HandlerResolver implements HandlerResolverInterface {
 	

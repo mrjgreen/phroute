@@ -14,8 +14,8 @@
     }
   ],
   "autoload": {
-        "psr-0": { 
-            "Phroute": "src"
+        "psr-4": {
+            "Phroute\\Phroute\\": "src/Phroute"
          }
     },
   "require": {

@@ -1,9 +1,9 @@
-<?php namespace Phroute;
+<?php namespace Phroute\Phroute;
 
 use ReflectionClass;
 use ReflectionMethod;
 
-use Phroute\Exception\BadRouteException;
+use Phroute\Phroute\Exception\BadRouteException;
 
 class RouteCollector implements RouteDataProviderInterface {
     
