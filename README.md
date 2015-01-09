@@ -1,7 +1,8 @@
 PHRoute - Fast request router for PHP
 =======================================
 
-[![Build Status](https://travis-ci.org/mrjgreen/phroute.svg)](https://travis-ci.org/mrjgreen/phroute)  [![Coverage Status](https://coveralls.io/repos/joegreen0991/phroute/badge.png?branch=master)](https://coveralls.io/r/joegreen0991/phroute?branch=master)
+[![Build Status](https://travis-ci.org/mrjgreen/phroute.svg?branch=refactor)](https://travis-ci.org/mrjgreen/phroute?branch=refactor)
+[![Coverage Status](https://coveralls.io/repos/joegreen0991/phroute/badge.png?branch=refactor)](https://coveralls.io/r/joegreen0991/phroute?branch=master)
 
 ## This library provides a fast implementation of a regular expression based router.
 
@@ -26,7 +27,7 @@ Install via composer
 ```
 {
     "require": {
-        "phroute/phroute": "1.*"
+        "phroute/phroute": "2.*"
     }
 }
 
@@ -93,8 +94,8 @@ $router->addRoute('GET', '/user/{id}?', function($id = null) {
     return 'second';
 });
 
-# NB. You can cache this object so you don't have to create the routes each request - massive speed gains
-$dispatcher = new Phroute\Dispatcher($router);
+# NB. You can cache the return value from $router->getData() so you don't have to create the routes each request - massive speed gains
+$dispatcher = new Phroute\Router\Dispatcher($router->getData());
 
 $response = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
     
