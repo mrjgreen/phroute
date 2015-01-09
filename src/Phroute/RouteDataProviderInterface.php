@@ -1,9 +1,9 @@
-<?php namespace Phroute\Router;
+<?php namespace Phroute\Phroute;
 
 
 /**
  * Interface RouteDataProviderInterface
- * @package Phroute\Router
+ * @package Phroute\Phroute
  */
 interface RouteDataProviderInterface {
 

@@ -64,7 +64,7 @@ syntax by passing using a different route parser.
 
 ```php
 
-$router = new Phroute\Router\RouteCollector();
+$router = new Phroute\Phroute\RouteCollector();
 
 
 $router->any('/example', function(){
@@ -97,7 +97,7 @@ $router->addRoute('GET', '/user/{id}?', function($id = null) {
 });
 
 # NB. You can cache the return value from $router->getData() so you don't have to create the routes each request - massive speed gains
-$dispatcher = new Phroute\Router\Dispatcher($router->getData());
+$dispatcher = new Phroute\Phroute\Dispatcher($router->getData());
 
 $response = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
     
@@ -241,16 +241,16 @@ A URI is dispatched by calling the `dispatch()` method of the created dispatcher
 accepts the HTTP method and a URI. Getting those two bits of information (and normalizing them
 appropriately) is your job - this library is not bound to the PHP web SAPIs.
 
-$response = (new Phroute\Router\Dispatcher($router))
+$response = (new Phroute\Phroute\Dispatcher($router))
             ->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
 
 The `dispatch()` method will call the matched route, or if no matches, throw one of the exceptions below:
 
     # Route not found
-    Phroute\Router\Exception\HttpRouteNotFoundException;
+    Phroute\Phroute\Exception\HttpRouteNotFoundException;
     
     # Route found, but method not allowed
-    Phroute\Router\Exception\HttpMethodNotAllowedException;
+    Phroute\Phroute\Exception\HttpMethodNotAllowedException;
 
 > **NOTE:** The HTTP specification requires that a `405 Method Not Allowed` response include the
 `Allow:` header to detail available methods for the requested resource. 
@@ -270,7 +270,7 @@ but pimple/pimple or others will work just as well.
 ~~~PHP
 
 use Orno\Di\Container;
-use Phroute\Router\HandlerResolverInterface;
+use Phroute\Phroute\HandlerResolverInterface;
 
 class RouterResolver implements HandlerResolverInterface
 {
@@ -311,7 +311,7 @@ $appContainer = new Orno\Di;
 
 
 $resolver = new RouterResolver($appContainer);
-$response = (new Phroute\Router\Dispatcher($router, $resolver))->dispatch($requestMethod, $requestUri);
+$response = (new Phroute\Phroute\Dispatcher($router, $resolver))->dispatch($requestMethod, $requestUri);
 
 ~~~
 
