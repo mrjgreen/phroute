@@ -10,4 +10,4 @@ interface HandlerResolverInterface {
 	 */
 	
 	public function resolve($handler);
-} 
+}
