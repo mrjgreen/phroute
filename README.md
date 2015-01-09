@@ -1,8 +1,8 @@
 PHRoute - Fast request router for PHP
 =======================================
 
-[![Build Status](https://travis-ci.org/mrjgreen/phroute.svg?branch=refactor)](https://travis-ci.org/mrjgreen/phroute?branch=refactor)
-[![Coverage Status](https://coveralls.io/repos/joegreen0991/phroute/badge.png?branch=refactor)](https://coveralls.io/r/joegreen0991/phroute?branch=master)
+[![Build Status](https://travis-ci.org/mrjgreen/phroute.svg)](https://travis-ci.org/mrjgreen/phroute)
+[![Coverage Status](https://coveralls.io/repos/mrjgreen/phroute/badge.png)](https://coveralls.io/r/mrjgreen/phroute)
 
 ## This library provides a fast implementation of a regular expression based router.
 
