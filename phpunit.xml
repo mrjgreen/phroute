@@ -12,7 +12,7 @@
          bootstrap="vendor/autoload.php"
         >
     <testsuites>
-        <testsuite name="FastRoute Tests">
+        <testsuite name="Phroute Tests">
             <directory>./test/</directory>
         </testsuite>
     </testsuites>
