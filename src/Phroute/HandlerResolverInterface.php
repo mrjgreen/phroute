@@ -1,4 +1,4 @@
-<?php namespace Phroute\Phroute;
+<?php namespace Phroute\Router;
 
 interface HandlerResolverInterface {
 	

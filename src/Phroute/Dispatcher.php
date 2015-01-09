@@ -1,7 +1,7 @@
-<?php namespace Phroute\Phroute;
+<?php namespace Phroute\Router;
 
-use Phroute\Phroute\Exception\HttpMethodNotAllowedException;
-use Phroute\Phroute\Exception\HttpRouteNotFoundException;
+use Phroute\Router\Exception\HttpMethodNotAllowedException;
+use Phroute\Router\Exception\HttpRouteNotFoundException;
 
 class Dispatcher {
 

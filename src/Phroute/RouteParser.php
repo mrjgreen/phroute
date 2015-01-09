@@ -1,6 +1,6 @@
-<?php namespace Phroute\Phroute;
+<?php namespace Phroute\Router;
 
-use Phroute\Phroute\Exception\BadRouteException;
+use Phroute\Router\Exception\BadRouteException;
 /**
  * Parses routes of the following form:
  *

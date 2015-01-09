@@ -8,6 +8,7 @@ PHRoute - Fast request router for PHP
 
  * Super fast
  * Route parameters and optional route parameters
+ * Dependency Injection Resolving (Integrates easily with 3rd parties eg. Orno/Di)
  * Named routes and reverse routing
  * Restful controller routing
  * Route filters and route groups
@@ -62,7 +63,7 @@ syntax by passing using a different route parser.
 
 ```php
 
-$router = new Phroute\RouteCollector();
+$router = new Phroute\Router\RouteCollector();
 
 
 $router->any('/example', function(){
@@ -239,16 +240,16 @@ A URI is dispatched by calling the `dispatch()` method of the created dispatcher
 accepts the HTTP method and a URI. Getting those two bits of information (and normalizing them
 appropriately) is your job - this library is not bound to the PHP web SAPIs.
 
-$response = (new Phroute\Dispatcher($router))
+$response = (new Phroute\Router\Dispatcher($router))
             ->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
 
 The `dispatch()` method will call the matched route, or if no matches, throw one of the exceptions below:
 
     # Route not found
-    Phroute\Exception\HttpRouteNotFoundException;
+    Phroute\Router\Exception\HttpRouteNotFoundException;
     
     # Route found, but method not allowed
-    Phroute\Exception\HttpMethodNotAllowedException;
+    Phroute\Router\Exception\HttpMethodNotAllowedException;
 
 > **NOTE:** The HTTP specification requires that a `405 Method Not Allowed` response include the
 `Allow:` header to detail available methods for the requested resource. 
@@ -256,6 +257,62 @@ This information can be obtained from the thrown exception's message content:
 which will look like: `"Allow: HEAD, GET, POST"` etc... depending on the methods you have set
 You should catch the exception and use this to send a header to the client: `header($e->getMessage());`
 
+
+###Dependency Injection
+
+Defining your own dependency resolver is simple and easy. The router will attempt to resolve filters,
+and route handlers via the dependency resolver.
+
+The example below shows how you can define your own resolver to integrate with orno/di,
+but pimple/pimple or others will work just as well.
+
+~~~PHP
+
+use Orno\Di\Container;
+use Phroute\Router\HandlerResolverInterface;
+
+class RouterResolver implements HandlerResolverInterface
+{
+    private $container;
+
+    public function __construct(Container $container)
+    {
+        $this->container = $container;
+    }
+
+    public function resolve($handler)
+    {
+        /*
+         * Only attempt resolve uninstantiated objects which will be in the form:
+         *
+         *      $handler = array('App\Controllers\Home', 'method');
+         */
+        if(is_array($handler) and is_string($handler[0]))
+        {
+            $handler[0] = $this->container[$handler[0]];
+        }
+
+        return $handler;
+    }
+}
+
+~~~
+
+
+When you create your dispatcher:
+
+~~~PHP
+
+$appContainer = new Orno\Di;
+
+// Attach your controllers as normal
+// $appContainer->add('App\Controllers\Home')
+
+
+$resolver = new RouterResolver($appContainer);
+$response = (new Phroute\Router\Dispatcher($router, $resolver))->dispatch($requestMethod, $requestUri);
+
+~~~
 
 ### A Note on HEAD Requests
 

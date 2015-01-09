@@ -1,3 +1,3 @@
-<?php namespace Phroute\Phroute\Exception;
+<?php namespace Phroute\Router\Exception;
 
 class HttpException extends \Exception {}

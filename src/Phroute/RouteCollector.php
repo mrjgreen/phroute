@@ -1,13 +1,13 @@
-<?php namespace Phroute\Phroute;
+<?php namespace Phroute\Router;
 
 use ReflectionClass;
 use ReflectionMethod;
 
-use Phroute\Phroute\Exception\BadRouteException;
+use Phroute\Router\Exception\BadRouteException;
 
 /**
  * Class RouteCollector
- * @package Phroute\Phroute
+ * @package Phroute\Router
  */
 class RouteCollector implements RouteDataProviderInterface {
 

@@ -1,11 +1,11 @@
 <?php
 
-namespace Phroute\Phroute\Dispatcher;
+namespace Phroute\Router\Dispatcher;
 
-use Phroute\Phroute\RouteCollector;
-use Phroute\Phroute\RouteParser;
-use Phroute\Phroute\Dispatcher;
-use Phroute\Phroute\Route;
+use Phroute\Router\RouteCollector;
+use Phroute\Router\RouteParser;
+use Phroute\Router\Dispatcher;
+use Phroute\Router\Route;
 
 class Test {
     
@@ -113,7 +113,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider provideNotFoundDispatchCases
-     * @expectedException \Phroute\Phroute\Exception\HttpRouteNotFoundException
+     * @expectedException \Phroute\Router\Exception\HttpRouteNotFoundException
      * @expectedExceptionMessage does not exist
      */
     public function testNotFoundDispatches($method, $uri, $callback)
@@ -128,7 +128,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
      */
     public function testMethodNotAllowedDispatches($method, $uri, $callback, $allowed)
     {
-        $this->setExpectedException('\Phroute\Phroute\Exception\HttpMethodNotAllowedException',"Allow: " . implode(', ', $allowed));
+        $this->setExpectedException('\Phroute\Router\Exception\HttpMethodNotAllowedException',"Allow: " . implode(', ', $allowed));
 
         $r = $this->router();
         $callback($r);
@@ -180,7 +180,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException \Phroute\Phroute\Exception\BadRouteException
+     * @expectedException \Phroute\Router\Exception\BadRouteException
      * @expectedExceptionMessage Expecting route variable 'store'
      */
     public function testMissingParameterReverseRoute()
@@ -193,7 +193,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException \Phroute\Phroute\Exception\BadRouteException
+     * @expectedException \Phroute\Router\Exception\BadRouteException
      * @expectedExceptionMessage Cannot use the same placeholder 'test' twice
      */
     public function testDuplicateVariableNameError()
@@ -204,7 +204,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException \Phroute\Phroute\Exception\BadRouteException
+     * @expectedException \Phroute\Router\Exception\BadRouteException
      * @expectedExceptionMessage Cannot register two routes matching 'user/([^/]+)' for method 'GET'
      */
     public function testDuplicateVariableRoute()
@@ -219,7 +219,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException \Phroute\Phroute\Exception\BadRouteException
+     * @expectedException \Phroute\Router\Exception\BadRouteException
      * @expectedExceptionMessage Cannot register two routes matching 'user' for method 'GET'
      */
     public function testDuplicateStaticRoute()
@@ -234,7 +234,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException \Phroute\Phroute\Exception\BadRouteException
+     * @expectedException \Phroute\Router\Exception\BadRouteException
      * @expectedExceptionMessage Static route 'user/nikic' is shadowed by previously defined variable route 'user/([^/]+)' for method 'GET'
      */
     public function testShadowedStaticRoute()
@@ -420,7 +420,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
 
     /**
-     * @expectedException \Phroute\Phroute\Exception\HttpRouteNotFoundException
+     * @expectedException \Phroute\Router\Exception\HttpRouteNotFoundException
      * @expectedExceptionMessage does not exist
      */
     public function testRestfulOptionalRequiredControllerMethodThrows()
@@ -433,7 +433,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException \Phroute\Phroute\Exception\HttpRouteNotFoundException
+     * @expectedException \Phroute\Router\Exception\HttpRouteNotFoundException
      * @expectedExceptionMessage does not exist
      */
     public function testRestfulRequiredControllerMethodThrows()
@@ -446,7 +446,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @expectedException \Phroute\Phroute\Exception\HttpRouteNotFoundException
+     * @expectedException \Phroute\Router\Exception\HttpRouteNotFoundException
      * @expectedExceptionMessage does not exist
      */
     public function testRestfulHyphenateControllerMethodThrows()
