@@ -6,12 +6,12 @@ PHRoute - Fast request router for PHP
 
 ## This library provides a fast implementation of a regular expression based router.
 
- * Super fast
- * Route parameters and optional route parameters
- * Dependency Injection Resolving (Integrates easily with 3rd parties eg. Orno/Di)
- * Named routes and reverse routing
- * Restful controller routing
- * Route filters and route groups
+ * [Super fast](#performance)
+ * [Route parameters and optional route parameters](#defining-routes)
+ * [Dependency Injection Resolving (Integrates easily with 3rd parties eg. Orno/Di)](#dependency-injection)
+ * [Named routes and reverse routing](#named-routes-for-reverse-routing)
+ * [Restful controller routing](#controllers)
+ * [Route filters and route groups](#filters)
 
 ### Credit to nikic/FastRoute. 
 
