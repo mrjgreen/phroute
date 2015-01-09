@@ -12,7 +12,7 @@ class HandlerResolver implements HandlerResolverInterface {
 	
 	public function resolve ($handler)
 	{
-		if(is_array($handler) and is_string($handler[0]))
+		if(is_array($handler) && is_string($handler[0]))
 		{
 			$handler[0] = new $handler[0];
 		}
