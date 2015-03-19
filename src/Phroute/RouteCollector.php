@@ -273,6 +273,11 @@ class RouteCollector implements RouteDataProviderInterface {
         $reflection = new ReflectionClass($classname);
 
         $validMethods = $this->getValidMethods();
+        
+        if(is_array($route))
+        {
+            list($route, $name) = $route;
+        }
 
         $sep = $route === '/' ? '' : '/';
 
@@ -288,10 +293,22 @@ class RouteCollector implements RouteDataProviderInterface {
 
                     if($methodName === self::DEFAULT_CONTROLLER_ROUTE)
                     {
-                        $this->addRoute($valid, $route . $params, [$classname, $method->name], $filters);
+                        if (isset($name))
+                        {
+                            $this->addRoute($valid, [$route . $params, $name], array($classname, $method->name), $filters);
+                        }
+                        else
+                        {
+                            $this->addRoute($valid, $route . $params, array($classname, $method->name), $filters);
+                        }
+
                     }
 
-                    $this->addRoute($valid, $route . $sep . $methodName . $params, [$classname, $method->name], $filters);
+                    if (isset($name)) {
+                        $this->addRoute($valid, [$route . $sep . $methodName . $params, $name . '-' . $methodName], array($classname, $method->name), $filters);
+                    } else {
+                        $this->addRoute($valid, $route . $sep . $methodName . $params, array($classname, $method->name), $filters);
+                    }
                     
                     break;
                 }
