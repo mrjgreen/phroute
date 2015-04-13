@@ -39,6 +39,11 @@ class Test {
         return 'testRoutePutTest';
     }
 
+    public function patchTest()
+    {
+        return 'testRoutePatchTest';
+    }
+
     public function deleteTest()
     {
         return 'testRouteDeleteTest';
@@ -361,6 +366,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
             Route::GET,
             Route::POST,
             Route::PUT,
+            Route::PATCH,
             Route::DELETE,
             Route::HEAD,
             Route::OPTIONS,
@@ -378,6 +384,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('yes', $this->dispatch($r, Route::GET, 'user'));
         $this->assertEquals('yes', $this->dispatch($r, Route::DELETE, 'user'));
         $this->assertEquals('yes', $this->dispatch($r, Route::PUT, 'user'));
+        $this->assertEquals('yes', $this->dispatch($r, Route::PATCH, 'user'));
         $this->assertEquals('yes', $this->dispatch($r, Route::POST, 'user'));
         $this->assertEquals('yes', $this->dispatch($r, Route::OPTIONS, 'user'));
         $this->assertEquals('yes', $this->dispatch($r, 'MADE_UP_NON_STANDARD_METHOD', 'user'));
@@ -400,11 +407,13 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('testRouteAnyIndex', $this->dispatch($r, Route::GET, 'user'));
         $this->assertEquals('testRouteAnyIndex', $this->dispatch($r, Route::POST, 'user'));
         $this->assertEquals('testRouteAnyIndex', $this->dispatch($r, Route::PUT, 'user'));
+        $this->assertEquals('testRouteAnyIndex', $this->dispatch($r, Route::PATCH, 'user'));
         $this->assertEquals('testRouteAnyIndex', $this->dispatch($r, Route::DELETE, 'user'));
 
         $this->assertEquals('testRouteAnyIndex', $this->dispatch($r, Route::GET, 'user/index'));
         $this->assertEquals('testRouteAnyIndex', $this->dispatch($r, Route::POST, 'user/index'));
         $this->assertEquals('testRouteAnyIndex', $this->dispatch($r, Route::PUT, 'user/index'));
+        $this->assertEquals('testRouteAnyIndex', $this->dispatch($r, Route::PATCH, 'user/index'));
         $this->assertEquals('testRouteAnyIndex', $this->dispatch($r, Route::DELETE, 'user/index'));
 
         $this->assertEquals('hyphenated', $this->dispatch($r, Route::GET, 'user/camel-case-hyphenated'));

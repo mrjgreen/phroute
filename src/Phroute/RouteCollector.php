@@ -235,6 +235,17 @@ class RouteCollector implements RouteDataProviderInterface {
      * @param array $filters
      * @return RouteCollector
      */
+    public function patch($route, $handler, array $filters = [])
+    {
+        return $this->addRoute(Route::PATCH, $route, $handler, $filters);
+    }
+
+    /**
+     * @param $route
+     * @param $handler
+     * @param array $filters
+     * @return RouteCollector
+     */
     public function delete($route, $handler, array $filters = [])
     {
         return $this->addRoute(Route::DELETE, $route, $handler, $filters);
@@ -336,6 +347,7 @@ class RouteCollector implements RouteDataProviderInterface {
             Route::GET,
             Route::POST,
             Route::PUT,
+            Route::PATCH,
             Route::DELETE,
             Route::HEAD,
             Route::OPTIONS,
