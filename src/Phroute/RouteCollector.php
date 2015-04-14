@@ -168,11 +168,32 @@ class RouteCollector implements RouteDataProviderInterface {
      * @param array $filters
      * @param callable $callback
      */
-    public function group(array $filters, \Closure $callback)
+    public function group(array $filters, \Closure $callback, array $options = [])
     {
         $oldGlobal = $this->globalFilters;
         $this->globalFilters = array_merge_recursive($this->globalFilters, array_intersect_key($filters, [Route::AFTER => 1, Route::BEFORE => 1]));
-        $callback($this);
+
+        $self = clone $this;
+        $self->regexToRoutesMap = [];
+        $self->staticRoutes = [];
+
+        $callback($self);
+
+        if (array_key_exists('prefix', $options)) {
+            $prefix = trim($this->routeParser->parse($options['prefix'])[0][0], '/');
+
+            foreach ($self->regexToRoutesMap as $key => $value) {
+                $this->regexToRoutesMap[$prefix . '/' . $key] = $value;
+            }
+
+            foreach ($self->staticRoutes as $key => $value) {
+                $this->staticRoutes[$prefix . '/' . $key] = $value;
+            }
+        } else {
+            $this->regexToRoutesMap += $self->regexToRoutesMap;
+            $this->staticRoutes += $self->staticRoutes;
+        }
+
         $this->globalFilters = $oldGlobal;
     }
 
