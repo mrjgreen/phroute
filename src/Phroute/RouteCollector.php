@@ -173,25 +173,33 @@ class RouteCollector implements RouteDataProviderInterface {
         $oldGlobal = $this->globalFilters;
         $this->globalFilters = array_merge_recursive($this->globalFilters, array_intersect_key($filters, [Route::AFTER => 1, Route::BEFORE => 1]));
 
-        $self = clone $this;
-        $self->regexToRoutesMap = [];
-        $self->staticRoutes = [];
 
-        $callback($self);
 
         if (array_key_exists('prefix', $options)) {
+            $self = clone $this;
+            $self->regexToRoutesMap = [];
+            $self->staticRoutes = [];
+
+            $callback($self);
+
+
             $prefix = trim($this->routeParser->parse($options['prefix'])[0][0], '/');
 
-            foreach ($self->regexToRoutesMap as $key => $value) {
-                $this->regexToRoutesMap[$prefix . '/' . $key] = $value;
+            if ($prefix === trim($options['prefix'], '/')) {
+                foreach ($self->regexToRoutesMap as $pattern => $entry) {
+                    $this->regexToRoutesMap[$prefix . $pattern] = $entry;
+                }
+
+                foreach ($self->staticRoutes as $pattern => $entry) {
+                    $pattern = ($pattern === '' ?'': '/' . $pattern);
+                    $this->staticRoutes[$prefix . $pattern] = $entry;
+                }
+            } else {
+                throw new BadRouteException('Bad prefix: "%s", should not variables.');
             }
 
-            foreach ($self->staticRoutes as $key => $value) {
-                $this->staticRoutes[$prefix . '/' . $key] = $value;
-            }
         } else {
-            $this->regexToRoutesMap += $self->regexToRoutesMap;
-            $this->staticRoutes += $self->staticRoutes;
+            $callback($this);
         }
 
         $this->globalFilters = $oldGlobal;
