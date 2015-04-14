@@ -187,7 +187,7 @@ class RouteCollector implements RouteDataProviderInterface {
 
             if ($prefix === trim($options['prefix'], '/')) {
                 foreach ($self->regexToRoutesMap as $pattern => $entry) {
-                    $this->regexToRoutesMap[$prefix . $pattern] = $entry;
+                    $this->regexToRoutesMap[$prefix . '/' . $pattern] = $entry;
                 }
 
                 foreach ($self->staticRoutes as $pattern => $entry) {
