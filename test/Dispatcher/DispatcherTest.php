@@ -178,11 +178,9 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     {
         $r = $this->router();
 
-        $r->any( array('products/store/{store:i}?', 'products'), array(__NAMESPACE__.'\\Test','route'));
-
-        $this->assertEquals('products/store', $r->route('products'));
-        $this->assertEquals('products/store/1', $r->route('products', array(1)));
-    }
+        $r->any( array('product-catalogue/store/{store:i}?', 'products'), array(__NAMESPACE__.'\\Test','route'));
+        $this->assertEquals('product-catalogue/store', $r->route('products'));
+        $this->assertEquals('product-catalogue/store/1', $r->route('products', array(1)));    }
 
     public function testGroupsReverseRoutes()
     {
