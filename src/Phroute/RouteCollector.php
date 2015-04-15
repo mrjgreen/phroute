@@ -164,20 +164,22 @@ class RouteCollector implements RouteDataProviderInterface {
         $this->regexToRoutesMap[$regex][$httpMethod] = [$handler, $filters, $variables];
     }
 
+    /**
+     * @param $option string
+     * @param $instance $this
+     */
     private function processPrefixedRoutes($option, $instance)
     {
         list($prefix, $routeData)=$this->routeParser->parse(trim($option, '/'));
         $prefix = $prefix[0];
 
         foreach ($instance->reverse as $name => $entries) {
-            $flip = array_reverse($entries);
-
-            foreach (array_reverse($routeData) as $data) {
-                array_push($flip, ['variable' => false, 'value' => '/']);
-                array_push($flip, $data);
+            $flip = [$routeData[0],  ['variable' => false, 'value' => '/']];
+            foreach ($entries as $entry) {
+                $flip[] = $entry;
             }
 
-            $this->reverse[$name] = array_reverse($flip);
+            $this->reverse[$name] = $flip;
         }
 
 
