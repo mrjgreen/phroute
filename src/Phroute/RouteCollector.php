@@ -193,7 +193,7 @@ class RouteCollector implements RouteDataProviderInterface {
                 $this->staticRoutes[$prefix . $pattern] = $entry;
             }
         } else {
-            throw new BadRouteException('Bad prefix: "%s", should not variables.');
+            throw new BadRouteException(sprintf('Bad prefix: "%s", should not contain variables.', $prefix));
         }
     }
     /**
