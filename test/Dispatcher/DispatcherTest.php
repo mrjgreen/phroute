@@ -184,6 +184,30 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('product-catalogue/store/1', $r->route('products', array(1)));
     }
 
+    public function testGroupsReverseRoutes()
+    {
+        $r = $this->router();
+
+        $r->group([], function($r) {
+            $r->any(['products/store/{store:i}?', 'products'], array(__NAMESPACE__.'\\Test','route'));
+        });
+
+        $this->assertEquals('products/store', $r->route('products'));
+        $this->assertEquals('products/store/1', $r->route('products', array(1)));
+    }
+
+    public function testPrefixGroupsReverseRoutes()
+    {
+        $r = $this->router();
+
+        $r->group([], function($r) {
+            $r->any(['items/{store:i}?', 'products'], array(__NAMESPACE__.'\\Test','route'));
+        }, ['prefix' => 'product-catalogue/store']);
+
+        $this->assertEquals('product-catalogue/store/items', $r->route('products'));
+        $this->assertEquals('product-catalogue/store/items/1', $r->route('products', array(1)));
+    }
+
     /**
      * @expectedException \Phroute\Phroute\Exception\BadRouteException
      * @expectedExceptionMessage Expecting route variable 'store'
@@ -357,6 +381,50 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(2, $dispatchedFilter);
         $this->assertEquals(1, $dispatchedFilter2);
         
+    }
+
+    public function testPrefixedFilterGroups()
+    {
+        $r = $this->router();
+
+        $dispatchedFilter = 0;
+        $dispatchedFilter2 = 0;
+
+        $r->filter('test', function() use(&$dispatchedFilter){
+            $dispatchedFilter++;
+        });
+
+        $r->filter('test2', function() use(&$dispatchedFilter2){
+            $dispatchedFilter2++;
+        });
+
+        $r->group(array('before' => 'test'), function($router){
+            $router->addRoute('GET', '/', function() {
+
+            });
+            $router->group(array('before' => 'test2'), function($router){
+                $router->addRoute('GET', '/{id}', function() {
+
+                });
+            });
+        }, ['prefix' => '/user']);
+
+        $this->dispatch($r, 'GET', '/user');
+
+        $this->assertEquals(1, $dispatchedFilter);
+
+        $this->dispatch($r, 'GET', '/user/2');
+
+        $this->assertEquals(2, $dispatchedFilter);
+        $this->assertEquals(1, $dispatchedFilter2);
+    }
+
+    public function testVariablePrefix()
+    {
+        $this->setExpectedException('\Phroute\Phroute\Exception\BadRouteException');
+
+        $r = $this->router();
+        $r->group([], function(){}, ['prefix' => '/demo/{unexpected}']);
     }
 
     public function testValidMethods()

@@ -165,14 +165,60 @@ class RouteCollector implements RouteDataProviderInterface {
     }
 
     /**
+     * @param $option string
+     * @param $instance $this
+     */
+    private function processPrefixedRoutes($option, $instance)
+    {
+        list($prefix, $routeData)=$this->routeParser->parse(trim($option, '/'));
+        $prefix = $prefix[0];
+
+        foreach ($instance->reverse as $name => $entries) {
+            $flip = [$routeData[0],  ['variable' => false, 'value' => '/']];
+            foreach ($entries as $entry) {
+                $flip[] = $entry;
+            }
+
+            $this->reverse[$name] = $flip;
+        }
+
+
+        if ($prefix === trim($option, '/')) {
+            foreach ($instance->regexToRoutesMap as $pattern => $entry) {
+                $this->regexToRoutesMap[$prefix . '/' . $pattern] = $entry;
+            }
+
+            foreach ($instance->staticRoutes as $pattern => $entry) {
+                $pattern = ($pattern === '' ?'': '/' . $pattern);
+                $this->staticRoutes[$prefix . $pattern] = $entry;
+            }
+        } else {
+            throw new BadRouteException(sprintf('Bad prefix: "%s", should not contain variables.', $prefix));
+        }
+    }
+    /**
      * @param array $filters
      * @param callable $callback
      */
-    public function group(array $filters, \Closure $callback)
+    public function group(array $filters, \Closure $callback, array $options = [])
     {
         $oldGlobal = $this->globalFilters;
         $this->globalFilters = array_merge_recursive($this->globalFilters, array_intersect_key($filters, [Route::AFTER => 1, Route::BEFORE => 1]));
-        $callback($this);
+
+        if (array_key_exists('prefix', $options)) {
+            $self = clone $this;
+            $self->regexToRoutesMap = [];
+            $self->staticRoutes = [];
+
+            $callback($self);
+
+            $this->processPrefixedRoutes($options['prefix'], $self);
+        } else {
+            $callback($this);
+        }
+
+
+
         $this->globalFilters = $oldGlobal;
     }
 
