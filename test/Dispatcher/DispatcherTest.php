@@ -200,9 +200,9 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     {
         $r = $this->router();
 
-        $r->group([], function($r) {
+        $r->group(['prefix' => 'product-catalogue/store'], function($r) {
             $r->any(['items/{store:i}?', 'products'], array(__NAMESPACE__.'\\Test','route'));
-        }, ['prefix' => 'product-catalogue/store']);
+        });
 
         $this->assertEquals('product-catalogue/store/items', $r->route('products'));
         $this->assertEquals('product-catalogue/store/items/1', $r->route('products', array(1)));
@@ -383,48 +383,47 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         
     }
 
-    public function testPrefixedFilterGroups()
+    public function testMultiplePrefixedGroups()
     {
         $r = $this->router();
 
-        $dispatchedFilter = 0;
-        $dispatchedFilter2 = 0;
-
-        $r->filter('test', function() use(&$dispatchedFilter){
-            $dispatchedFilter++;
-        });
-
-        $r->filter('test2', function() use(&$dispatchedFilter2){
-            $dispatchedFilter2++;
-        });
-
-        $r->group(array('before' => 'test'), function($router){
+        $r->group(['prefix' => '/user'], function($router){
             $router->addRoute('GET', '/', function() {
 
             });
-            $router->group(array('before' => 'test2'), function($router){
+            $router->group(['prefix' => '/foo'], function($router){
                 $router->addRoute('GET', '/{id}', function() {
 
                 });
             });
-        }, ['prefix' => '/user']);
+        });
 
         $this->dispatch($r, 'GET', '/user');
 
-        $this->assertEquals(1, $dispatchedFilter);
+        $this->dispatch($r, 'GET', '/user/foo/2');
 
-        $this->dispatch($r, 'GET', '/user/2');
-
-        $this->assertEquals(2, $dispatchedFilter);
-        $this->assertEquals(1, $dispatchedFilter2);
     }
 
     public function testVariablePrefix()
     {
-        $this->setExpectedException('\Phroute\Phroute\Exception\BadRouteException');
-
         $r = $this->router();
-        $r->group([], function(){}, ['prefix' => '/demo/{unexpected}']);
+        $r->group(['prefix' => '/demo/{variable}'], function($router){
+            $router->addRoute('GET', '/something', function($var){
+               return $var;
+            });
+
+            $router->addRoute('GET', '/something-else', function($var){
+                return $var;
+            });
+        });
+
+        $response = $this->dispatch($r, 'GET', '/demo/2/something');
+
+        $this->assertEquals('2', $response);
+
+        $response = $this->dispatch($r, 'GET', '/demo/4/something-else');
+
+        $this->assertEquals('4', $response);
     }
 
     public function testValidMethods()

@@ -48,6 +48,11 @@ class RouteCollector implements RouteDataProviderInterface {
     private $globalFilters = [];
 
     /**
+     * @var
+     */
+    private $globalRoutePrefix;
+
+    /**
      * @param RouteParser $routeParser
      */
     public function __construct(RouteParser $routeParser = null) {
@@ -104,8 +109,10 @@ class RouteCollector implements RouteDataProviderInterface {
         {
             list($route, $name) = $route;
         }
-        
-        list($routeData, $reverseData) = $this->routeParser->parse(trim($route , '/'));
+
+        $route = $this->addPrefix($this->trim($route));
+
+        list($routeData, $reverseData) = $this->routeParser->parse($route);
         
         if(isset($name))
         {
@@ -165,61 +172,31 @@ class RouteCollector implements RouteDataProviderInterface {
     }
 
     /**
-     * @param $option string
-     * @param $instance $this
-     */
-    private function processPrefixedRoutes($option, $instance)
-    {
-        list($prefix, $routeData)=$this->routeParser->parse(trim($option, '/'));
-        $prefix = $prefix[0];
-
-        foreach ($instance->reverse as $name => $entries) {
-            $flip = [$routeData[0],  ['variable' => false, 'value' => '/']];
-            foreach ($entries as $entry) {
-                $flip[] = $entry;
-            }
-
-            $this->reverse[$name] = $flip;
-        }
-
-
-        if ($prefix === trim($option, '/')) {
-            foreach ($instance->regexToRoutesMap as $pattern => $entry) {
-                $this->regexToRoutesMap[$prefix . '/' . $pattern] = $entry;
-            }
-
-            foreach ($instance->staticRoutes as $pattern => $entry) {
-                $pattern = ($pattern === '' ?'': '/' . $pattern);
-                $this->staticRoutes[$prefix . $pattern] = $entry;
-            }
-        } else {
-            throw new BadRouteException(sprintf('Bad prefix: "%s", should not contain variables.', $prefix));
-        }
-    }
-    /**
      * @param array $filters
-     * @param callable $callback
+     * @param \Closure $callback
      */
-    public function group(array $filters, \Closure $callback, array $options = [])
+    public function group(array $filters, \Closure $callback)
     {
-        $oldGlobal = $this->globalFilters;
+        $oldGlobalFilters = $this->globalFilters;
+
+        $oldGlobalPrefix = $this->globalRoutePrefix;
+
         $this->globalFilters = array_merge_recursive($this->globalFilters, array_intersect_key($filters, [Route::AFTER => 1, Route::BEFORE => 1]));
 
-        if (array_key_exists('prefix', $options)) {
-            $self = clone $this;
-            $self->regexToRoutesMap = [];
-            $self->staticRoutes = [];
+        $newPrefix = isset($filters[Route::PREFIX]) ? $this->trim($filters[Route::PREFIX]) : null;
 
-            $callback($self);
+        $this->globalRoutePrefix = $this->addPrefix($newPrefix);
 
-            $this->processPrefixedRoutes($options['prefix'], $self);
-        } else {
-            $callback($this);
-        }
+        $callback($this);
 
+        $this->globalFilters = $oldGlobalFilters;
 
+        $this->globalRoutePrefix = $oldGlobalPrefix;
+    }
 
-        $this->globalFilters = $oldGlobal;
+    private function addPrefix($route)
+    {
+        return $this->trim($this->trim($this->globalRoutePrefix) . '/' . $route);
     }
 
     /**
@@ -411,6 +388,15 @@ class RouteCollector implements RouteDataProviderInterface {
         }
 
         return new RouteDataArray($this->staticRoutes, $this->generateVariableRouteData(), $this->filters);
+    }
+
+    /**
+     * @param $route
+     * @return string
+     */
+    private function trim($route)
+    {
+        return trim($route, '/');
     }
 
     /**
