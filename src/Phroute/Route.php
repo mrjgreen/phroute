@@ -9,6 +9,8 @@ class Route {
 
     const AFTER = 'after';
 
+    const PREFIX = 'prefix';
+
     /**
      * Constants for common HTTP methods
      */

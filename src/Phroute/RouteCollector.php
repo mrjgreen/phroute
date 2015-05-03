@@ -48,6 +48,11 @@ class RouteCollector implements RouteDataProviderInterface {
     private $globalFilters = [];
 
     /**
+     * @var
+     */
+    private $globalRoutePrefix;
+
+    /**
      * @param RouteParser $routeParser
      */
     public function __construct(RouteParser $routeParser = null) {
@@ -104,8 +109,10 @@ class RouteCollector implements RouteDataProviderInterface {
         {
             list($route, $name) = $route;
         }
-        
-        list($routeData, $reverseData) = $this->routeParser->parse(trim($route , '/'));
+
+        $route = $this->addPrefix($this->trim($route));
+
+        list($routeData, $reverseData) = $this->routeParser->parse($route);
         
         if(isset($name))
         {
@@ -166,14 +173,30 @@ class RouteCollector implements RouteDataProviderInterface {
 
     /**
      * @param array $filters
-     * @param callable $callback
+     * @param \Closure $callback
      */
     public function group(array $filters, \Closure $callback)
     {
-        $oldGlobal = $this->globalFilters;
+        $oldGlobalFilters = $this->globalFilters;
+
+        $oldGlobalPrefix = $this->globalRoutePrefix;
+
         $this->globalFilters = array_merge_recursive($this->globalFilters, array_intersect_key($filters, [Route::AFTER => 1, Route::BEFORE => 1]));
+
+        $newPrefix = isset($filters[Route::PREFIX]) ? $this->trim($filters[Route::PREFIX]) : null;
+
+        $this->globalRoutePrefix = $this->addPrefix($newPrefix);
+
         $callback($this);
-        $this->globalFilters = $oldGlobal;
+
+        $this->globalFilters = $oldGlobalFilters;
+
+        $this->globalRoutePrefix = $oldGlobalPrefix;
+    }
+
+    private function addPrefix($route)
+    {
+        return $this->trim($this->trim($this->globalRoutePrefix) . '/' . $route);
     }
 
     /**
@@ -365,6 +388,15 @@ class RouteCollector implements RouteDataProviderInterface {
         }
 
         return new RouteDataArray($this->staticRoutes, $this->generateVariableRouteData(), $this->filters);
+    }
+
+    /**
+     * @param $route
+     * @return string
+     */
+    private function trim($route)
+    {
+        return trim($route, '/');
     }
 
     /**

@@ -184,6 +184,30 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('product-catalogue/store/1', $r->route('products', array(1)));
     }
 
+    public function testGroupsReverseRoutes()
+    {
+        $r = $this->router();
+
+        $r->group([], function($r) {
+            $r->any(['products/store/{store:i}?', 'products'], array(__NAMESPACE__.'\\Test','route'));
+        });
+
+        $this->assertEquals('products/store', $r->route('products'));
+        $this->assertEquals('products/store/1', $r->route('products', array(1)));
+    }
+
+    public function testPrefixGroupsReverseRoutes()
+    {
+        $r = $this->router();
+
+        $r->group(['prefix' => 'product-catalogue/store'], function($r) {
+            $r->any(['items/{store:i}?', 'products'], array(__NAMESPACE__.'\\Test','route'));
+        });
+
+        $this->assertEquals('product-catalogue/store/items', $r->route('products'));
+        $this->assertEquals('product-catalogue/store/items/1', $r->route('products', array(1)));
+    }
+
     /**
      * @expectedException \Phroute\Phroute\Exception\BadRouteException
      * @expectedExceptionMessage Expecting route variable 'store'
@@ -357,6 +381,49 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(2, $dispatchedFilter);
         $this->assertEquals(1, $dispatchedFilter2);
         
+    }
+
+    public function testMultiplePrefixedGroups()
+    {
+        $r = $this->router();
+
+        $r->group(['prefix' => '/user'], function($router){
+            $router->addRoute('GET', '/', function() {
+
+            });
+            $router->group(['prefix' => '/foo'], function($router){
+                $router->addRoute('GET', '/{id}', function() {
+
+                });
+            });
+        });
+
+        $this->dispatch($r, 'GET', '/user');
+
+        $this->dispatch($r, 'GET', '/user/foo/2');
+
+    }
+
+    public function testVariablePrefix()
+    {
+        $r = $this->router();
+        $r->group(['prefix' => '/demo/{variable}'], function($router){
+            $router->addRoute('GET', '/something', function($var){
+               return $var;
+            });
+
+            $router->addRoute('GET', '/something-else', function($var){
+                return $var;
+            });
+        });
+
+        $response = $this->dispatch($r, 'GET', '/demo/2/something');
+
+        $this->assertEquals('2', $response);
+
+        $response = $this->dispatch($r, 'GET', '/demo/4/something-else');
+
+        $this->assertEquals('4', $response);
     }
 
     public function testValidMethods()
