@@ -162,6 +162,10 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $r->addRoute('GET', array('/foo/{name}/{something:i}', 'name2'), array(__NAMESPACE__.'\\Test','route'));
                 
         $this->assertEquals('foo/joe/something',$r->route('name2', ['joe', 'something']));
+
+
+        $this->assertTrue($r->hasRoute('name2'));
+        $this->assertFalse($r->hasRoute('unknown-name'));
     }
 
     public function testOptionalReverseRoute()

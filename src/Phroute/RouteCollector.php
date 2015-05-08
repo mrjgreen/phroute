@@ -61,6 +61,14 @@ class RouteCollector implements RouteDataProviderInterface {
 
     /**
      * @param $name
+     * @return bool
+     */
+	public function hasRoute($name) {
+		return isset($this->reverse[$name]);
+	}
+
+    /**
+     * @param $name
      * @param array $args
      * @return string
      */
