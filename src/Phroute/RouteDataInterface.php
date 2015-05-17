@@ -8,14 +8,9 @@
 interface RouteDataInterface {
 
     /**
-     * @return array
+     * @return Driver\DispatcherInterface
      */
-    public function getStaticRoutes();
-
-    /**
-     * @return array
-     */
-    public function getVariableRoutes();
+    public function getDispatcher();
 
     /**
      * @return array

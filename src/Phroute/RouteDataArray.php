@@ -1,16 +1,13 @@
 <?php namespace Phroute\Phroute;
 
+use Phroute\Phroute\Driver\DispatcherInterface;
+
 class RouteDataArray implements RouteDataInterface {
 
     /**
-     * @var array
+     * @var DispatcherInterface
      */
-    private $variableRoutes;
-
-    /**
-     * @var array
-     */
-    private $staticRoutes;
+    private $dispatcher;
 
     /**
      * @var array
@@ -18,33 +15,22 @@ class RouteDataArray implements RouteDataInterface {
     private $filters;
 
     /**
-     * @param array $staticRoutes
-     * @param array $variableRoutes
+     * @param DispatcherInterface $dispatcher
      * @param array $filters
      */
-    public function __construct(array $staticRoutes, array $variableRoutes, array $filters)
+    public function __construct(DispatcherInterface $dispatcher, array $filters)
     {
-        $this->staticRoutes = $staticRoutes;
-
-        $this->variableRoutes = $variableRoutes;
+        $this->dispatcher = $dispatcher;
 
         $this->filters = $filters;
     }
 
     /**
-     * @return array
+     * @return DispatcherInterface
      */
-    public function getStaticRoutes()
+    public function getDispatcher()
     {
-        return $this->staticRoutes;
-    }
-
-    /**
-     * @return array
-     */
-    public function getVariableRoutes()
-    {
-        return $this->variableRoutes;
+        return $this->dispatcher;
     }
 
     /**

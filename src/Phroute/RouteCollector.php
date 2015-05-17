@@ -1,5 +1,9 @@
 <?php namespace Phroute\Phroute;
 
+use Phroute\Phroute\Driver\CollectorInterface;
+use Phroute\Phroute\Driver\FastRoute\FastRouteCollector;
+use Phroute\Phroute\Driver\Hybrid\HybridCollector;
+use Phroute\Phroute\Driver\Regex\RegexCollector;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -17,11 +21,6 @@ class RouteCollector implements RouteDataProviderInterface {
     const DEFAULT_CONTROLLER_ROUTE = 'index';
 
     /**
-     *
-     */
-    const APPROX_CHUNK_SIZE = 10;
-
-    /**
      * @var RouteParser
      */
     private $routeParser;
@@ -29,14 +28,7 @@ class RouteCollector implements RouteDataProviderInterface {
      * @var array
      */
     private $filters = [];
-    /**
-     * @var array
-     */
-    private $staticRoutes = [];
-    /**
-     * @var array
-     */
-    private $regexToRoutesMap = [];
+
     /**
      * @var array
      */
@@ -53,10 +45,19 @@ class RouteCollector implements RouteDataProviderInterface {
     private $globalRoutePrefix;
 
     /**
-     * @param RouteParser $routeParser
+     * @var
      */
-    public function __construct(RouteParser $routeParser = null) {
+    private $driver;
+
+    /**
+     * @param RouteParser $routeParser
+     * @param CollectorInterface $collector
+     */
+    public function __construct($routeParser = null, CollectorInterface $collector = null) {
+
         $this->routeParser = $routeParser ?: new RouteParser();
+
+        $this->driver = $collector ?: new FastRouteCollector();
     }
 
     /**
@@ -120,63 +121,18 @@ class RouteCollector implements RouteDataProviderInterface {
 
         $route = $this->addPrefix($this->trim($route));
 
-        list($routeData, $reverseData) = $this->routeParser->parse($route);
+        $parsedRoute = $this->routeParser->parse($route);
         
         if(isset($name))
         {
-            $this->reverse[$name] = $reverseData;
+            $this->reverse[$name] = $parsedRoute->reverse;
         }
         
         $filters = array_merge_recursive($this->globalFilters, $filters);
 
-        isset($routeData[1]) ? 
-            $this->addVariableRoute($httpMethod, $routeData, $handler, $filters) :
-            $this->addStaticRoute($httpMethod, $routeData, $handler, $filters);
+        $this->driver->addRoute($httpMethod, $parsedRoute, $handler, $filters);
         
         return $this;
-    }
-
-    /**
-     * @param $httpMethod
-     * @param $routeData
-     * @param $handler
-     * @param $filters
-     */
-    private function addStaticRoute($httpMethod, $routeData, $handler, $filters)
-    {
-        $routeStr = $routeData[0];
-
-        if (isset($this->staticRoutes[$routeStr][$httpMethod]))
-        {
-            throw new BadRouteException("Cannot register two routes matching '$routeStr' for method '$httpMethod'");
-        }
-
-        foreach ($this->regexToRoutesMap as $regex => $routes) {
-            if (isset($routes[$httpMethod]) && preg_match('~^' . $regex . '$~', $routeStr))
-            {
-                throw new BadRouteException("Static route '$routeStr' is shadowed by previously defined variable route '$regex' for method '$httpMethod'");
-            }
-        }
-
-        $this->staticRoutes[$routeStr][$httpMethod] = array($handler, $filters, []);
-    }
-
-    /**
-     * @param $httpMethod
-     * @param $routeData
-     * @param $handler
-     * @param $filters
-     */
-    private function addVariableRoute($httpMethod, $routeData, $handler, $filters)
-    {
-        list($regex, $variables) = $routeData;
-
-        if (isset($this->regexToRoutesMap[$regex][$httpMethod]))
-        {
-            throw new BadRouteException("Cannot register two routes matching '$regex' for method '$httpMethod'");
-        }
-
-        $this->regexToRoutesMap[$regex][$httpMethod] = [$handler, $filters, $variables];
     }
 
     /**
@@ -200,11 +156,6 @@ class RouteCollector implements RouteDataProviderInterface {
         $this->globalFilters = $oldGlobalFilters;
 
         $this->globalRoutePrefix = $oldGlobalPrefix;
-    }
-
-    private function addPrefix($route)
-    {
-        return $this->trim($this->trim($this->globalRoutePrefix) . '/' . $route);
     }
 
     /**
@@ -385,17 +336,14 @@ class RouteCollector implements RouteDataProviderInterface {
         ];
     }
 
-    /**
-     * @return RouteDataArray
-     */
     public function getData()
     {
-        if (empty($this->regexToRoutesMap))
-        {
-            return new RouteDataArray($this->staticRoutes, [], $this->filters);
-        }
+        return new RouteDataArray($this->driver->getDispatcher(), $this->filters);
+    }
 
-        return new RouteDataArray($this->staticRoutes, $this->generateVariableRouteData(), $this->filters);
+    private function addPrefix($route)
+    {
+        return $this->trim($this->trim($this->globalRoutePrefix) . '/' . $route);
     }
 
     /**
@@ -405,52 +353,5 @@ class RouteCollector implements RouteDataProviderInterface {
     private function trim($route)
     {
         return trim($route, '/');
-    }
-
-    /**
-     * @return array
-     */
-    private function generateVariableRouteData()
-    {
-        $chunkSize = $this->computeChunkSize(count($this->regexToRoutesMap));
-        $chunks = array_chunk($this->regexToRoutesMap, $chunkSize, true);
-        return array_map([$this, 'processChunk'], $chunks);
-    }
-
-    /**
-     * @param $count
-     * @return float
-     */
-    private function computeChunkSize($count)
-    {
-        $numParts = max(1, round($count / self::APPROX_CHUNK_SIZE));
-        return ceil($count / $numParts);
-    }
-
-    /**
-     * @param $regexToRoutesMap
-     * @return array
-     */
-    private function processChunk($regexToRoutesMap)
-    {
-        $routeMap = [];
-        $regexes = [];
-        $numGroups = 0;
-        foreach ($regexToRoutesMap as $regex => $routes) {
-            $firstRoute = reset($routes);
-            $numVariables = count($firstRoute[2]);
-            $numGroups = max($numGroups, $numVariables);
-
-            $regexes[] = $regex . str_repeat('()', $numGroups - $numVariables);
-
-            foreach ($routes as $httpMethod => $route) {
-                $routeMap[$numGroups + 1][$httpMethod] = $route;
-            }
-
-            $numGroups++;
-        }
-
-        $regex = '~^(?|' . implode('|', $regexes) . ')$~';
-        return ['regex' => $regex, 'routeMap' => $routeMap];
     }
 }

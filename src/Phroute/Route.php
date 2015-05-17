@@ -29,5 +29,27 @@ class Route {
     const DELETE = 'DELETE';
 
     const OPTIONS = 'OPTIONS';
+
+    public $regex;
+
+    /**
+     * @var RoutePiece[]
+     */
+    public $pieces;
+
+    public $variables;
+
+    public $reverse;
+
+    public function __construct($regex, $pieces, $variables, $reverse)
+    {
+        $this->regex = $regex;
+
+        $this->pieces = $pieces;
+
+        $this->variables = $variables;
+
+        $this->reverse = $reverse;
+    }
 }
 
