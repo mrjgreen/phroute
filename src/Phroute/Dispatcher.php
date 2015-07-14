@@ -67,7 +67,7 @@ class Dispatcher {
      * @param null $response
      * @return mixed|null
      */
-    private function dispatchFilters($filters, $response = null)
+    protected function dispatchFilters($filters, $response = null)
     {
         while($filter = array_shift($filters))
         {
@@ -88,7 +88,7 @@ class Dispatcher {
      * @param $filters
      * @return array
      */
-    private function parseFilters($filters)
+    protected function parseFilters($filters)
     {        
         $beforeFilter = array();
         $afterFilter = array();
@@ -113,7 +113,7 @@ class Dispatcher {
      * @param $uri
      * @throws Exception\HttpRouteNotFoundException
      */
-    private function dispatchRoute($httpMethod, $uri)
+    protected function dispatchRoute($httpMethod, $uri)
     {
         if (isset($this->staticRouteMap[$uri]))
         {
@@ -131,7 +131,7 @@ class Dispatcher {
      * @return mixed
      * @throws Exception\HttpMethodNotAllowedException
      */
-    private function dispatchStaticRoute($httpMethod, $uri)
+    protected function dispatchStaticRoute($httpMethod, $uri)
     {
         $routes = $this->staticRouteMap[$uri];
 
@@ -150,7 +150,7 @@ class Dispatcher {
      * @param $httpMethod
      * @throws Exception\HttpMethodNotAllowedException
      */
-    private function checkFallbacks($routes, $httpMethod)
+    protected function checkFallbacks($routes, $httpMethod)
     {
         $additional = array(Route::ANY);
         
@@ -180,7 +180,7 @@ class Dispatcher {
      * @throws Exception\HttpMethodNotAllowedException
      * @throws Exception\HttpRouteNotFoundException
      */
-    private function dispatchVariableRoute($httpMethod, $uri)
+    protected function dispatchVariableRoute($httpMethod, $uri)
     {
         foreach ($this->variableRouteData as $data) 
         {
