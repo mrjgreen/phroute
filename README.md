@@ -13,6 +13,7 @@ PHRoute - Fast request router for PHP
  * [Named routes and reverse routing](#named-routes-for-reverse-routing)
  * [Restful controller routing](#controllers)
  * [Route filters and route groups](#filters)
+ * [Route prefixes](#prefixes)
 
 ### Credit to nikic/FastRoute. 
 
@@ -87,7 +88,7 @@ $router->any('/', function(){
 
 // Lazy load autoloaded route handling classes using strings for classnames
 // Calls the Controllers\User::displayUser($id) method with {id} parameter as an argument
-$router->any('/users/{id}', array('Controllers\User','displayUser'));
+$router->any('/users/{id}', ['Controllers\User','displayUser']);
 
 // Optional Parameters
 // simply add a '?' after the route name to make the parameter optional
@@ -158,7 +159,7 @@ $router->filter('statsComplete', function(){
 
 $router->get('/user/{name}', function($name){
     return 'Hello ' . $name;
-}, array('before' => 'statsStart', 'after' => 'statsComplete'));
+}, ['before' => 'statsStart', 'after' => 'statsComplete']);
 ```
 
 ###Filter Groups
@@ -177,7 +178,7 @@ $router->filter('auth', function(){
     }
 });
 
-$router->group(array('before' => 'auth'), function($router){
+$router->group(['before' => 'auth'], function($router){
     
     $router->get('/user/{name}', function($name){
         return 'Hello ' . $name;
@@ -186,6 +187,26 @@ $router->group(array('before' => 'auth'), function($router){
         return 'You must be authenticated to see this page: ' . $id;
     });
     
+});
+```
+
+```php
+
+// You can combine a prefix with a filter, eg. `['prefix' => 'admin', 'before' => 'auth']`
+
+$router->group(['prefix' => 'admin'], function($router){
+
+    $router->get('pages', function(){
+        return 'page management';
+    });
+
+    $router->get('products', function(){
+        return 'product management';
+    });
+
+    $router->get('orders', function(){
+        return 'order management';
+    });
 });
 ```
 
@@ -231,7 +252,7 @@ class Test {
 $router->controller('/controller', 'Test');
 
 // Controller with associated filter
-$router->controller('/controller', 'Test', array('before' => 'auth'));
+$router->controller('/controller', 'Test', ['before' => 'auth']);
 ```
 
 
@@ -286,7 +307,7 @@ class RouterResolver implements HandlerResolverInterface
         /*
          * Only attempt resolve uninstantiated objects which will be in the form:
          *
-         *      $handler = array('App\Controllers\Home', 'method');
+         *      $handler = ['App\Controllers\Home', 'method'];
          */
         if(is_array($handler) and is_string($handler[0]))
         {

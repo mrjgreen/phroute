@@ -5,30 +5,30 @@ include __DIR__ . '/../vendor/autoload.php';
 $collector = new Phroute\Phroute\RouteCollector();
 
 $collector->get('/test', function(){
-    
+
 });
 
 $collector->get('/test2', function(){
-    
+
 });
 
 $collector->get('/test3', function(){
-    
+
 });
 
 $collector->get('/test1/{name}', function(){
-    
+
 });
 
 $collector->get('/test2/{name2}', function(){
-    
+
 });
 
 $collector->get('/test3/{name3}', function(){
-    
+
 });
 
-$dispatcher =  new Phroute\Phroute\Dispatcher($collector);
+$dispatcher =  new Phroute\Phroute\Dispatcher($collector->getData());
 
 $runTime = 10;
 
@@ -40,7 +40,7 @@ while($seconds < $runTime)
 {
     $count++;
     $dispatcher->dispatch('GET', '/test2/joe');
-    
+
     if($time + 1 < microtime(true))
     {
         $time = microtime(true);
