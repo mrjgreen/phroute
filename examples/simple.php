@@ -2,7 +2,10 @@
 
 include __DIR__ . '/../vendor/autoload.php';
 
-$collector = new Phroute\Phroute\RouteCollector();
+use Phroute\Phroute\RouteCollector;
+use Phroute\Phroute\Dispatcher;
+
+$collector = new RouteCollector();
 
 $collector->get('/', function(){
     return 'Home Page';
@@ -16,7 +19,7 @@ $collector->put('items/{id}', function($id){
     return 'Amend Item ' . $id;
 });
 
-$dispatcher =  new Phroute\Phroute\Dispatcher($collector->getData());
+$dispatcher =  new Dispatcher($collector->getData());
 
 echo $dispatcher->dispatch('GET', '/'), "\n";   // Home Page
 echo $dispatcher->dispatch('POST', '/products'), "\n"; // Create Product

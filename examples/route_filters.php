@@ -2,7 +2,10 @@
 
 include __DIR__ . '/../vendor/autoload.php';
 
-$collector = new Phroute\Phroute\RouteCollector();
+use Phroute\Phroute\RouteCollector;
+use Phroute\Phroute\Dispatcher;
+
+$collector = new RouteCollector();
 
 $USER_SESSION = false;
 
@@ -13,14 +16,14 @@ $collector->filter('auth', function() use(&$USER_SESSION){
     }
 });
 
-$collector->group(array('before' => 'auth'), function($collector){
+$collector->group(array('before' => 'auth'), function(RouteCollector $collector){
 
     $collector->get('/', function(){
         return 'Hurrah! Home Page';
     });
 });
 
-$dispatcher =  new Phroute\Phroute\Dispatcher($collector->getData());
+$dispatcher =  new Dispatcher($collector->getData());
 
 echo $dispatcher->dispatch('GET', '/'), "\n"; // Nope! Must be authenticated
 
