@@ -12,8 +12,8 @@ PHRoute - Fast request router for PHP
  * [Dependency Injection Resolving (Integrates easily with 3rd parties eg. Orno/Di)](#dependency-injection)
  * [Named routes and reverse routing](#named-routes-for-reverse-routing)
  * [Restful controller routing](#controllers)
- * [Route filters and route groups](#filters)
- * [Route prefixes](#prefixes)
+ * [Route filters and filter groups](#filters)
+ * [Route prefixes groups](#prefix-groups)
 
 ### Credit to nikic/FastRoute. 
 
@@ -189,7 +189,6 @@ $router->group(['before' => 'auth'], function($router){
     
 });
 ```
-
 ###Prefix Groups
 
 ```php
