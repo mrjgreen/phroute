@@ -190,6 +190,8 @@ $router->group(['before' => 'auth'], function($router){
 });
 ```
 
+###Prefix Groups
+
 ```php
 
 // You can combine a prefix with a filter, eg. `['prefix' => 'admin', 'before' => 'auth']`
