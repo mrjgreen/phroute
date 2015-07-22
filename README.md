@@ -33,6 +33,23 @@ composer require phroute/phroute
 
 Usage
 -----
+### Example
+
+~~~PHP
+
+$router->get('/example', function(){
+    return 'This route responds to requests with the GET method at the path /example';
+});
+
+$router->post('/example/{id}', function($id){
+    return 'This route responds to requests with the POST method at the path /example/1234. It passes in the parameter as a function argument.';
+});
+
+$router->any('/example', function(){
+    return 'This route responds to any method (POST, GET, DELETE, OPTIONS, HEAD etc...) at the path /example';
+});
+~~~
+
 
 ### Defining routes
 
