@@ -13,7 +13,7 @@ PHRoute - Fast request router for PHP
  * [Named routes and reverse routing](#named-routes-for-reverse-routing)
  * [Restful controller routing](#controllers)
  * [Route filters and filter groups](#filters)
- * [Route prefixes groups](#prefix-groups)
+ * [Route prefix groups](#prefix-groups)
 
 ### Credit to nikic/FastRoute. 
 
@@ -28,12 +28,7 @@ Installation
 Install via composer
 
 ```
-{
-    "require": {
-        "phroute/phroute": "2.*"
-    }
-}
-
+composer require phroute/phroute
 ```
 
 Usage
@@ -41,33 +36,32 @@ Usage
 
 ### Defining routes
 
-The routes are added by calling `addRoute($method, $route, $handler)` on the `Phroute\RouteCollector` collector instance.
-
 ~~~PHP
-  #NB. You can also call the HTTP method short cuts: 
- $routeCollector->get($route, $handler);    # match only get request methods
- $routeCollector->post($route, $handler);   # match only post request methods
- $routeCollector->delete($route, $handler); # match only delete request methods
- $routeCollector->any($route, $handler);    # match any request method
- etc...
+use Phroute\Phroute\RouteCollector;
+
+$router = new RouteCollector();
+
+$router->get($route, $handler);    # match only get requests
+$router->post($route, $handler);   # match only post requests
+$router->delete($route, $handler); # match only delete requests
+$router->any($route, $handler);    # match any request method
+
+etc...
 ~~~
 
-This method accepts the HTTP method the route must match, the route pattern, an associated
-handler and an optional array of 'before' and 'after' filters. The handler does not necessarily have 
-to be a callback (it could also be a controller class name and method or any other kind of data you wish to 
-associate with the route).
+ > These helper methods are wrappers around `addRoute($method, $route, $handler)`
 
-By default a route pattern syntax is used where `{foo}` specified a placeholder with name `foo`
+This method accepts the HTTP method the route must match, the route pattern and a callable handler, which can be a closure, function name or `['ClassName', 'method']` pair.
+
+The methods also accept an additional parameter which is an array of middlewares: currently filters `before` and `after`, and route prefixing with `prefix` are supported. See the sections on Filters and Prefixes for more info and examples.
+
+By default a route pattern syntax is used where `{foo}` specifies a placeholder with name `foo`
 and matching the string `[^/]+`. To adjust the pattern the placeholder matches, you can specify
 a custom pattern by writing `{bar:[0-9]+}`. However, it is also possible to adjust the pattern
-syntax by passing using a different route parser.
+syntax by passing a custom route parser to the router at construction.
 
 
 ```php
-
-$router = new Phroute\Phroute\RouteCollector();
-
-
 $router->any('/example', function(){
     return 'This route responds to any method (POST, GET, DELETE etc...) at the URI /example';
 });
@@ -93,7 +87,7 @@ $router->any('/users/{id}', ['Controllers\User','displayUser']);
 // Optional Parameters
 // simply add a '?' after the route name to make the parameter optional
 // NB. be sure to add a default value for the function argument
-$router->addRoute('GET', '/user/{id}?', function($id = null) {
+$router->get('/user/{id}?', function($id = null) {
     return 'second';
 });
 
