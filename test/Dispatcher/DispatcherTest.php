@@ -178,6 +178,19 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('products/store/1', $r->route('products', array(1)));
     }
 
+    public function testReverseRouteWrappedWithSlashes()
+    {
+        $r = $this->router();
+
+        $r->any( ['products/store', 'products'], [__NAMESPACE__.'\\Test','route']);
+
+        $this->assertEquals('/products/store/', $r->route('products', null, true));
+
+        $r->any( ['products/store/{store:i}', 'products'], [__NAMESPACE__.'\\Test','route']);
+
+        $this->assertEquals('/products/store/1/', $r->route('products', [1], true));
+    }
+
     public function testReverseRouteWithDashes()
     {
         $r = $this->router();

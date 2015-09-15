@@ -154,6 +154,9 @@ $router->route('username', ['joe']);
 $router->route('page', ['intro', 456]);
 // string(14) 'page/intro/456'
 
+$router->route('product', [1], true);
+// string(11) '/product/1/'
+
 ```
 
 ###Filters

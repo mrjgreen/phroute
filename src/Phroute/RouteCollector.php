@@ -70,9 +70,10 @@ class RouteCollector implements RouteDataProviderInterface {
     /**
      * @param $name
      * @param array $args
+     * @param bool $wrapWithSlashes
      * @return string
      */
-    public function route($name, array $args = null)
+    public function route($name, array $args = null, $wrapWithSlashes = false)
     {
         $url = [];
 
@@ -101,7 +102,9 @@ class RouteCollector implements RouteDataProviderInterface {
             }
         }
 
-        return implode('', $url);
+        $wrapChar = $wrapWithSlashes ? '/' : '';
+
+        return $wrapChar . implode('', $url) . $wrapChar;
     }
 
     /**
