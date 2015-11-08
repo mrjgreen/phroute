@@ -13,7 +13,7 @@
         >
     <testsuites>
         <testsuite name="Phroute Tests">
-            <directory>./test/</directory>
+            <directory>./test/Phroute</directory>
         </testsuite>
     </testsuites>
 
