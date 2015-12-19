@@ -601,6 +601,53 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         
         $this->assertEquals($methods, array_keys($data->getStaticRoutes()['user']));
     }
+
+    public function testParameterHandler()
+    {
+        $handler = $this
+            ->getMockBuilder('\Phroute\Phroute\HandlerResolverInterface')
+            ->getMock();
+
+        $handler
+            ->method('resolve')
+            ->willReturnCallback(function () {
+                $handler = function($name, $country) {
+                    return [$name, $country];
+                };
+
+                return $handler;
+            });
+
+        $r = $this->router();
+        $r->get('/{name}/{country}', function (){});
+
+        $response = (new Dispatcher($r->getData(), $handler))->dispatch('GET', '/joe/uk');
+        $this->assertSame(['joe', 'uk'], $response);
+    }
+
+    public function testNamedParameterHandler()
+    {
+        $handler = $this
+            ->getMockBuilder('\Phroute\Phroute\NamedParameterHandlerResolverInterface')
+            ->getMock();
+
+        $handler
+            ->method('resolve')
+            ->willReturnCallback(function () {
+                $handler = function($args) {
+                    return $args;
+                };
+
+                return $handler;
+            });
+
+        $r = $this->router();
+        $r->get('/{name}/{country}', function (){});
+
+        $response = (new Dispatcher($r->getData(), $handler))->dispatch('GET', '/joe/uk');
+
+        $this->assertSame(['name' => 'joe', 'country' => 'uk'], $response);
+    }
     
     public function provideFoundDispatchCases()
     {
