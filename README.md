@@ -225,6 +225,8 @@ $router->group(['prefix' => 'admin'], function($router){
 ###Controllers
 
 ```php
+namespace MyApp;
+
 class Test {
     
     public function anyIndex()
@@ -261,10 +263,10 @@ class Test {
     }
 }
 
-$router->controller('/controller', 'Test');
+$router->controller('/controller', 'MyApp\\Test');
 
 // Controller with associated filter
-$router->controller('/controller', 'Test', ['before' => 'auth']);
+$router->controller('/controller', 'MyApp\\Test', ['before' => 'auth']);
 ```
 
 
