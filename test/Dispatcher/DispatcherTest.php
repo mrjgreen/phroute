@@ -1081,10 +1081,10 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $r = $this->router();
         $r->addRoute('GET', '/catprefix/{:cat}/{slug}.html', array(__NAMESPACE__.'\\Test','infiniteNesting'));
         $r->addRoute('GET', '/catprefix/{:cat}/{slug}', array(__NAMESPACE__.'\\Test','infiniteNesting'));
-        $response = $this->dispatch($r, 'GET', '/catprefix/cat1/cat2/cat3/cat4/cat5/test.html');
+        $response = $this->dispatch($r, 'GET', '/catprefix/cat-1/cat_2/cat+3/cat4/cat5/test.html');
         $response2 =  $this->dispatch($r, 'GET', '/catprefix/cat1/cat2/cat3/cat4/cat5/cat6/test');
                 
-        $this->assertEquals('cat1/cat2/cat3/cat4/cat5/test',$response);
+        $this->assertEquals('cat-1/cat_2/cat+3/cat4/cat5/test',$response);
         $this->assertEquals('cat1/cat2/cat3/cat4/cat5/cat6/test',$response2);
     }
 
