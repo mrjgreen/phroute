@@ -197,7 +197,18 @@ class Dispatcher {
 
             if (!isset($routes[$httpMethod]))
             {
-                $httpMethod = $this->checkFallbacks($routes, $httpMethod);
+                // A brutally discusting fix for not being able to call getIndex and postIndex
+                try {
+                    $httpMethod = $this->checkFallbacks($routes, $httpMethod);
+                    
+                } catch (HttpMethodNotAllowedException $ex) {
+                    $count = count($matches);
+
+                    while(!isset($data['routeMap'][$count++][$httpMethod]));
+                    $routes = $data['routeMap'][$count - 1];
+                    if (!isset($routes[$httpMethod]))
+                        throw new HttpMethodNotAllowedException('Allow: ' . implode(', ', array_keys($routes)));
+                }
             } 
 
             foreach (array_values($routes[$httpMethod][2]) as $i => $varName)
