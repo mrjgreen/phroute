@@ -90,6 +90,16 @@ class Test {
     }
 }
 
+class DefaultTest{
+	function getIndex($one, $two = false){
+		return "getIndex";
+	}
+	
+	function postIndex($one) {
+		return "postIndex";
+	}
+}
+
 class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
     /**
@@ -1068,5 +1078,21 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
         return $cases;
     }
+	
+	public function testDefaultControllerActions(){
+		$r = $this->router();
+		
+		$r->controller('testDefault', __NAMESPACE__.'\\DefaultTest');
+		
+		try {
+			$this->dispatch($r, Route::POST, 'testDefault/test');
+			$this->dispatch($r, Route::GET, 'testDefault/test');
+		} catch (\Phroute\Phroute\Exception\HttpMethodNotAllowedException $ex) {
+			$this->fail('Should not throw exception '.get_class($ex));
+		}
+		
+		
+		
+	}
 
 }
