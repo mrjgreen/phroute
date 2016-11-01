@@ -190,17 +190,13 @@ class Dispatcher {
             }
 
             $count = count($matches);
-
-           while( !isset($data['routeMap'][$count++][$httpMethod]) && ($count < count($data['routeMap'])) );
             
             $routes = $data['routeMap'][$count - 1];
 
             if (!isset($routes[$httpMethod]))
             {
 				
-				$httpMethod = $this->checkFallbacks($routes, $httpMethod);
                
-            } 
 
             foreach (array_values($routes[$httpMethod][2]) as $i => $varName)
             {
