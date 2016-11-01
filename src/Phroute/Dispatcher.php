@@ -201,7 +201,7 @@ class Dispatcher {
                 try {
                     $httpMethod = $this->checkFallbacks($routes, $httpMethod);
                     
-                } catch (HttpMethodNotAllowedException $ex) {
+                } catch (HttpMethodNotAllowedException $ex) { 
                     $count = count($matches);
 
                     while(!isset($data['routeMap'][$count++][$httpMethod]));
