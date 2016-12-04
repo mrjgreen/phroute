@@ -37,6 +37,8 @@ Usage
 
 ~~~PHP
 
+$router = new Phroute\Phroute\Router();
+
 $router->get('/example', function(){
     return 'This route responds to requests with the GET method at the path /example';
 });
@@ -48,16 +50,14 @@ $router->post('/example/{id}', function($id){
 $router->any('/example', function(){
     return 'This route responds to any method (POST, GET, DELETE, OPTIONS, HEAD etc...) at the path /example';
 });
+
+$response = $router->dispatch('GET', '/example');
 ~~~
 
 
 ### Defining routes
 
 ~~~PHP
-use Phroute\Phroute\RouteCollector;
-
-$router = new RouteCollector();
-
 $router->get($route, $handler);    # match only get requests
 $router->post($route, $handler);   # match only post requests
 $router->delete($route, $handler); # match only delete requests
@@ -108,10 +108,8 @@ $router->get('/user/{id}?', function($id = null) {
     return 'second';
 });
 
-# NB. You can cache the return value from $router->getData() so you don't have to create the routes each request - massive speed gains
-$dispatcher = new Phroute\Phroute\Dispatcher($router->getData());
 
-$response = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+$response = $router->dispatch($_SERVER['REQUEST_METHOD'], parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
     
 // Print out the value returned from the dispatched function
 echo $response;
@@ -275,7 +273,7 @@ accepts the HTTP method and a URI. Getting those two bits of information (and no
 appropriately) is your job - this library is not bound to the PHP web SAPIs.
 
 $response = (new Phroute\Phroute\Dispatcher($router))
-            ->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+            ->dispatch($_SERVER['REQUEST_METHOD'], parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 
 The `dispatch()` method will call the matched route, or if no matches, throw one of the exceptions below:
 

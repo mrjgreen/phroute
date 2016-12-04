@@ -60,8 +60,19 @@ class MethodHandlerMap {
         }
     }
 
+    /**
+     * @return array
+     */
     public function getMap()
     {
         return $this->map;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllowedMethods()
+    {
+        return array_keys($this->map);
     }
 }

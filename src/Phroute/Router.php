@@ -1,4 +1,5 @@
 <?php namespace Phroute\Phroute;
+use Phroute\Phroute\Dispatch\DispatcherInterface;
 use Phroute\Phroute\Dispatch\ParameterDispatcher;
 use Phroute\Phroute\Exception\HttpMethodNotAllowedException;
 use Phroute\Phroute\Exception\HttpRouteNotFoundException;
@@ -6,10 +7,10 @@ use Phroute\Phroute\Router\FastRoute;
 use Phroute\Phroute\Router\RouterInterface;
 
 /**
- * Class RouteCollector
+ * Class Router
  * @package Phroute\Phroute
  */
-class RouteCollector {
+class Router {
 
     private $router;
 
@@ -21,33 +22,17 @@ class RouteCollector {
     private $routeParser;
 
     /**
-     *
+     * Router constructor.
+     * @param RouterInterface|null $router
+     * @param DispatcherInterface|null $dispatcher
      */
-    public function __construct(RouterInterface $router = null)
+    public function __construct(RouterInterface $router = null, DispatcherInterface $dispatcher = null)
     {
         $this->router = $router ?: new FastRoute();
 
-        $this->dispatcher = new ParameterDispatcher();
+        $this->dispatcher = $dispatcher ?: new ParameterDispatcher();
 
         $this->routeParser = new RouteParser();
-    }
-
-    /**
-     * @param $name
-     * @return bool
-     */
-    public function hasRoute($name) {
-
-    }
-
-    /**
-     * @param $name
-     * @param array $args
-     * @return string
-     */
-    public function route($name, array $args = null)
-    {
-
     }
 
     /**
@@ -68,7 +53,7 @@ class RouteCollector {
     /**
      * @param $route
      * @param $handler
-     * @return RouteCollector
+     * @return Router
      */
     public function get($route, $handler)
     {
@@ -78,7 +63,7 @@ class RouteCollector {
     /**
      * @param $route
      * @param $handler
-     * @return RouteCollector
+     * @return Router
      */
     public function head($route, $handler)
     {
@@ -88,7 +73,7 @@ class RouteCollector {
     /**
      * @param $route
      * @param $handler
-     * @return RouteCollector
+     * @return Router
      */
     public function post($route, $handler)
     {
@@ -98,7 +83,7 @@ class RouteCollector {
     /**
      * @param $route
      * @param $handler
-     * @return RouteCollector
+     * @return Router
      */
     public function put($route, $handler)
     {
@@ -108,7 +93,7 @@ class RouteCollector {
     /**
      * @param $route
      * @param $handler
-     * @return RouteCollector
+     * @return Router
      */
     public function patch($route, $handler)
     {
@@ -118,7 +103,7 @@ class RouteCollector {
     /**
      * @param $route
      * @param $handler
-     * @return RouteCollector
+     * @return Router
      */
     public function delete($route, $handler)
     {
@@ -128,7 +113,7 @@ class RouteCollector {
     /**
      * @param $route
      * @param $handler
-     * @return RouteCollector
+     * @return Router
      */
     public function options($route, $handler)
     {
@@ -138,7 +123,7 @@ class RouteCollector {
     /**
      * @param $route
      * @param $handler
-     * @return RouteCollector
+     * @return Router
      */
     public function any($route, $handler)
     {

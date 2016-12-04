@@ -16,9 +16,15 @@ class Route {
 
     private $parts;
 
+    private $variableParts;
+
     public function __construct($parts)
     {
         $this->parts = $parts;
+
+        $this->variableParts = array_filter($this->parts, function(RoutePart $part){
+            return $part->variable !== false;
+        });
     }
 
     public function getParts()
@@ -33,9 +39,7 @@ class Route {
 
     public function getVariableParts()
     {
-        return array_filter($this->parts, function(RoutePart $part){
-           return $part->variable !== false;
-        });
+        return $this->variableParts;
     }
 
     public function getRegex()

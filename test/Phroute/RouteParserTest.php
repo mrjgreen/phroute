@@ -1,7 +1,6 @@
 <?php
 
-
-use Phroute\Phroute\Route;
+use Phroute\Phroute\RouteParser;
 use Phroute\Phroute\RoutePart;
 
 class RouteParserTest extends \PHPUnit_Framework_TestCase
@@ -14,7 +13,7 @@ class RouteParserTest extends \PHPUnit_Framework_TestCase
      */
     public function testItParsesRoutes($route, $expected)
     {
-        $p = new \Phroute\Phroute\RouteParser();
+        $p = new RouteParser();
 
         $parsed = $p->parse($route);
 
@@ -42,5 +41,16 @@ class RouteParserTest extends \PHPUnit_Framework_TestCase
                 new RoutePart('(?:/([0-9]+))?', 'thing', true)
             ]]
         ];
+    }
+
+    /**
+     * @expectedException \Phroute\Phroute\Exception\BadRouteException
+     * @expectedExceptionMessage  Cannot use the same placeholder 'foo' twice
+     */
+    public function testItThrowsExceptionForDuplicateName()
+    {
+        $parser = new RouteParser();
+
+        $parser->parse('{foo}/{foo}');
     }
 }

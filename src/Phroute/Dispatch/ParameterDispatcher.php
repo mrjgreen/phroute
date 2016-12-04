@@ -9,7 +9,7 @@ class ParameterDispatcher implements DispatcherInterface {
      * @param $variables
      * @return mixed
      */
-    public function dispatch($handler, $variables)
+    public function dispatch(array $handler, $variables)
     {
         list($handler, $parameters) = $handler;
 

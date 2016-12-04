@@ -15,9 +15,7 @@
          }
     },
   "require": {
-    "php": ">=5.4.0",
-    "monolog/monolog": "^1.17",
-    "symfony/http-kernel": "^2.7"
+    "php": ">=5.4.0"
   },
   "require-dev": {
       "phpunit/phpunit": "*",
