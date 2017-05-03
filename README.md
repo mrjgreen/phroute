@@ -2,7 +2,7 @@ PHRoute - Fast request router for PHP
 =======================================
 
 [![Build Status](https://travis-ci.org/mrjgreen/phroute.svg)](https://travis-ci.org/mrjgreen/phroute)
-[![Coverage Status](https://coveralls.io/repos/mrjgreen/phroute/badge.png)](https://coveralls.io/r/mrjgreen/phroute)
+[![Coverage Status](https://coveralls.io/repos/github/mrjgreen/phroute/badge.svg)](https://coveralls.io/github/mrjgreen/phroute)
 [![Latest Stable Version](https://poser.pugx.org/phroute/phroute/v/stable)](https://packagist.org/packages/phroute/phroute)
 [![License](https://poser.pugx.org/phroute/phroute/license)](https://packagist.org/packages/phroute/phroute)
 [![Total Downloads](https://poser.pugx.org/phroute/phroute/downloads)](https://packagist.org/packages/phroute/phroute)
