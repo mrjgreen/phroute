@@ -19,6 +19,6 @@
   },
   "require-dev": {
       "phpunit/phpunit": "*",
-      "satooshi/php-coveralls": "dev-master"
+      "satooshi/php-coveralls": "@stable"
   }
 }

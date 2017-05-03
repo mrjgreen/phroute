@@ -190,15 +190,31 @@ class Dispatcher {
             }
 
             $count = count($matches);
-
-            while(!isset($data['routeMap'][$count++]));
-            
-            $routes = $data['routeMap'][$count - 1];
+			
+			while( !isset($data['routeMap'][$count++]) );
+					
+			$routes = $data['routeMap'][$count - 1];
 
             if (!isset($routes[$httpMethod]))
             {
-                $httpMethod = $this->checkFallbacks($routes, $httpMethod);
-            } 
+				try 
+				{
+					$httpMethod = $this->checkFallbacks($routes, $httpMethod);
+					
+				} catch (HttpMethodNotAllowedException $ex) 
+				{ // extremely dirty solution
+					$count = count($matches);
+
+					while( !isset($data['routeMap'][$count++][$httpMethod]) && ( $count <= max(array_keys($data['routeMap'])) ) );
+					if(isset($data['routeMap'][$count - 1][$httpMethod])) {
+						$routes = $data['routeMap'][$count - 1];
+						
+					} else throw new HttpMethodNotAllowedException('Allow: ' . implode(', ', array_keys($routes)));
+				
+				}
+               
+            }
+			
 
             foreach (array_values($routes[$httpMethod][2]) as $i => $varName)
             {
