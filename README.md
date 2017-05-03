@@ -3,9 +3,9 @@ PHRoute - Fast request router for PHP
 
 [![Build Status](https://travis-ci.org/mrjgreen/phroute.svg)](https://travis-ci.org/mrjgreen/phroute)
 [![Coverage Status](https://coveralls.io/repos/mrjgreen/phroute/badge.png)](https://coveralls.io/r/mrjgreen/phroute)
-[![Latest Stable Version](https://poser.pugx.org/mrjgreen/phroute/v/stable)](https://packagist.org/packages/mrjgreen/phroute)
-[![License](https://poser.pugx.org/mrjgreen/phroute/license)](https://packagist.org/packages/mrjgreen/phroute)
-[![Total Downloads](https://poser.pugx.org/mrjgreen/phroute/downloads)](https://packagist.org/packages/mrjgreen/phroute)
+[![Latest Stable Version](https://poser.pugx.org/phroute/phroute/v/stable)](https://packagist.org/packages/phroute/phroute)
+[![License](https://poser.pugx.org/phroute/phroute/license)](https://packagist.org/packages/phroute/phroute)
+[![Total Downloads](https://poser.pugx.org/phroute/phroute/downloads)](https://packagist.org/packages/phroute/phroute)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/92fb42d3-5254-4b3e-8a84-69d535941465/mini.png)](https://insight.sensiolabs.com/projects/92fb42d3-5254-4b3e-8a84-69d535941465)
 
 ## This library provides a fast implementation of a regular expression based router.
