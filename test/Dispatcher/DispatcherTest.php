@@ -88,6 +88,11 @@ class Test {
     {
         return $param . $param2;
     }
+    
+    public function infiniteNesting($param, $param2)
+    {
+        return $param . "/" . $param2;
+    }
 }
 
 class DispatcherTest extends \PHPUnit_Framework_TestCase {
@@ -206,10 +211,12 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
         $r->group(['prefix' => 'product-catalogue/store'], function($r) {
             $r->any(['items/{store:i}?', 'products'], array(__NAMESPACE__.'\\Test','route'));
+            $r->any( array('/catprefix/{:cat}/{slug}.html', 'nesting'), array(__NAMESPACE__.'\\Test','infiniteNesting'));
         });
 
         $this->assertEquals('product-catalogue/store/items', $r->route('products'));
         $this->assertEquals('product-catalogue/store/items/1', $r->route('products', array(1)));
+        $this->assertEquals('product-catalogue/store/catprefix/cat1/cat2/1.html', $r->route('nesting', array("cat1/cat2",1)));
     }
 
     /**
@@ -1067,6 +1074,18 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         // x -------------------------------------------------------------------------------------->
 
         return $cases;
+    }
+    
+    public function testInfiniteNesting()
+    {
+        $r = $this->router();
+        $r->addRoute('GET', '/catprefix/{:cat}/{slug}.html', array(__NAMESPACE__.'\\Test','infiniteNesting'));
+        $r->addRoute('GET', '/catprefix/{:cat}/{slug}', array(__NAMESPACE__.'\\Test','infiniteNesting'));
+        $response = $this->dispatch($r, 'GET', '/catprefix/cat-1/cat_2/cat+3/cat4/cat5/test.html');
+        $response2 =  $this->dispatch($r, 'GET', '/catprefix/cat1/cat2/cat3/cat4/cat5/cat6/test');
+                
+        $this->assertEquals('cat-1/cat_2/cat+3/cat4/cat5/test',$response);
+        $this->assertEquals('cat1/cat2/cat3/cat4/cat5/cat6/test',$response2);
     }
 
 }
