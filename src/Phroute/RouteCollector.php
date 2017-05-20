@@ -15,7 +15,6 @@ class RouteCollector implements RouteDataProviderInterface {
      *
      */
     const DEFAULT_CONTROLLER_ROUTE = 'index';
-
     /**
      *
      */
