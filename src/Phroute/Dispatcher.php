@@ -54,8 +54,12 @@ class Dispatcher {
         }
         
         $resolvedHandler = $this->handlerResolver->resolve($handler);
-        
-        $response = call_user_func_array($resolvedHandler, $vars);
+
+        if ($this->handlerResolver instanceof NamedParameterHandlerResolverInterface) {
+            $response = call_user_func($resolvedHandler, $vars);
+        } else {
+            $response = call_user_func_array($resolvedHandler, $vars);
+        }
 
         return $this->dispatchFilters($afterFilter, $response);
     }
