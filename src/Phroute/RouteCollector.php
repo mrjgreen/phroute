@@ -325,7 +325,7 @@ class RouteCollector implements RouteDataProviderInterface {
                 {
                     $methodName = $this->camelCaseToDashed(substr($method->name, strlen($valid)));
 
-                    $params = $this->buildControllerParameters($method);
+                    $params = $this->buildControllerParameters($method, $route);
 
                     if($methodName === self::DEFAULT_CONTROLLER_ROUTE)
                     {
@@ -346,12 +346,16 @@ class RouteCollector implements RouteDataProviderInterface {
      * @param ReflectionMethod $method
      * @return string
      */
-    private function buildControllerParameters(ReflectionMethod $method)
+    private function buildControllerParameters(ReflectionMethod $method, $route)
     {
         $params = '';
 
         foreach($method->getParameters() as $param)
         {
+            if (strpos($route, '{' . $param->getName()) !== false)
+            {
+                continue;
+            }
             $params .= "/{" . $param->getName() . "}" . ($param->isOptional() ? '?' : '');
         }
 
