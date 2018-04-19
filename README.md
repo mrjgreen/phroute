@@ -297,7 +297,7 @@ which will look like: `"Allow: HEAD, GET, POST"` etc... depending on the methods
 You should catch the exception and use this to send a header to the client: `header($e->getMessage());`
 
 
-###Dependency Injection
+### Dependency Injection
 
 Defining your own dependency resolver is simple and easy. The router will attempt to resolve filters,
 and route handlers via the dependency resolver.
@@ -378,7 +378,7 @@ Performed on a machine with :
  * Processor  2.3 GHz Intel Core i7
  * Memory  8 GB 1600 MHz DDR3
 
-####Phroute
+#### Phroute
 
 This test is to illustrate, in part, the efficiency of the lightweight routing-core, but mostly the lack of degradation of matching speed as the number of routes grows, as compared to conventional libraries.
 
@@ -486,7 +486,7 @@ Percentage of the requests served within a certain time (ms)
  100%    478 (longest request)
 ~~~
 
-###For comparison, Laravel 4.0 routing core
+### For comparison, Laravel 4.0 routing core
 
 Please note, this is no slight against laravel - it is based on a routing loop, which is why the performance worsens as the number of routes grows
 
