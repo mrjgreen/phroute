@@ -137,7 +137,7 @@ use in routes:
 
 ```
 
-###Named Routes for Reverse Routing
+### Named Routes for Reverse Routing
 
 Pass in an array as the first argument, where the first item is your route and the second item is a name with which to reference it later.
 
@@ -159,7 +159,7 @@ $router->route('page', ['intro', 456]);
 
 ```
 
-###Filters
+### Filters
 
 ```php
 
@@ -176,7 +176,7 @@ $router->get('/user/{name}', function($name){
 }, ['before' => 'statsStart', 'after' => 'statsComplete']);
 ```
 
-###Filter Groups
+### Filter Groups
 
 Wrap multiple routes in a route group to apply that filter to every route defined within. You can nest route groups if required.
 
@@ -203,7 +203,7 @@ $router->group(['before' => 'auth'], function($router){
     
 });
 ```
-###Prefix Groups
+### Prefix Groups
 
 ```php
 
@@ -225,7 +225,7 @@ $router->group(['prefix' => 'admin'], function($router){
 });
 ```
 
-###Controllers
+### Controllers
 
 ```php
 namespace MyApp;
