@@ -6,6 +6,7 @@ use Phroute\Phroute\RouteCollector;
 use Phroute\Phroute\RouteParser;
 use Phroute\Phroute\Dispatcher;
 use Phroute\Phroute\Route;
+use PHPUnit\Framework\TestCase;
 
 class Test {
     
@@ -90,7 +91,7 @@ class Test {
     }
 }
 
-class DispatcherTest extends \PHPUnit_Framework_TestCase {
+class DispatcherTest extends TestCase {
 
     /**
      * Set appropriate options for the specific Dispatcher class we're testing
@@ -130,11 +131,11 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider provideMethodNotAllowedDispatchCases
+     * @expectedException Phroute\Phroute\Exception\HttpMethodNotAllowedException
+     * @expectedExceptionMessage Allow: GET
      */
     public function testMethodNotAllowedDispatches($method, $uri, $callback, $allowed)
     {
-        $this->setExpectedException('\Phroute\Phroute\Exception\HttpMethodNotAllowedException',"Allow: " . implode(', ', $allowed));
-
         $r = $this->router();
         $callback($r);
         $this->dispatch($r, $method, $uri);
