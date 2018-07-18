@@ -137,7 +137,7 @@ use in routes:
 
 ```
 
-###Named Routes for Reverse Routing
+### Named Routes for Reverse Routing
 
 Pass in an array as the first argument, where the first item is your route and the second item is a name with which to reference it later.
 
@@ -159,7 +159,7 @@ $router->route('page', ['intro', 456]);
 
 ```
 
-###Filters
+### Filters
 
 ```php
 
@@ -176,7 +176,7 @@ $router->get('/user/{name}', function($name){
 }, ['before' => 'statsStart', 'after' => 'statsComplete']);
 ```
 
-###Filter Groups
+### Filter Groups
 
 Wrap multiple routes in a route group to apply that filter to every route defined within. You can nest route groups if required.
 
@@ -203,7 +203,7 @@ $router->group(['before' => 'auth'], function($router){
     
 });
 ```
-###Prefix Groups
+### Prefix Groups
 
 ```php
 
@@ -225,7 +225,7 @@ $router->group(['prefix' => 'admin'], function($router){
 });
 ```
 
-###Controllers
+### Controllers
 
 ```php
 namespace MyApp;
@@ -297,7 +297,7 @@ which will look like: `"Allow: HEAD, GET, POST"` etc... depending on the methods
 You should catch the exception and use this to send a header to the client: `header($e->getMessage());`
 
 
-###Dependency Injection
+### Dependency Injection
 
 Defining your own dependency resolver is simple and easy. The router will attempt to resolve filters,
 and route handlers via the dependency resolver.
@@ -378,7 +378,7 @@ Performed on a machine with :
  * Processor  2.3 GHz Intel Core i7
  * Memory  8 GB 1600 MHz DDR3
 
-####Phroute
+#### Phroute
 
 This test is to illustrate, in part, the efficiency of the lightweight routing-core, but mostly the lack of degradation of matching speed as the number of routes grows, as compared to conventional libraries.
 
