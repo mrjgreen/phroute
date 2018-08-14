@@ -41,6 +41,8 @@ class Dispatcher {
      * @param $httpMethod
      * @param $uri
      * @return mixed|null
+     * @throws Exception\HttpRouteNotFoundException
+     * @throws Exception\HttpMethodNotAllowedException
      */
     public function dispatch($httpMethod, $uri)
     {
@@ -111,7 +113,9 @@ class Dispatcher {
      *
      * @param $httpMethod
      * @param $uri
+     * @return mixed
      * @throws Exception\HttpRouteNotFoundException
+     * @throws Exception\HttpMethodNotAllowedException
      */
     private function dispatchRoute($httpMethod, $uri)
     {
@@ -148,6 +152,7 @@ class Dispatcher {
      *
      * @param $routes
      * @param $httpMethod
+     * @return string
      * @throws Exception\HttpMethodNotAllowedException
      */
     private function checkFallbacks($routes, $httpMethod)
@@ -177,6 +182,7 @@ class Dispatcher {
      *
      * @param $httpMethod
      * @param $uri
+     * @return mixed
      * @throws Exception\HttpMethodNotAllowedException
      * @throws Exception\HttpRouteNotFoundException
      */
