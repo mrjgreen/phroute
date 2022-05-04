@@ -35,7 +35,7 @@ jobs:
         run: mkdir -p build/logs
 
       - name: Run test suite
-        run: php vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+        run: XDEBUG_MODE=coverage php vendor/bin/phpunit --coverage-clover build/logs/clover.xml
 
       - name: Generate coverage
         run: php vendor/bin/coveralls -v
