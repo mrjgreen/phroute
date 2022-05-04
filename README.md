@@ -1,44 +1,41 @@
-PHRoute - Fast request router for PHP
-=======================================
+# PHRoute - Fast request router for PHP
 
-[![Build Status](https://travis-ci.org/mrjgreen/phroute.svg)](https://travis-ci.org/mrjgreen/phroute)
+![Build Status](https://github.com/mrjgreen/phroute/actions/workflows/php.yml/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/mrjgreen/phroute/badge.svg)](https://coveralls.io/github/mrjgreen/phroute)
 [![Latest Stable Version](https://poser.pugx.org/phroute/phroute/v/stable)](https://packagist.org/packages/phroute/phroute)
 [![License](https://poser.pugx.org/phroute/phroute/license)](https://packagist.org/packages/phroute/phroute)
 [![Total Downloads](https://poser.pugx.org/phroute/phroute/downloads)](https://packagist.org/packages/phroute/phroute)
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/92fb42d3-5254-4b3e-8a84-69d535941465/mini.png)](https://insight.sensiolabs.com/projects/92fb42d3-5254-4b3e-8a84-69d535941465)
 
 ## This library provides a fast implementation of a regular expression based router.
 
- * [Super fast](#performance)
- * [Route parameters and optional route parameters](#defining-routes)
- * [Dependency Injection Resolving (Integrates easily with 3rd parties eg. Orno/Di)](#dependency-injection)
- * [Named routes and reverse routing](#named-routes-for-reverse-routing)
- * [Restful controller routing](#controllers)
- * [Route filters and filter groups](#filters)
- * [Route prefix groups](#prefix-groups)
+- [Super fast](#performance)
+- [Route parameters and optional route parameters](#defining-routes)
+- [Dependency Injection Resolving (Integrates easily with 3rd parties eg. Orno/Di)](#dependency-injection)
+- [Named routes and reverse routing](#named-routes-for-reverse-routing)
+- [Restful controller routing](#controllers)
+- [Route filters and filter groups](#filters)
+- [Route prefix groups](#prefix-groups)
 
-### Credit to nikic/FastRoute. 
+### Credit to nikic/FastRoute.
 
-While the bulk of the library and extensive unit tests are my own, credit for the regex matching core implementation and benchmarking goes to [nikic](https://github.com/nikic/FastRoute). Please go and read nikic's 
+While the bulk of the library and extensive unit tests are my own, credit for the regex matching core implementation and benchmarking goes to [nikic](https://github.com/nikic/FastRoute). Please go and read nikic's
 [blog post explaining how the implementation works and why it's fast.](http://nikic.github.io/2014/02/18/Fast-request-routing-using-regular-expressions.html)
 
 Many modifications to the core have been made to suit the new library wrapper, and additional features added such as optional route parameters and reverse routing etc, but please head over and checkout nikic's library to see the origins of the core and how it works.
 
+## Installation
 
-Installation
-------------
 Install via composer
 
 ```
 composer require phroute/phroute
 ```
 
-Usage
------
+## Usage
+
 ### Example
 
-~~~PHP
+```PHP
 
 $router->get('/example', function(){
     return 'This route responds to requests with the GET method at the path /example';
@@ -51,12 +48,11 @@ $router->post('/example/{id}', function($id){
 $router->any('/example', function(){
     return 'This route responds to any method (POST, GET, DELETE, OPTIONS, HEAD etc...) at the path /example';
 });
-~~~
-
+```
 
 ### Defining routes
 
-~~~PHP
+```PHP
 use Phroute\Phroute\RouteCollector;
 
 $router = new RouteCollector();
@@ -67,9 +63,9 @@ $router->delete($route, $handler); # match only delete requests
 $router->any($route, $handler);    # match any request method
 
 etc...
-~~~
+```
 
- > These helper methods are wrappers around `addRoute($method, $route, $handler)`
+> These helper methods are wrappers around `addRoute($method, $route, $handler)`
 
 This method accepts the HTTP method the route must match, the route pattern and a callable handler, which can be a closure, function name or `['ClassName', 'method']` pair.
 
@@ -79,7 +75,6 @@ By default a route pattern syntax is used where `{foo}` specifies a placeholder 
 and matching the string `[^/]+`. To adjust the pattern the placeholder matches, you can specify
 a custom pattern by writing `{bar:[0-9]+}`. However, it is also possible to adjust the pattern
 syntax by passing a custom route parser to the router at construction.
-
 
 ```php
 $router->any('/example', function(){
@@ -91,7 +86,7 @@ $router->any('/example', function(){
 $router->post('/page/{id:\d+}', function($id){
 
     // $id contains the url paramter
-    
+
     return 'This route responds to the post method at the URI /page/{param} where param is at least one number';
 });
 
@@ -115,7 +110,7 @@ $router->get('/user/{id}?', function($id = null) {
 $dispatcher = new Phroute\Phroute\Dispatcher($router->getData());
 
 $response = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
-    
+
 // Print out the value returned from the dispatched function
 echo $response;
 
@@ -127,7 +122,7 @@ echo $response;
 
 :i => :/d+                # numbers only
 :a => :[a-zA-Z0-9]+       # alphanumeric
-:c => :[a-zA-Z0-9+_\-\.]+  # alnumnumeric and + _ - . characters 
+:c => :[a-zA-Z0-9+_\-\.]+  # alnumnumeric and + _ - . characters
 :h => :[a-fA-F0-9]+       # hex
 
 use in routes:
@@ -163,11 +158,11 @@ $router->route('page', ['intro', 456]);
 
 ```php
 
-$router->filter('statsStart', function(){    
+$router->filter('statsStart', function(){
     setPageStartTime(microtime(true));
 });
 
-$router->filter('statsComplete', function(){    
+$router->filter('statsComplete', function(){
     var_dump('Page load time: ' . (microtime(true) - getPageStartTime()));
 });
 
@@ -183,26 +178,27 @@ Wrap multiple routes in a route group to apply that filter to every route define
 ```php
 
 // Any thing other than null returned from a filter will prevent the route handler from being dispatched
-$router->filter('auth', function(){    
-    if(!isset($_SESSION['user'])) 
+$router->filter('auth', function(){
+    if(!isset($_SESSION['user']))
     {
         header('Location: /login');
-        
+
         return false;
     }
 });
 
 $router->group(['before' => 'auth'], function($router){
-    
+
     $router->get('/user/{name}', function($name){
         return 'Hello ' . $name;
     })
     ->get('/page/{id:\d+}', function($id){
         return 'You must be authenticated to see this page: ' . $id;
     });
-    
+
 });
 ```
+
 ###Prefix Groups
 
 ```php
@@ -231,12 +227,12 @@ $router->group(['prefix' => 'admin'], function($router){
 namespace MyApp;
 
 class Test {
-    
+
     public function anyIndex()
     {
         return 'This is the default page and will respond to /controller and /controller/index';
     }
-    
+
     /**
     * One required paramter and one optional parameter
     */
@@ -244,22 +240,22 @@ class Test {
     {
         return 'This will respond to /controller/test/{param}/{param2}? with any method';
     }
-    
+
     public function getTest()
     {
         return 'This will respond to /controller/test with only a GET method';
     }
-    
+
     public function postTest()
     {
         return 'This will respond to /controller/test with only a POST method';
     }
-    
+
     public function putTest()
     {
         return 'This will respond to /controller/test with only a PUT method';
     }
-    
+
     public function deleteTest()
     {
         return 'This will respond to /controller/test with only a DELETE method';
@@ -272,7 +268,6 @@ $router->controller('/controller', 'MyApp\\Test');
 $router->controller('/controller', 'MyApp\\Test', ['before' => 'auth']);
 ```
 
-
 ### Dispatching a URI
 
 A URI is dispatched by calling the `dispatch()` method of the created dispatcher. This method
@@ -280,22 +275,21 @@ accepts the HTTP method and a URI. Getting those two bits of information (and no
 appropriately) is your job - this library is not bound to the PHP web SAPIs.
 
 $response = (new Phroute\Phroute\Dispatcher($router))
-            ->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+->dispatch($\_SERVER['REQUEST_METHOD'], $\_SERVER['REQUEST_URI']);
 
 The `dispatch()` method will call the matched route, or if no matches, throw one of the exceptions below:
 
     # Route not found
     Phroute\Phroute\Exception\HttpRouteNotFoundException;
-    
+
     # Route found, but method not allowed
     Phroute\Phroute\Exception\HttpMethodNotAllowedException;
 
 > **NOTE:** The HTTP specification requires that a `405 Method Not Allowed` response include the
-`Allow:` header to detail available methods for the requested resource. 
-This information can be obtained from the thrown exception's message content:
-which will look like: `"Allow: HEAD, GET, POST"` etc... depending on the methods you have set
-You should catch the exception and use this to send a header to the client: `header($e->getMessage());`
-
+> `Allow:` header to detail available methods for the requested resource.
+> This information can be obtained from the thrown exception's message content:
+> which will look like: `"Allow: HEAD, GET, POST"` etc... depending on the methods you have set
+> You should catch the exception and use this to send a header to the client: `header($e->getMessage());`
 
 ###Dependency Injection
 
@@ -305,7 +299,7 @@ and route handlers via the dependency resolver.
 The example below shows how you can define your own resolver to integrate with orno/di,
 but pimple/pimple or others will work just as well.
 
-~~~PHP
+```PHP
 
 use Orno\Di\Container;
 use Phroute\Phroute\HandlerResolverInterface;
@@ -335,12 +329,11 @@ class RouterResolver implements HandlerResolverInterface
     }
 }
 
-~~~
-
+```
 
 When you create your dispatcher:
 
-~~~PHP
+```PHP
 
 $appContainer = new Orno\Di;
 
@@ -351,7 +344,7 @@ $appContainer = new Orno\Di;
 $resolver = new RouterResolver($appContainer);
 $response = (new Phroute\Phroute\Dispatcher($router, $resolver))->dispatch($requestMethod, $requestUri);
 
-~~~
+```
 
 ### A Note on HEAD Requests
 
@@ -365,25 +358,25 @@ from HEAD responses so this behavior has no effect on the vast majority of users
 
 However, implementors using Phroute outside the web SAPI environment (e.g. a custom server) MUST
 NOT send entity bodies generated in response to HEAD requests. If you are a non-SAPI user this is
-*your responsibility*; Phroute has no purview to prevent you from breaking HTTP in such cases.
+_your responsibility_; Phroute has no purview to prevent you from breaking HTTP in such cases.
 
 Finally, note that applications MAY always specify their own HEAD method route for a given
 resource to bypass this behavior entirely.
-
 
 ### Performance
 
 Performed on a machine with :
 
- * Processor  2.3 GHz Intel Core i7
- * Memory  8 GB 1600 MHz DDR3
+- Processor 2.3 GHz Intel Core i7
+- Memory 8 GB 1600 MHz DDR3
 
 ####Phroute
 
 This test is to illustrate, in part, the efficiency of the lightweight routing-core, but mostly the lack of degradation of matching speed as the number of routes grows, as compared to conventional libraries.
 
 ##### With 10 routes, matching 1st route (best case)
-~~~~
+
+```
 $ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:9943/
 
 Finished 1000 requests
@@ -404,13 +397,13 @@ Percentage of the requests served within a certain time (ms)
   98%    310
   99%    310
  100%    310 (longest request)
-~~~~
+```
 
-#####  With 10 routes, matching last route (worst case)
+##### With 10 routes, matching last route (worst case)
 
 Note that the match is just as quick as against the first route
 
-~~~
+```
 $ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:9943/thelastroute
 
 Finished 1000 requests
@@ -432,11 +425,11 @@ Percentage of the requests served within a certain time (ms)
   98%    312
   99%    312
  100%    313 (longest request)
-~~~
+```
 
-#####  With 100 routes, matching last route (worst case)
+##### With 100 routes, matching last route (worst case)
 
-~~~
+```
 $ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:9943/thelastroute
 
 Finished 1000 requests
@@ -458,11 +451,11 @@ Percentage of the requests served within a certain time (ms)
   98%    323
   99%    324
  100%    324 (longest request)
-~~~
+```
 
 ##### With 1000 routes, matching the last route (worst case)
 
-~~~
+```
 $ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:9943/thelastroute
 
 Finished 1000 requests
@@ -484,7 +477,7 @@ Percentage of the requests served within a certain time (ms)
   98%    457
   99%    458
  100%    478 (longest request)
-~~~
+```
 
 ###For comparison, Laravel 4.0 routing core
 
@@ -492,7 +485,7 @@ Please note, this is no slight against laravel - it is based on a routing loop, 
 
 ##### With 10 routes, matching first route (best case)
 
-~~~
+```
 $ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:4968/
 
 Finished 1000 requests
@@ -513,12 +506,11 @@ Percentage of the requests served within a certain time (ms)
   98%   1349
   99%   1351
  100%   1353 (longest request)
-~~~
-
+```
 
 ##### With 10 routes, matching last route (worst case)
 
-~~~
+```
 $ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:4968/thelastroute
 
 Finished 1000 requests
@@ -539,11 +531,11 @@ Percentage of the requests served within a certain time (ms)
   98%   1480
   99%   1482
  100%   1484 (longest request)
-~~~
+```
 
 ##### With 100 routes, matching last route (worst case)
 
-~~~
+```
 $ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:4968/thelastroute
 
 Finished 1000 requests
@@ -564,11 +556,11 @@ Percentage of the requests served within a certain time (ms)
   98%   3232
   99%   3236
  100%   3241 (longest request)
-~~~
+```
 
 ##### With 1000 routes, matching last route (worst case)
 
-~~~
+```
 $ /usr/local/bin/ab -n 1000 -c 100 http://127.0.0.1:5740/thelastroute
 
 Finished 1000 requests
@@ -589,4 +581,4 @@ Percentage of the requests served within a certain time (ms)
   98%  19945
   99%  19960
  100%  19975 (longest request)
-~~~
+```
