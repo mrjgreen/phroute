@@ -1,24 +1,27 @@
 {
   "name": "phroute/phroute",
   "description": "Fast, fully featured restful request router for PHP",
-  "keywords": ["routing", "router"],
+  "keywords": [
+    "routing",
+    "router"
+  ],
   "license": "BSD-3-Clause",
   "authors": [
-      {
+    {
       "name": "Joe Green",
       "email": "joe.green.0991@gmail.com"
     }
   ],
   "autoload": {
-        "psr-4": {
-            "Phroute\\Phroute\\": "src/Phroute"
-         }
-    },
+    "psr-4": {
+      "Phroute\\Phroute\\": "src/Phroute"
+    }
+  },
   "require": {
     "php": ">=5.4.0"
   },
   "require-dev": {
     "satooshi/php-coveralls": "^1.0",
-    "phpunit/phpunit": "^5.0"
+    "phpunit/phpunit": "^9.0"
   }
 }

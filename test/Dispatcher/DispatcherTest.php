@@ -90,7 +90,7 @@ class Test {
     }
 }
 
-class DispatcherTest extends \PHPUnit_Framework_TestCase {
+class DispatcherTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * Set appropriate options for the specific Dispatcher class we're testing
@@ -118,11 +118,11 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @dataProvider provideNotFoundDispatchCases
-     * @expectedException \Phroute\Phroute\Exception\HttpRouteNotFoundException
-     * @expectedExceptionMessage does not exist
      */
     public function testNotFoundDispatches($method, $uri, $callback)
     {
+        $this->expectException('\Phroute\Phroute\Exception\HttpRouteNotFoundException', 'does not exist');
+        
         $r = $this->router();
         $callback($r);
         $this->dispatch($r, $method, $uri);
@@ -133,7 +133,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
      */
     public function testMethodNotAllowedDispatches($method, $uri, $callback, $allowed)
     {
-        $this->setExpectedException('\Phroute\Phroute\Exception\HttpMethodNotAllowedException',"Allow: " . implode(', ', $allowed));
+        $this->expectException('\Phroute\Phroute\Exception\HttpMethodNotAllowedException',"Allow: " . implode(', ', $allowed));
 
         $r = $this->router();
         $callback($r);
@@ -212,12 +212,10 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('product-catalogue/store/items/1', $r->route('products', array(1)));
     }
 
-    /**
-     * @expectedException \Phroute\Phroute\Exception\BadRouteException
-     * @expectedExceptionMessage Expecting route variable 'store'
-     */
     public function testMissingParameterReverseRoute()
     {
+        $this->expectException('\Phroute\Phroute\Exception\BadRouteException', "Expecting route variable 'store'");
+
         $r = $this->router();
 
         $r->any( array('products/store/{store:i}', 'products'), array(__NAMESPACE__.'\\Test','route'));
@@ -225,23 +223,19 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('products/store', $r->route('products'));
     }
 
-    /**
-     * @expectedException \Phroute\Phroute\Exception\BadRouteException
-     * @expectedExceptionMessage Cannot use the same placeholder 'test' twice
-     */
     public function testDuplicateVariableNameError()
     {
+        $this->expectException('\Phroute\Phroute\Exception\BadRouteException', "Cannot use the same placeholder 'test' twice");
+
         $this->router()->addRoute('GET', '/foo/{test}/{test:\d+}', function() {
             
         });
     }
 
-    /**
-     * @expectedException \Phroute\Phroute\Exception\BadRouteException
-     * @expectedExceptionMessage Cannot register two routes matching 'user/([^/]+)' for method 'GET'
-     */
     public function testDuplicateVariableRoute()
     {
+        $this->expectException('\Phroute\Phroute\Exception\BadRouteException', "Cannot register two routes matching 'user/([^/]+)' for method 'GET'");
+
         $r = $this->router();
         $r->addRoute('GET', '/user/{id}', function() {
             
@@ -251,12 +245,10 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         });
     }
 
-    /**
-     * @expectedException \Phroute\Phroute\Exception\BadRouteException
-     * @expectedExceptionMessage Cannot register two routes matching 'user' for method 'GET'
-     */
     public function testDuplicateStaticRoute()
     {
+        $this->expectException('\Phroute\Phroute\Exception\BadRouteException', "Cannot register two routes matching 'user' for method 'GET'");
+
         $r = $this->router();
         $r->addRoute('GET', '/user', function() {
             
@@ -266,12 +258,10 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         });
     }
 
-    /**
-     * @expectedException \Phroute\Phroute\Exception\BadRouteException
-     * @expectedExceptionMessage Static route 'user/nikic' is shadowed by previously defined variable route 'user/([^/]+)' for method 'GET'
-     */
     public function testShadowedStaticRoute()
     {
+        $this->expectException('\Phroute\Phroute\Exception\BadRouteException', "Static route 'user/nikic' is shadowed by previously defined variable route 'user/([^/]+)' for method 'GET'");
+
         $r = $this->router();
         $r->addRoute('GET', '/user/{name}', function() {
             
@@ -393,18 +383,20 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
 
         $r->group(['prefix' => '/user'], function($router){
             $router->addRoute('GET', '/', function() {
-
+                return 'user';
             });
             $router->group(['prefix' => '/foo'], function($router){
-                $router->addRoute('GET', '/{id}', function() {
-
+                $router->addRoute('GET', '/{id}', function($id) {
+                    return 'foo';
                 });
             });
         });
 
-        $this->dispatch($r, 'GET', '/user');
+        $val1 = $this->dispatch($r, 'GET', '/user');
+        $this->assertEquals('user', $val1);
 
-        $this->dispatch($r, 'GET', '/user/foo/2');
+        $val2 = $this->dispatch($r, 'GET', '/user/foo/2');
+        $this->assertEquals('foo', $val2);
 
     }
 
@@ -412,12 +404,12 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     {
         $r = $this->router();
         $r->group(['prefix' => '/demo/{variable}'], function($router){
-            $router->addRoute('GET', '/something', function($var){
-               return $var;
+            $router->addRoute('GET', '/something', function($variable){
+               return $variable;
             });
 
-            $router->addRoute('GET', '/something-else', function($var){
-                return $var;
+            $router->addRoute('GET', '/something-else', function($variable){
+                return $variable;
             });
         });
 
@@ -498,13 +490,10 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('joegreen', $this->dispatch($r, Route::GET, 'user/parameter-optional-required/joe/green'));
     }
 
-
-    /**
-     * @expectedException \Phroute\Phroute\Exception\HttpRouteNotFoundException
-     * @expectedExceptionMessage does not exist
-     */
     public function testRestfulOptionalRequiredControllerMethodThrows()
     {
+        $this->expectException('\Phroute\Phroute\Exception\HttpRouteNotFoundException', 'does not exist');
+
         $r = $this->router();
 
         $r->controller('/user', __NAMESPACE__ . '\\Test');
@@ -512,12 +501,10 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $this->dispatch($r, Route::GET, 'user/parameter-optional-required');
     }
 
-    /**
-     * @expectedException \Phroute\Phroute\Exception\HttpRouteNotFoundException
-     * @expectedExceptionMessage does not exist
-     */
     public function testRestfulRequiredControllerMethodThrows()
     {
+        $this->expectException('\Phroute\Phroute\Exception\HttpRouteNotFoundException', 'does not exist');
+
         $r = $this->router();
 
         $r->controller('/user', __NAMESPACE__ . '\\Test');
@@ -525,12 +512,10 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         $this->dispatch($r, Route::GET, 'user/parameter-required');
     }
 
-    /**
-     * @expectedException \Phroute\Phroute\Exception\HttpRouteNotFoundException
-     * @expectedExceptionMessage does not exist
-     */
     public function testRestfulHyphenateControllerMethodThrows()
     {
+        $this->expectException('\Phroute\Phroute\Exception\HttpRouteNotFoundException', 'does not exist');
+
         $r = $this->router();
 
         $r->controller('/user', __NAMESPACE__ . '\\Test');
@@ -558,8 +543,8 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
     {
         $r = $this->router();
 
-        $r->get($route, function(){
-            return implode(' ', func_get_args());
+        $r->get($route, function($name){
+            return $name;
         });
 
         $val = $this->dispatch($r, Route::GET, $uri);
@@ -574,15 +559,36 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
             array('/user-name/{name}', '/user-name/joe', 'joe'),
             array('/user_name/{name}', '/user_name/joe', 'joe'),
             array('/user+++name/{name}', '/user+++name/joe', 'joe'),
-            array('/user.name/{name_with_undersc0r3s_n_nums}', '/user.name/joe', 'joe'),
             array('/us;er:nam;e/{name}', '/us;er:nam;e/joe', 'joe'),
             array('/us%25r:na%20;e/{name}', '/us%25r:na%20;e/joe', 'joe'),
-
-            // Regex characters to check for proper escaping
-            array('/sta++++tic1', '/sta++++tic1', ''),
-
-            array('/static1/{name}/static2/{country}', '/static1/joe/static2/uk', 'joe uk'),
         );
+    }
+
+    public function testComplexRouteParamName()
+    {
+        $r = $this->router();
+
+        $r->get('/user.name/{name_with_undersc0r3s_n_nums}', function($name_with_undersc0r3s_n_nums){
+            return $name_with_undersc0r3s_n_nums;
+        });
+
+        $val = $this->dispatch($r, Route::GET, '/user.name/joe');
+
+        $this->assertEquals('joe', $val);
+    }
+
+    public function testRegexRouteParamName()
+    {
+        $r = $this->router();
+
+        // Regex characters to check for proper escaping
+        $r->get('/sta++++tic1', function(){
+            return 'foo';
+        });
+
+        $val = $this->dispatch($r, Route::GET, '/sta++++tic1');
+
+        $this->assertEquals('foo', $val);
     }
 
     public function testRestfulMethods()
@@ -852,16 +858,16 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase {
         // 11 -------------------------------------------------------------------------------------->
         // Test shortcuts parameter
         $callback = function($r) {
-            $r->addRoute('GET', '/user/{id}?/{id2}?/{id3}?', function() {
+            $r->addRoute('GET', '/user/{id}?/{id2}?/{id3}?', function($id = null, $id2 = null, $id3 = null) {
                 return 'first';
             });
-            $r->addRoute('GET', '/user2/{id}?', function() {
+            $r->addRoute('GET', '/user2/{id}?', function($id = null) {
                 return 'second';
             });
-            $r->addRoute('GET', '/user3/{id}?', function() {
+            $r->addRoute('GET', '/user3/{id}?', function($id = null) {
                 return 'third';
             });
-            $r->addRoute('GET', '/user4/{id}?/{id2}?/{id3}?', function() {
+            $r->addRoute('GET', '/user4/{id}?/{id2}?/{id3}?', function($id = null, $id2 = null, $id3 = null) {
                 return 'fourth';
             });
         };
