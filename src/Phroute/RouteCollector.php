@@ -440,6 +440,10 @@ class RouteCollector implements RouteDataProviderInterface {
             $numVariables = count($firstRoute[2]);
             $numGroups = max($numGroups, $numVariables);
 
+            if ($numVariables === $numGroups) {
+                $numGroups++;
+            }
+            
             $regexes[] = $regex . str_repeat('()', $numGroups - $numVariables);
 
             foreach ($routes as $httpMethod => $route) {
