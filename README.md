@@ -146,11 +146,14 @@ $router->get(['/user/{name}', 'username'], function($name){
 
 // Use the routename and pass in any route parameters to reverse engineer an existing route path
 // If you change your route path above, you won't need to go through your code updating any links/references to that route
-$router->route('username', 'joe');
-// string(9) '/user/joe'
+$router->route('username', ['joe']);
+// string(8) 'user/joe'
 
 $router->route('page', ['intro', 456]);
-// string(15) '/page/intro/456'
+// string(14) 'page/intro/456'
+
+$router->route('product', [1], true);
+// string(11) '/product/1/'
 
 ```
 
